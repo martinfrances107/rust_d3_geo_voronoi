@@ -1,3 +1,5 @@
+use std::cmp;
+
 use num_traits::cast::FromPrimitive;
 use num_traits::Float;
 use num_traits::FloatConst;
@@ -7,11 +9,11 @@ use rust_d3_geo::projection::stereographic::StereographicRaw;
 use rust_d3_geo::rotation::rotation::Rotation;
 use rust_d3_geo::Transform;
 
-use super::delaunay::Delaunay;
+use super::Delaunay;
 
 pub fn delaunay_from<F>(points: Vec<[F; 2]>) -> Option<Delaunay<F>>
 where
-  F: Float + FloatConst + FromPrimitive,
+  F: Float + FloatConst + FromPrimitive + 'static,
 {
   if points.len() < 2 {
     return None;
@@ -20,22 +22,21 @@ where
   // Find a valid PIvot point.
   // The index of the first acceptable point in
   // which the x or y component is not inifinty.
-  let Pivot = points
+  let pivot: usize = points
     .iter()
     .position(|p| (p[0] + p[1]).is_finite())
     .unwrap();
 
-  let r = Rotation::new(points[Pivot][0], points[Pivot][1], points[Pivot][2]);
+  let r = Rotation::new(points[pivot][0], points[pivot][1], points[pivot][2]);
+
   let mut projection = StereographicRaw::gen_projection_mutator();
   projection.translate(Some(&[F::zero(), F::zero()]));
   projection.scale(Some(&F::one()));
   let angles2: [F; 2] = r.invert(&[F::from(180f64).unwrap(), F::from(0f64).unwrap()]);
   let angles: [F; 3] = [angles2[0], angles2[1], F::zero()];
   projection.rotate(Some(angles));
-  let points: Vec<[F; 2]> = points
-    .iter()
-    .map(|p: [F; 2]| projection.transform(&p))
-    .collect();
+
+  let points: Vec<[F; 2]> = points.iter().map(|p| projection.transform(&p)).collect();
 
   let mut zeros = Vec::new();
   let max2 = F::one();
@@ -57,4 +58,69 @@ where
   points.push([F::zero(), far]);
   points.push([-far, F::zero()]);
   points.push([F::zero(), -far]);
+
+  // const delaunay = Delaunay.from(points);
+  let mut delaunay: Option<Delaunay<F>> = delaunay_from(points);
+
+  match delaunay {
+    Some(delaunay) => {
+      delaunay.projection = Some(projection);
+
+      // clean up the triangulation
+      // let  {triangles, halfedges, inedges} = delaunay;
+      let mut triangles: Vec<usize> = delaunay.triangles;
+      let mut halfedges: Vec<i32> = delaunay.halfedges;
+      let mut inedges = delaunay.inedges;
+
+      // const degenerate = [];
+      let degenerate: Vec<usize> = Vec::new();
+      // for (let i = 0, l = halfedges.length; i < l; i++) {
+      for i in 0..halfedges.len() {
+        if halfedges[i] < 0 {
+          let j = match i % 3 == 2 {
+            true => i - 2,
+            false => i + 1,
+          };
+          let k = match i % 3 == 0 {
+            true => i + 2,
+            false => i - 1,
+          };
+          let a = halfedges[j] as usize;
+          let b = halfedges[k] as usize;
+          halfedges[a] = b as i32;
+          halfedges[b] = a as i32;
+          halfedges[j] = -1;
+          halfedges[k] = -1;
+          triangles[i] = pivot;
+          triangles[j] = pivot;
+          triangles[k] = pivot;
+          match a % 3 == 0 {
+            true => {
+              inedges[triangles[a]] = a as i32 + 2;
+              inedges[triangles[b]] = b as i32 + 2;
+            }
+            false => {
+              inedges[triangles[a]] = a as i32 - 1;
+              inedges[triangles[b]] = b as i32 - 1;
+            }
+          };
+          let mut m = cmp::min(i, j);
+          let m = cmp::min(m, k);
+          degenerate.push(m);
+
+        // TODO must rework loop
+        // i += 2 - i % 3;
+        } else if triangles[i] > points.len() - 3 - 1 {
+          triangles[i] = pivot;
+        }
+      }
+
+      // // there should always be 4 degenerate triangles
+      // // console.warn(degenerate);
+      return Some(delaunay);
+    }
+    None => {
+      return None;
+    }
+  }
 }

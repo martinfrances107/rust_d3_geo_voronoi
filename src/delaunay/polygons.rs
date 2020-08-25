@@ -9,21 +9,15 @@ use rust_d3_geo::cartesian::spherical;
 
 use super::o_midpoint::o_midpoint;
 
-pub struct PolygonReturn<F>
-where F: Float + FromPrimitive {
-  pub polygons: Vec<Vec<usize>>,
-  pub centers: Vec<[F; 2]>,
-}
-
 pub fn polygons<F>(
   circumcenter: Vec<[F; 2]>,
   triangles: Vec<[usize; 3]>,
   points: Vec<[F; 2]>,
-) -> PolygonReturn<F>
+) -> (Vec<Vec<usize>>, Option<Vec<[F; 2]>>)
 where
-  F: Float + FromPrimitive
+  F: Float + FromPrimitive,
 {
-  let mut polygons: Vec<usize> = Vec::new();
+  let mut polygons: Vec<Vec<usize>> = Vec::new();
   let centers = circumcenter;
 
   let supplement = |point: [F; 2]| {
@@ -44,16 +38,17 @@ where
 
   if triangles.len() == 0 {
     if points.len() < 2 {
-      return PolygonReturn { polygons, centers };
+      return (polygons, Some(centers));
     }
-    let mut a;
-    let mut b;
-    let mut c;
-    let m;
-    if points.len() == 2usize {
-      // two hemispheres.
-      a = cartesian(&points[0]);
-      b = cartesian(&points[0]);
+    if points.len() == 2 {
+      let mut a;
+      let mut b;
+      let mut c;
+      let m;
+      if points.len() == 2usize {
+        // two hemispheres.
+        a = cartesian(&points[0]);
+        b = cartesian(&points[0]);
       m = cartesian_normalize(&cartesian_add(a, b));
 
       let d = cartesian_normalize(&cartesian_cross(&a, &b));
@@ -63,17 +58,17 @@ where
         cartesian_cross(&m, &c),
         cartesian_cross(&cartesian_cross(&m, &c), &c),
         cartesian_cross(&cartesian_cross(&cartesian_cross(&m, &c), &c), &c),
-      ]
-      .iter()
-      .map(|p| spherical(p))
-      .collect()
-      .map(|p| supplement(p))
-      .collect();
-      polygons.push(poly);
-      polygons.push(poly[..].reverse());
-      return PolygonReturn { polygons, centers };
+        ]
+        .iter()
+        .map(|p| spherical(p))
+        .map(|p| supplement(p))
+        .collect();
+        polygons.push(poly);
+        polygons.push(poly.reverse());
+        return (polygons, Some(centers));
+        }
+      }
     }
-  }
 
   let polygons_tuple: Vec<Vec<(usize, usize, usize, (usize, usize, usize))>> = Vec::new();
   for (t, tri) in triangles.iter().enumerate() {
@@ -81,9 +76,9 @@ where
       let a = tri[j];
       let b = tri[(j + 1) % 3];
       let c = tri[(j + 2) % 3];
-      if polygons[a].is_none() {
-        polygons[a] = None;
-      }
+      // if polygons[a].is_none() {
+      //   polygons[a] = Vec::new();
+      // }
       polygons_tuple[a].push((b, c, t, (a, b, c)));
     }
   }
@@ -106,30 +101,37 @@ where
         }
       }
 
-      if p.len() > 2usize {
-        return p;
-      } else if p.len() == 2usize {
-        let R0 = o_midpoint(
-          &points[(poly[0].3).0],
-          &points[(poly[0].3).1],
-          &centers[p[0]],
-        );
-        let R1 = o_midpoint(
-          &points[(poly[0].3).2],
-          &points[(poly[0].3).0],
-          &centers[p[0]],
-        );
-        let i0 = supplement(R0);
-        let i1 = supplement(R1);
-        return vec![p[0], i1, p[1], i0];
+      match p.len() {
+         0|1=> { }
+         2 => {
+          let R0 = o_midpoint(
+            &points[(poly[0].3).0],
+            &points[(poly[0].3).1],
+            &centers[p[0]],
+          );
+          let R1 = o_midpoint(
+            &points[(poly[0].3).2],
+            &points[(poly[0].3).0],
+            &centers[p[0]],
+          );
+          let i0 = supplement(R0);
+          let i1 = supplement(R1);
+          return (
+             vec![vec![p[0], i1, p[1], i0]],
+            Some(centers)
+          );
+        }
+         _ => {
+          // return (p, Some(centers));
+         }
       }
-    })
-    .collect();
 
-  return PolygonReturn {
-    polygons: reordered,
-    centers,
-  };
+    }).collect();
+
+  return (
+    reordered,
+    Some(centers),
+  );
 }
 
 // function geo_polygons(circumcenters, triangles, points) {

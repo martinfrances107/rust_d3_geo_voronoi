@@ -2,7 +2,7 @@ use num_traits::cast::FromPrimitive;
 use num_traits::Float;
 use num_traits::FloatConst;
 
-use super::delaunay::Delaunay;
+use super::Delaunay;
 
 pub fn triangles<F>(delaunay: Delaunay<F>) -> Vec<[usize; 3]>
 where

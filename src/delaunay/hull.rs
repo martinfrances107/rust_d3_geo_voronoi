@@ -60,7 +60,12 @@ where
         hull.push(next);
         let n = h_index.get(&next).unwrap();
         h_index.insert(next, None);
-        next = n;
+        match *n {
+          Some(n) => {
+            next = n;
+          }
+          None => {}
+        }
 
         if next == start {
           break 'l;
