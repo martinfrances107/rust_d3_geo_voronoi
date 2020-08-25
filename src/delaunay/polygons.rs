@@ -12,63 +12,72 @@ use super::o_midpoint::o_midpoint;
 pub fn polygons<F>(
   circumcenter: Vec<[F; 2]>,
   triangles: Vec<[usize; 3]>,
-  points: Vec<[F; 2]>,
-) -> (Vec<Vec<usize>>, Option<Vec<[F; 2]>>)
+  points: &Vec<[F; 2]>,
+) -> (Vec<Vec<usize>>, Vec<[F; 2]>)
 where
   F: Float + FromPrimitive,
 {
   let mut polygons: Vec<Vec<usize>> = Vec::new();
   let centers = circumcenter;
 
-  let supplement = |point: [F; 2]| {
-    let f: usize;
+  let supplement = |point: [F; 2]| -> usize {
+    let f: Option<usize>;
 
     let centers_slice = &centers[triangles.len()..centers.len()];
     centers_slice.iter().enumerate().map(|(i, p)| {
       if p[0] == point[0] && p[1] == point[1] {
-        f = i + triangles.len();
+        f = Some(i + triangles.len());
       };
     });
-    if f < 0 {
-      f = centers.len();
+
+    if f.is_none() {
+      f = Some(centers.len());
       centers.push(point);
     }
-    return f;
+    match f {
+      Some(f) => {
+        return f;
+      }
+      None => {
+        panic!("Suppliment did not find a value to return");
+      }
+    }
   };
 
   if triangles.len() == 0 {
     if points.len() < 2 {
-      return (polygons, Some(centers));
+      return (polygons, centers);
     }
     if points.len() == 2 {
-      let mut a;
-      let mut b;
-      let mut c;
+      let a;
+      let b;
       let m;
       if points.len() == 2usize {
         // two hemispheres.
         a = cartesian(&points[0]);
         b = cartesian(&points[0]);
-      m = cartesian_normalize(&cartesian_add(a, b));
+        m = cartesian_normalize(&cartesian_add(a, b));
 
-      let d = cartesian_normalize(&cartesian_cross(&a, &b));
-      let c = cartesian_cross(&m, &d);
-      let poly = [
-        m,
-        cartesian_cross(&m, &c),
-        cartesian_cross(&cartesian_cross(&m, &c), &c),
-        cartesian_cross(&cartesian_cross(&cartesian_cross(&m, &c), &c), &c),
+        let d = cartesian_normalize(&cartesian_cross(&a, &b));
+        let c = cartesian_cross(&m, &d);
+
+        let poly: Vec<usize> = [
+          m,
+          cartesian_cross(&m, &c),
+          cartesian_cross(&cartesian_cross(&m, &c), &c),
+          cartesian_cross(&cartesian_cross(&cartesian_cross(&m, &c), &c), &c),
         ]
         .iter()
         .map(|p| spherical(p))
         .map(|p| supplement(p))
         .collect();
         polygons.push(poly);
-        polygons.push(poly.reverse());
-        return (polygons, Some(centers));
-        }
+        let rev: Vec<usize> = poly[..].iter().rev().map(|x| *x).collect();
+        polygons.push(rev);
+        return (polygons, centers);
       }
     }
+  }
 
   let polygons_tuple: Vec<Vec<(usize, usize, usize, (usize, usize, usize))>> = Vec::new();
   for (t, tri) in triangles.iter().enumerate() {
@@ -84,13 +93,13 @@ where
   }
 
   // reorder each polygon.
-  let reordered = polygons_tuple
+  let reordered: Vec<Vec<usize>> = polygons_tuple
     .iter()
     .map(|poly| {
-      let p = vec![poly[0].2]; // t
-      let k = poly[0].1; // k = c
+      let mut p = vec![poly[0].2]; // t
+      let mut k = poly[0].1; // k = c
 
-      for i in 0..poly.len() {
+      for _i in 0..poly.len() {
         // look for b = k
         for j in 0..poly.len() {
           if poly[j].0 == k {
@@ -102,8 +111,10 @@ where
       }
 
       match p.len() {
-         0|1=> { }
-         2 => {
+        0 | 1 => {
+          return Vec::new();
+        }
+        2 => {
           let R0 = o_midpoint(
             &points[(poly[0].3).0],
             &points[(poly[0].3).1],
@@ -116,22 +127,16 @@ where
           );
           let i0 = supplement(R0);
           let i1 = supplement(R1);
-          return (
-             vec![vec![p[0], i1, p[1], i0]],
-            Some(centers)
-          );
+          return vec![p[0], i1, p[1], i0];
         }
-         _ => {
-          // return (p, Some(centers));
-         }
+        _ => {
+          return p;
+        }
       }
+    })
+    .collect();
 
-    }).collect();
-
-  return (
-    reordered,
-    Some(centers),
-  );
+  return (reordered, centers);
 }
 
 // function geo_polygons(circumcenters, triangles, points) {

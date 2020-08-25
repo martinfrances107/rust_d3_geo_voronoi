@@ -11,7 +11,7 @@ use rust_d3_geo::Transform;
 
 use super::Delaunay;
 
-pub fn delaunay_from<F>(points: Vec<[F; 2]>) -> Option<Delaunay<F>>
+pub fn delaunay_from<F>(points: &Vec<[F; 2]>) -> Option<Delaunay<F>>
 where
   F: Float + FloatConst + FromPrimitive + 'static,
 {
@@ -40,7 +40,8 @@ where
 
   let mut zeros = Vec::new();
   let max2 = F::one();
-  for (i, elem) in points.iter().enumerate() {
+  // for (i, elem) in points.iter().enumerate() {
+  for i in 0..points.len() {
     let m = points[i][0] * points[i][0] + points[i][1] * points[i][1];
     if !m.is_finite() || m > F::from(1e32f64).unwrap() {
       zeros.push(i);
@@ -60,7 +61,7 @@ where
   points.push([F::zero(), -far]);
 
   // const delaunay = Delaunay.from(points);
-  let mut delaunay: Option<Delaunay<F>> = delaunay_from(points);
+  let mut delaunay: Option<Delaunay<F>> = delaunay_from(&points);
 
   match delaunay {
     Some(delaunay) => {

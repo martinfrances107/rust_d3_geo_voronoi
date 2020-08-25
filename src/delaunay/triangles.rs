@@ -14,7 +14,6 @@ where
   }
 
   let mut geo_triangles: Vec<[usize; 3]> = Vec::new();
-  let iter = triangles.iter();
   let n: usize = triangles.len() / 3usize;
 
   for i in 0..n {

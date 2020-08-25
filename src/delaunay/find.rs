@@ -16,17 +16,16 @@ where
 
 pub fn find<F>(
   neighbors: HashMap<usize, Vec<usize>>,
-  points: Vec<[F; 2]>,
+  points: &Vec<[F; 2]>,
 ) -> Box<dyn Fn(F, F, Option<usize>) -> Option<usize>>
 where
   F: Float + 'static,
 {
-  return Box::new(move |x: F, y: F, next_p: Option<usize>| -> Option<usize> {
+  return Box::new(|x: F, y: F, next_p: Option<usize>| -> Option<usize> {
     let next_or_none = match next_p {
       Some(n) => Some(n),
       None => Some(0usize),
     };
-    let cell: usize;
     let mut dist: F;
     let found = next_or_none;
     let xyz = cartesian(&[x, y]);

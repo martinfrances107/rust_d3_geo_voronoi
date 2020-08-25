@@ -3,7 +3,7 @@ use num_traits::Float;
 use super::excess::excess;
 use std::collections::HashMap;
 
-pub fn edges<F>(triangles: Vec<[usize; 3]>, point: Vec<[F; 2]>) -> Vec<[usize; 2]>
+pub fn edges<F>(triangles: &Vec<[usize; 3]>, point: &Vec<[F; 2]>) -> Vec<[usize; 2]>
 where
   F: Float,
 {

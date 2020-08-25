@@ -4,7 +4,7 @@ use num_traits::Float;
 
 use super::excess::excess;
 
-pub fn hull<F>(triangles: Vec<[usize; 3]>, points: Vec<[F; 2]>) -> Vec<usize>
+pub fn hull<F>(triangles: &Vec<[usize; 3]>, points: &Vec<[F; 2]>) -> Vec<usize>
 where
   F: Float,
 {
@@ -38,10 +38,9 @@ where
     }
   }
 
-  let index = {};
   let start: Option<usize> = None;
 
-  let code: [usize; 2];
+  // let code: [usize; 2];
   let h_index: HashMap<usize, Option<usize>> = HashMap::new();
 
   for key in h_hull.keys() {

@@ -96,12 +96,12 @@ impl<F> Delaunay<F>
 where
   F: Float + FloatConst + FromPrimitive + 'static,
 {
-  fn delaunay(points: Vec<[F; 2]>) -> Option<DelaunayReturn<F>> {
-    match delaunay_from(points) {
+  fn delaunay(points: &Vec<[F; 2]>) -> Option<DelaunayReturn<F>> {
+    match delaunay_from(&points) {
       Some(delaunay) => {
         let tri = triangles(delaunay);
-        let e = edges(tri, points);
-        let pr = polygons(circumcenters(tri, points), tri, points);
+        let e = edges(&tri, &points);
+        let pr = polygons(circumcenters(&tri, &points), tri, &points);
         let polys = pr.0;
         let centers = pr.1;
         let n = neighbors(tri, points.len());
@@ -114,9 +114,9 @@ where
           neghbors: n,
           polygons: polys,
           mesh: mesh(polys),
-          hull: hull(tri, points),
+          hull: hull(&tri, &points),
           urquhart: urquhart(e, tri),
-          find: find(n, points),
+          find: find(n, &points),
         });
       }
       None => {

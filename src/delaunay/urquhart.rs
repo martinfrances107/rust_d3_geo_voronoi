@@ -45,7 +45,7 @@ where
       .iter()
       .map(|edge| {
         let code: String = format!("{}-{}", edge[0], edge[1]);
-        return h_urquhart.get(&code).unwrap();
+        return *h_urquhart.get(&code).unwrap();
       })
       .collect();
 

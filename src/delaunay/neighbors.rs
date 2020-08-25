@@ -6,7 +6,6 @@ pub fn neighbors(triangles: Vec<[usize; 3]>, npoints: usize) -> HashMap<usize, V
     for j in 0..3 {
       let a = tri[j];
       let b = tri[j + 1];
-      let c = tri[j + 2];
       let entry = h_neighbors.entry(a).or_insert(vec![]);
       (*entry).push(b);
     }
