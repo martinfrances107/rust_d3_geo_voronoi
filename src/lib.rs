@@ -3,8 +3,9 @@ extern crate rust_d3_array;
 
 pub mod voronoi;
 pub mod delaunay;
-mod math;
 
+mod data_object;
+mod math;
 
 #[cfg(test)]
 mod tests {

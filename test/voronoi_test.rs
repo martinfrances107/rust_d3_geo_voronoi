@@ -31,7 +31,8 @@ mod voronoi_test{
 #[test]
 pub fn voronoi_polygons_returns_polygons(){
   println!("geoVoronoi.polygons(sites) returns polygons.");
-
+  var sites = [[0,0], [10,0]];
+console.log("####### in voronoi testing ###################################");
   let u = voronoi::new(sites).polygons()
         .features[0].geometry.coordinates[0][0];
   let v = [-175f64, -4.981069f64];

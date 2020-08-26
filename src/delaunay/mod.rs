@@ -1,7 +1,7 @@
 mod circumcenters;
 mod edges;
-mod excess;
-mod delaunay_from;
+pub mod excess;
+pub mod delaunay_from;
 mod find;
 mod hull;
 mod mesh;
@@ -96,7 +96,7 @@ impl<F> Delaunay<F>
 where
   F: Float + FloatConst + FromPrimitive + 'static,
 {
-  fn delaunay(points: &Vec<[F; 2]>) -> Option<DelaunayReturn<F>> {
+  pub fn delaunay(points: &Vec<[F; 2]>) -> Option<DelaunayReturn<F>> {
     match delaunay_from(&points) {
       Some(delaunay) => {
         let tri = triangles(delaunay);
