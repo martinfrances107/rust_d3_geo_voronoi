@@ -2,13 +2,13 @@ use num_traits::cast::FromPrimitive;
 use num_traits::Float;
 use num_traits::FloatConst;
 
-pub enum GeometryType<F>
+pub enum FeatureGeometry<F>
 where F: Float {
   Polygon { coordinates: Vec<usize> },
   LineString { coordinate: [[F; 2]; 2] },
 }
 
-pub enum PropertyType<F>
+pub enum FeatureProperty<F>
 where
   F: Float,
 {
@@ -19,12 +19,12 @@ where
   Urquhart(F),
 }
 
-pub struct FeaturesStruct<F>
+pub struct FeatureStruct<F>
 where
   F: Float,
 {
-  properties: Vec<PropertyType<F>>,
-  geometry: GeometryType<F>,
+  properties: Vec<FeatureProperty<F>>,
+  geometry: FeatureGeometry<F>,
 }
 
 /// The input data type use in D3
@@ -46,10 +46,10 @@ where
   // * Polygon - an array of arrays of positions forming a polygon (possibly with holes).
   // * MultiPolygon - a multidimensional array of positions forming multiple polygons.
   // * GeometryCollection - an array of geometry objects.
-  Feature(FeaturesStruct<F>),
+  Feature(FeatureStruct<F>),
   /// FeatruesCollection - An array of feature objects.
   FeaturesCollection {
-    features: Vec<FeaturesStruct<F>>,
+    features: Vec<FeatureStruct<F>>,
   },
   // A feature containing one of the above geometry objects.
   // Polygon{coordinates: Vec<usize>},
