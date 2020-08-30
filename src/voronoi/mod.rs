@@ -303,17 +303,6 @@ where
   //   };
   // }
 
-  //   v.mesh = function(data) {
-  //     if (data !== undefined) {
-  //       v(data);
-  //     }
-  //     if (!v.delaunay) return false;
-  //     return {
-  //       type: "MultiLineString",
-  //       coordinates: v.delaunay.edges.map(e => [v.points[e[0]], v.points[e[1]]])
-  //     };
-  //   };
-
   fn mesh(mut self, data: DataType<'a, F>) -> Option<DataObject<F>> {
     match data {
       DataType::Blank => {
