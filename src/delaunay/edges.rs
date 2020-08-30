@@ -17,10 +17,6 @@ where
       return Vec::new();
     }
 
-    // let ex_in: [[F; 2]; 3];
-    // for i in 0..3 {
-    //   ex_in[i] = point[i];
-    // }
     let ex_in = vec![point[0], point[1], point[2]];
 
     if excess(ex_in) < F::zero() {
