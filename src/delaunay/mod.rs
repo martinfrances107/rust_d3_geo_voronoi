@@ -1,7 +1,7 @@
 mod circumcenters;
+pub mod delaunay_from;
 mod edges;
 pub mod excess;
-pub mod delaunay_from;
 mod find;
 mod hull;
 mod mesh;
@@ -13,6 +13,7 @@ mod urquhart;
 
 /// Delaunay triangulation
 use std::collections::HashMap;
+use std::rc::Rc;
 
 use num_traits::cast::FromPrimitive;
 use num_traits::Float;
@@ -59,7 +60,7 @@ where
   ///
   pub triangles: Vec<usize>,
 
-  centers: Option<Vec<[F;2]>>,
+  centers: Option<Vec<[F; 2]>>,
 
   /// The incoming halfedge indexes as a Int32Array [e0, e1, e2, ...].
   /// For each point i, inedges[i] is the halfedge index e of an incoming halfedge.
@@ -73,38 +74,68 @@ where
   outedges: Vec<i32>,
 
   pub projection: Option<ProjectionMutator<F>>,
-
 }
 
-struct DelaunayReturn<F>
+pub struct DelaunayReturn<'a, F>
 where
   F: Float + FloatConst + FromPrimitive,
 {
-  delaunay: Delaunay<F>,
-  edges: Vec<[usize; 2]>,
-  triangles: Vec<[usize; 3]>,
-  centers: Vec<[F; 2]>,
-  neghbors: HashMap<usize, Vec<usize>>,
-  polygons: Vec<Vec<usize>>,
-  mesh: Vec<[usize; 2]>,
-  hull: Vec<usize>,
-  urquhart: Box<dyn Fn(Vec<F>) -> Vec<bool>>,
-  find: Box<dyn Fn(F, F, Option<usize>) -> Option<usize>>,
+  pub delaunay: Delaunay<F>,
+  // The edges and triangles properties need RC because the values are close over in the urquhart function.
+  pub edges: Rc<Vec<[usize; 2]>>,
+  pub triangles: Rc<Vec<Vec<usize>>>,
+  pub centers: Vec<[F; 2]>,
+  pub neghbors: Rc<HashMap<usize, Vec<usize>>>,
+  pub polygons: Vec<Vec<usize>>,
+  pub mesh: Vec<[usize; 2]>,
+  pub hull: Vec<usize>,
+  pub urquhart: Box<dyn Fn(Vec<F>) -> Vec<bool> + 'a>,
+  pub find: Box<dyn Fn(F, F, Option<usize>) -> Option<usize> + 'a>,
 }
 
-impl<F> Delaunay<F>
+impl<'a, F> Delaunay<F>
 where
   F: Float + FloatConst + FromPrimitive + 'static,
 {
-  pub fn delaunay(points: &Vec<[F; 2]>) -> Option<DelaunayReturn<F>> {
-    match delaunay_from(&points) {
+  pub fn delaunay(points: Rc<Vec<[F; 2]>>) -> Option<DelaunayReturn<'a, F>> {
+    match delaunay_from(points.clone()) {
       Some(delaunay) => {
-        let tri = triangles(delaunay);
-        let e = edges(&tri, &points);
-        let pr = polygons(circumcenters(&tri, &points), tri, &points);
-        let polys = pr.0;
-        let centers = pr.1;
-        let n = neighbors(tri, points.len());
+        // RC is needed here as tri and e are both closed over in the urquhart function an is part of the Delaunay return.
+        let tri = Rc::new(triangles(&delaunay));
+        let e = Rc::new(edges(&tri, &points));
+        let polys;
+        let centers;
+        {
+          let pr = polygons(circumcenters(&tri, &points), &tri, &points);
+          polys = pr.0;
+          centers = pr.1;
+        }
+
+        // RC is needed here as it is both closed over in the find function an is part of the Delaunay return.
+        let n = Rc::new(neighbors(&tri, points.len()));
+
+        // Borrow and release polys.
+        let m;
+        {
+          m = mesh(&polys);
+        }
+
+        // Borrow and release tri.
+        let h;
+        {
+          h = hull(&tri, &points);
+        }
+
+        // Borrow and release e, tri.
+        let u;
+        {
+          u = urquhart::<F>(e.clone(), tri.clone());
+        }
+
+        let f;
+        {
+          f = find(n.clone(), points);
+        }
 
         return Some(DelaunayReturn {
           delaunay: delaunay,
@@ -113,10 +144,10 @@ where
           centers,
           neghbors: n,
           polygons: polys,
-          mesh: mesh(polys),
-          hull: hull(&tri, &points),
-          urquhart: urquhart(e, tri),
-          find: find(n, &points),
+          mesh: m,
+          hull: h,
+          urquhart: u,
+          find: f,
         });
       }
       None => {

@@ -4,22 +4,27 @@ use num_traits::Float;
 
 use super::excess::excess;
 
-pub fn hull<F>(triangles: &Vec<[usize; 3]>, points: &Vec<[F; 2]>) -> Vec<usize>
+pub fn hull<F>(triangles: &Vec<Vec<usize>>, points: &Vec<[F; 2]>) -> Vec<usize>
 where
   F: Float,
 {
-  let h_hull: HashMap<String, bool> = HashMap::new();
-  let hull = Vec::new();
+  let mut h_hull: HashMap<String, bool> = HashMap::new();
+  let mut hull = Vec::new();
 
   for tri in triangles {
-    let ex_in: [[F; 2]; 3];
-    for i in 0..3 {
-      let ind = tri[i];
-      if ind > points.len() {
-        ind = 0;
-      }
-      ex_in[i] = points[ind];
-    }
+    let ex_in: Vec<[F; 2]> = tri
+      .iter()
+      .map(|i: &usize| {
+        let index;
+        if i > &points.len() {
+          index = 0;
+        } else {
+          index = *i;
+        };
+        return points[index];
+      })
+      .collect();
+
     if excess(ex_in) < F::zero() {
       return Vec::new();
     }
@@ -38,10 +43,8 @@ where
     }
   }
 
-  let start: Option<usize> = None;
-
-  // let code: [usize; 2];
-  let h_index: HashMap<usize, Option<usize>> = HashMap::new();
+  let mut start: Option<usize> = None;
+  let mut h_index: HashMap<usize, Option<usize>> = HashMap::new();
 
   for key in h_hull.keys() {
     let a_split: Vec<&str> = key.split('-').collect();
@@ -54,12 +57,12 @@ where
   match start {
     None => return hull,
     Some(start) => {
-      let next = start;
+      let mut next = start;
       'l: loop {
-        hull.push(next);
-        let n = h_index.get(&next).unwrap();
-        h_index.insert(next, None);
-        match *n {
+        let n: Option<usize> = h_index.get(&next).unwrap().clone();
+        hull.push(next.clone());
+        h_index.insert(next.clone(), None);
+        match n {
           Some(n) => {
             next = n;
           }

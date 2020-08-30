@@ -4,7 +4,7 @@ use num_traits::FloatConst;
 
 use super::Delaunay;
 
-pub fn triangles<F>(delaunay: Delaunay<F>) -> Vec<[usize; 3]>
+pub fn triangles<F>(delaunay: &Delaunay<F>) -> Vec<Vec<usize>>
 where
   F: Float + FloatConst + FromPrimitive,
 {
@@ -13,7 +13,7 @@ where
     return Vec::new();
   }
 
-  let mut geo_triangles: Vec<[usize; 3]> = Vec::new();
+  let mut geo_triangles: Vec<Vec<usize>> = Vec::new();
   let n: usize = triangles.len() / 3usize;
 
   for i in 0..n {
@@ -21,7 +21,7 @@ where
     let b = triangles[3 * i + 1];
     let c = triangles[3 * i + 2];
     if a != b && b != c {
-      geo_triangles.push([a, c, b]);
+      geo_triangles.push(vec![a, c, b]);
     }
   }
   return geo_triangles;

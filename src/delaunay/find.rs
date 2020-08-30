@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::rc::Rc;
 
 use num_traits::Float;
 
@@ -14,30 +15,31 @@ where
   return x * x + y * y + z * z;
 }
 
-pub fn find<F>(
-  neighbors: HashMap<usize, Vec<usize>>,
-  points: &Vec<[F; 2]>,
-) -> Box<dyn Fn(F, F, Option<usize>) -> Option<usize>>
+pub fn find<'a, F>(
+  neighbors: Rc<HashMap<usize, Vec<usize>>>,
+  points: Rc<Vec<[F; 2]>>,
+) -> Box<dyn Fn(F, F, Option<usize>) -> Option<usize> + 'a>
 where
   F: Float + 'static,
 {
-  return Box::new(|x: F, y: F, next_p: Option<usize>| -> Option<usize> {
+  let points = points.clone();
+  return Box::new(move |x: F, y: F, next_p: Option<usize>| -> Option<usize> {
     let next_or_none = match next_p {
       Some(n) => Some(n),
       None => Some(0usize),
     };
     let mut dist: F;
-    let found = next_or_none;
+    let mut found = next_or_none;
     let xyz = cartesian(&[x, y]);
     'outer: loop {
       let cell = next_or_none.unwrap();
-      let next_or_no = None;
+      let mut next_or_no = None;
       dist = distance2(xyz, cartesian(&points[cell]));
       let row = neighbors.get(&cell);
       match row {
         Some(row) => {
           for i in row {
-            let ndist = distance2(xyz, cartesian(&(points[*i])));
+            let ndist = distance2(xyz, cartesian(&points[*i]));
             if ndist < dist {
               dist = ndist;
               next_or_no = Some(*i);

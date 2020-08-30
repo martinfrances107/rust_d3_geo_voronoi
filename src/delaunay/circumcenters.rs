@@ -6,7 +6,7 @@ use rust_d3_geo::cartesian::cartesian_cross;
 use rust_d3_geo::cartesian::cartesian_normalize;
 use rust_d3_geo::cartesian::spherical;
 
-pub fn circumcenters<F>(triangles: &Vec<[usize; 3]>, points: &Vec<[F; 2]>) -> Vec<[F; 2]>
+pub fn circumcenters<F>(triangles: &Vec<Vec<usize>>, points: &Vec<[F; 2]>) -> Vec<[F; 2]>
 where
   F: Float,
 {

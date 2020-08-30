@@ -1,4 +1,5 @@
 use std::cmp;
+use std::rc::Rc;
 
 use num_traits::cast::FromPrimitive;
 use num_traits::Float;
@@ -11,7 +12,7 @@ use rust_d3_geo::Transform;
 
 use super::Delaunay;
 
-pub fn delaunay_from<F>(points: &Vec<[F; 2]>) -> Option<Delaunay<F>>
+pub fn delaunay_from<F>(points: Rc<Vec<[F; 2]>>) -> Option<Delaunay<F>>
 where
   F: Float + FloatConst + FromPrimitive + 'static,
 {
@@ -27,7 +28,9 @@ where
     .position(|p| (p[0] + p[1]).is_finite())
     .unwrap();
 
-  let r = Rotation::new(points[pivot][0], points[pivot][1], points[pivot][2]);
+  // TODO must fix this
+  // let r = Rotation::new(points[pivot][0], points[pivot][1], points[pivot][2]);
+  let r = Rotation::new(points[pivot][0], points[pivot][1],F::zero());
 
   let mut projection = StereographicRaw::gen_projection_mutator();
   projection.translate(Some(&[F::zero(), F::zero()]));
@@ -36,10 +39,10 @@ where
   let angles: [F; 3] = [angles2[0], angles2[1], F::zero()];
   projection.rotate(Some(angles));
 
-  let points: Vec<[F; 2]> = points.iter().map(|p| projection.transform(&p)).collect();
+  let mut points: Vec<[F; 2]> = points.iter().map(|p| projection.transform(&p)).collect();
 
   let mut zeros = Vec::new();
-  let max2 = F::one();
+  let mut max2 = F::one();
   // for (i, elem) in points.iter().enumerate() {
   for i in 0..points.len() {
     let m = points[i][0] * points[i][0] + points[i][1] * points[i][1];
@@ -55,29 +58,31 @@ where
 
   zeros.iter().for_each(|i| points[*i] = [far, F::zero()]);
 
-  // // Add infinite horizon points
+  // Add infinite horizon points
   points.push([F::zero(), far]);
   points.push([-far, F::zero()]);
   points.push([F::zero(), -far]);
 
+  let points = Rc::new(points);
+
   // const delaunay = Delaunay.from(points);
-  let mut delaunay: Option<Delaunay<F>> = delaunay_from(&points);
+  let delaunay: Option<Delaunay<F>> = delaunay_from(points.clone());
 
   match delaunay {
-    Some(delaunay) => {
+    Some(mut delaunay) => {
       delaunay.projection = Some(projection);
 
       // clean up the triangulation
       // let  {triangles, halfedges, inedges} = delaunay;
-      let mut triangles: Vec<usize> = delaunay.triangles;
-      let mut halfedges: Vec<i32> = delaunay.halfedges;
-      let mut inedges = delaunay.inedges;
+      // let triangles: &mut Vec<usize> = &mut delaunay.triangles;
+      // let halfedges: &mut Vec<i32> = &mut delaunay.halfedges;
+      // let mut inedges = delaunay.inedges;
 
       // const degenerate = [];
-      let degenerate: Vec<usize> = Vec::new();
+      let mut degenerate: Vec<usize> = Vec::new();
       // for (let i = 0, l = halfedges.length; i < l; i++) {
-      for i in 0..halfedges.len() {
-        if halfedges[i] < 0 {
+      for i in 0..delaunay.halfedges.len() {
+        if delaunay.halfedges[i] < 0 {
           let j = match i % 3 == 2 {
             true => i - 2,
             false => i + 1,
@@ -86,33 +91,33 @@ where
             true => i + 2,
             false => i - 1,
           };
-          let a = halfedges[j] as usize;
-          let b = halfedges[k] as usize;
-          halfedges[a] = b as i32;
-          halfedges[b] = a as i32;
-          halfedges[j] = -1;
-          halfedges[k] = -1;
-          triangles[i] = pivot;
-          triangles[j] = pivot;
-          triangles[k] = pivot;
+          let a = delaunay.halfedges[j] as usize;
+          let b = delaunay.halfedges[k] as usize;
+          delaunay.halfedges[a] = b as i32;
+          delaunay.halfedges[b] = a as i32;
+          delaunay.halfedges[j] = -1;
+          delaunay.halfedges[k] = -1;
+          delaunay.triangles[i] = pivot;
+          delaunay.triangles[j] = pivot;
+          delaunay.triangles[k] = pivot;
           match a % 3 == 0 {
             true => {
-              inedges[triangles[a]] = a as i32 + 2;
-              inedges[triangles[b]] = b as i32 + 2;
+              delaunay.inedges[delaunay.triangles[a]] = a as i32 + 2;
+              delaunay.inedges[delaunay.triangles[b]] = b as i32 + 2;
             }
             false => {
-              inedges[triangles[a]] = a as i32 - 1;
-              inedges[triangles[b]] = b as i32 - 1;
+              delaunay.inedges[delaunay.triangles[a]] = a as i32 - 1;
+              delaunay.inedges[delaunay.triangles[b]] = b as i32 - 1;
             }
           };
-          let mut m = cmp::min(i, j);
+          let m = cmp::min(i, j);
           let m = cmp::min(m, k);
           degenerate.push(m);
 
         // TODO must rework loop
         // i += 2 - i % 3;
-        } else if triangles[i] > points.len() - 3 - 1 {
-          triangles[i] = pivot;
+        } else if delaunay.triangles[i] > points.len() - 3 - 1 {
+          delaunay.triangles[i] = pivot;
         }
       }
 

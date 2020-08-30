@@ -2,79 +2,91 @@ use num_traits::cast::FromPrimitive;
 use num_traits::Float;
 use num_traits::FloatConst;
 
-use crate::delaunay::excess::excess;
+use rust_d3_geo::data_object::DataObject;
+use rust_d3_geo::data_object::DataType;
+use rust_d3_geo::data_object::FeatureGeometry;
+use rust_d3_geo::data_object::FeatureProperty;
+use rust_d3_geo::data_object::FeatureStruct;
+use rust_d3_geo::data_object::FeaturesStruct;
+use rust_d3_geo::distance::distance;
 
-use crate::data_object::DataObject;
-use crate::data_object::DataType;
-use crate::data_object::FeatureStruct;
-use crate::data_object::FeatureGeometry;
-use crate::data_object::FeatureProperty;
 use crate::delaunay::delaunay_from::delaunay_from;
+use crate::delaunay::excess::excess;
 use crate::delaunay::Delaunay;
+use crate::delaunay::DelaunayReturn;
 
 /// Return type used by .x() and .y()
-enum XYReturn<F>
+enum XYReturn<'a, F>
 where
   F: Float + FloatConst + FromPrimitive,
 {
-  Voronoi(Voronoi<F>),
-  Func(Box<dyn Fn(DataType<F>) -> Option<usize>>),
+  Voronoi(Voronoi<'a, F>),
+  Func(Box<dyn Fn(DataType<'a, F>) -> Option<F>>),
 }
 
-struct Voronoi<F>
+struct Voronoi<'a, F>
 where
   F: Float + FloatConst + FromPrimitive,
 {
   // cellMesh:
-  delaunay: Option<Delaunay<F>>,
-  data: DataType<F>,
-  find: Box<dyn Fn(F, F, Option<F>) -> Option<DataObject<F>>>,
+  delaunay_return: Option<DelaunayReturn<'a, F>>,
+  data: DataType<'a, F>,
+  found: Vec<F>,
   points: Vec<[F; 2]>,
-  mesh: Box<dyn Fn(DataObject<F>) -> Option<DataObject<F>>>,
-  link: Box<dyn Fn(DataObject<F>) -> Option<DataObject<F>>>,
-  hull: Box<dyn Fn(DataObject<F>) -> Option<DataObject<F>>>,
-  triangles: Box<dyn Fn(DataObject<F>) -> Option<DataObject<F>>>,
-  x: Box<dyn Fn(Box<dyn Fn(DataType<F>) -> Option<usize>>) -> XYReturn<F>>,
-  y: Box<dyn Fn(Box<dyn Fn(DataType<F>) -> Option<usize>>) -> XYReturn<F>>,
   valid: Vec<F>,
-  vx: Box<dyn Fn(DataType<F>) -> Option<usize>>,
-  vy: Box<dyn Fn(DataType<F>) -> Option<usize>>,
+  vx: Box<dyn Fn(DataType<'a, F>) -> Option<F>>,
+  vy: Box<dyn Fn(DataType<'a, F>) -> Option<F>>,
 }
 
-impl<F> Voronoi<F>
+impl<'a, F> Default for Voronoi<'a, F>
 where
   F: Float + FloatConst + FromPrimitive,
 {
-  fn voronoi(data: DataType<F>) -> Voronoi<F>
+  fn default() -> Voronoi<'a, F> {
+    return Voronoi {
+      data: DataType::Blank,
+      delaunay_return: None,
+      found: Vec::new(),
+      points: Vec::new(),
+      valid: Vec::new(),
+      vx: Box::new(|_| None),
+      vy: Box::new(|_| None),
+    };
+  }
+}
+
+impl<'a, F> Voronoi<'a, F>
+where
+  F: Float + FloatConst + FromPrimitive,
+{
+  fn voronoi(data: DataType<'a, F>) -> Voronoi<F>
   where
     F: Float + FloatConst + FromPrimitive,
   {
-    let mut v: Voronoi<F>;
-    v.data = data;
+    let mut v: Voronoi<F> = Voronoi {
+      data,
+      ..Voronoi::default()
+    };
+    // v.data = data;
 
     let points: Vec<[F; 2]>;
-    let valid: Vec<F>;
-    let delaunay: Option<Delaunay<F>> = None;
+    let delaunay_return: Option<DelaunayReturn<F>> = None;
 
-    //   if (typeof v._data === "object" && v._data.type === "FeatureCollection") {
-    //     v._data = v._data.features;
-    //   }
+    // On finding a Features Collection take t  he first element only, drop everything else.
+    // match v.data {
+    //   DataType::Object(obj) => match obj {
+    //     DataObject::FeaturesCollection { features: f } => {
+    //       Some(f) => {
+    //         v.data = DataType::Object(DataObject::Feature(features));
+    //       }
+    //       None => {
+    //         panic!("Found an empty feature Collection!");
+    //       }
+    //     },
+    //   },
+    // }
 
-    // On finding a Features Collection take the first element only, drop everything else.
-    match v.data {
-      DataType::Object(obj) => match obj {
-        DataObject::FeaturesCollection { features: f } => match f.first() {
-          Some(f) => {
-            v.data = DataType::Object(DataObject::Feature(*f));
-          }
-          None => {
-            panic!("Found an empty feature Collection!");
-          }
-        },
-      },
-    }
-
-    let vx = Box::new(|d: DataType<F>| -> Option<usize> {
+    let vx = Box::new(|d: DataType<'a, F>| -> Option<F> {
       match d {
         DataType::Object(d) => {
           // TODO untested code slip centroid calc.
@@ -99,14 +111,7 @@ where
       }
     });
 
-    //   v._vy = function(d) {
-    //     if (typeof d == "object" && "type" in d) {
-    //       return geoCentroid(d)[1];
-    //     }
-    //     if (1 in d) return d[1];
-    //   };
-
-    let vy = Box::new(|d: DataType<F>| -> Option<usize> {
+    let vy = Box::new(|d: DataType<'a, F>| -> Option<F> {
       match d {
         DataType::Object(d) => {
           // TODO untested code slip centroid calc.
@@ -126,458 +131,246 @@ where
       }
     });
 
-    let x = Box::new(|f| -> XYReturn<F> {
-      match f {
-        None => {
-          return XYReturn::Func(v.vx);
-          },
-        Some(f) => {
-          v.vx = f;
-          return XYReturn::Voronoi(v);
-        }
-      }
-    });
+    // match v.data {
+    //   DataType::Vec(data) => {
+    //     let temp = data
+    //       .iter()
+    //       .map(|d| {
+    //         return [vx(v.data), vy(v.data), Some(*d)];
+    //       })
+    //       .filter(|d| (d[0] + d[1]).is_finite())
+    //       .collect();
 
-    let y = Box::new(|f| -> XYReturn<F> {
-      match f {
-        None => {
-        return XYReturn::Func(v.vy);
-      },
-      Some(f)=> {
-        v.vy = f;
-        return XYReturn::Voronoi(v);
-      }
-    }
-    });
-
-    // v.links = function(data) {
-    //   if (data !== undefined) {
-    //     v(data);
+    //     points = temp.iter().map(|d| [d[0], d[1]]).collect();
+    //     valid = temp.map(|d| d[2]).collect();
+    //     delaunay_return = Delaunay::delaunay(&points);
     //   }
-    //   if (!v.delaunay) return false;
-    //   const _distances = v.delaunay.edges.map(e =>
-    //       geoDistance(v.points[e[0]], v.points[e[1]])
-    //     ),
-    //     _urquart = v.delaunay.urquhart(_distances);
-    //   return {
-    //     type: "FeatureCollection",
-    //     features: v.delaunay.edges.map((e, i) => ({
-    //       type: "Feature",
-    //       properties: {
-    //         source: v.valid[e[0]],
-    //         target: v.valid[e[1]],
-    //         length: _distances[i],
-    //         urquhart: !!_urquart[i]
-    //       },
-    //       geometry: {
-    //         type: "LineString",
-    //         coordinates: [v.points[e[0]], v.points[e[1]]]
-    //       }
-    //     }))
-    //   };
-    // };
-    let link = Box::new(|data: DataType<F>| -> Option<DataType<F>> {
-      match data {
-        DataType::Blank => {}
-        _ => {
-          Voronoi::voronoi(data);
-        }
-      }
+    //   _ => {}
+    // }
 
-      return match v.delaunay {
-        None => None,
-        Some(delaunay) => {
-          let features: Vec<FeatureStruct<F>> = delaunay
-            .edges
-            .iter
-            .enumerate
-            .map(|(i, e)| FeatureStruct {
-              properties: vec![
-                FeatureProperty::Source(v.valid[e[0]]),
-                FeatureProperty::Target(v.valid[e[0]]),
-                FeatureProperty::Length(v.valid[e[0]]),
-                FeatureProperty::Urquhart(v.valid[e[0]]),
-              ],
-              geometry: FeatureGeometry::LineString {
-                coordinate: [v.points[0], v.points[e[1]]],
-              },
-            })
-            .collect();
-
-          return Some(DataType::Object(DataObject::FeaturesCollection {
-            features,
-          }));
-        }
-      };
-    });
-
-    let triangles = Box::new(|data: DataType<F>| -> Option<DataObject<F>> {
-      match data {
-        DataType::Blank => {}
-        _ => {
-          Voronoi::voronoi(data);
-        }
-      }
-
-      if v.delaunay.is_none() {
-        return None;
-      }
-
-      return Some(DataObject::FeaturesCollection {
-        features: v
-          .delaunay
-          .triangles
-          .iter()
-          .enumerate()
-          .map(|(tri, index)| {
-            tri = tri.map(|i| v.points[i]);
-            tri.center = v.delaunay.centers[index];
-            return tri;
-          })
-          .filter(|tri| excess(tri) > F::zero())
-          .map(|tri| FeatureStruct::<F> {
-            properties: FeatureProperty::Circumecenter(tri.center),
-            geometry: FeatureGeometry::Polygon {
-              coordinates: [[..tri, tri[0]]],
-            }
-          }
-      )
-          .collect(),
-      });
-    });
-
-    //   v.mesh = function(data) {
-    //     if (data !== undefined) {
-    //       v(data);
-    //     }
-    //     if (!v.delaunay) return false;
-    //     return {
-    //       type: "MultiLineString",
-    //       coordinates: v.delaunay.edges.map(e => [v.points[e[0]], v.points[e[1]]])
-    //     };
-    //   };
-
-    let mesh = Box::new(|data: DataType<F>| -> Option<DataObject<F>> {
-      match data {
-        DataType::Blank => {}
-        _ => {
-          Voronoi::voronoi(data);
-        }
-      }
-
-      match v.delaunay {
-        None => {
-          return None;
-        }
-        Some(delaunay) => {
-          let coordinates = delaunay
-            .iter()
-            .map(|e| {
-              [v.points[*e[0]], v.points[*e[1]]];
-            })
-            .collect();
-          return Some(DataObject::MultiLineString { coordinates });
-        }
-      }
-    });
-
-    //   v._found = undefined;
-    //   v.find = function(x, y, radius) {
-    //     v._found = v.delaunay.find(x, y, v._found);
-    //     if (!radius || geoDistance([x, y], v.points[v._found]) < radius)
-    //       return v._found;
-    //   };
-
-    let found: Option<F>;
-    let find = Box::new(|x: F, y: F, radius: Option<F>| -> Option<DataObject<F>> {
-      found = v.delaunay.find(x, y, found);
-      return match radius {
-        Some(radius) => {
-          if distance([x, y], v.points[found]) < radius {
-            return found;
-          }
-        },
-        None => {None},
-      };
-    });
-
-    let hull = Box::new(|data: DataType<F>| -> Option<DataObject<F>> {
-      match data {
-        DataType::Blank => {}
-        _ => {
-          Voronoi::voronoi(data);
-        }
-      }
-
-      let hull = v.delaunay.hull;
-      let points = v.points;
-      return match hull.len() {
-        0 => None,
-        _ => DataObject::Polygon {
-          coordinates: [[..hull.map(|i| points[i]).collect(), points[hull[0]]]],
-        },
-      };
-    });
-
-    // v.hull = function(data) {
-    //   if (data !== undefined) {
-    //     v(data);
-    //   }
-    //   const hull = v.delaunay.hull,
-    //     points = v.points;
-    //   return hull.length === 0
-    //     ? null
-    //     : {
-    //         type: "Polygon",
-    //         coordinates: [[...hull.map(i => points[i]), points[hull[0]]]]
-    //       };
-    // };
-
-    //   if (typeof v._data === "object") {
-    //     const temp = v._data
-    //       .map(d => [v._vx(d), v._vy(d), d])
-    //       .filter(d => isFinite(d[0] + d[1]));
-    //     v.points = temp.map(d => [d[0], d[1]]);
-    //     v.valid = temp.map(d => d[2]);
-    //     v.delaunay = geoDelaunay(v.points);obj{d, ..}
-    //   }
-    //   return v;
-    // };
-
-    match v.data {
-      DataType::Vec(data) => {
-        let temp = data
-          .iter()
-          .map(|d| {
-            return [vx(d), vy(d), d];
-          })
-          .filter(|d| (d[0] + d[1]).is_finite())
-          .collect();
-
-        points = temp.iter().map(|d| [d[0], d[1]]).collect();
-        valid = temp.map(|d| d[2]).collect();
-        delaunay = delaunay_from(&points);
-      }
-      _ => {}
-    }
-
-    let v = Voronoi {
-      data,
-      delaunay,
-      find,
-      hull,
-      points,
-      mesh,
-      link,
-      triangles,
-      valid,
-      x,
-      y,
+    v = Voronoi {
+      delaunay_return,
+      found: Vec::new(),
+      // valid,
       vx,
       vy,
+      ..v
     };
 
-    return match data {
+    // let v = Voronoi {
+    //   data,
+    //   delaunay_return,
+    //   found: Vec::new(),
+    //   points,
+    //   valid,
+    //   vx,
+    //   vy,
+    // };
+
+    return match v.data {
       DataType::Blank => v,
-      _ => v(data),
+      _ => Voronoi::voronoi(v.data),
+    };
+  }
+
+  //   v._found = undefined;
+  //   v.find = function(x, y, radius) {
+  //     v._found = v.delaunay.find(x, y, v._found);
+  //     if (!radius || geoDistance([x, y], v.points[v._found]) < radius)
+  //       return v._found;
+  //   };
+
+  // fn find(&self, x: F, y: F, radius: Option<F>) -> Option<DataObject<F>> {
+  //   return match self.delaunay_return {
+  //     None => {None},
+  //     Some(delaunay_return) => {
+  //       self.found = (delaunay_return.find)(x, y, self.found);
+  //       return match radius {
+  //       Some(radius) => {
+  //         if distance(&[x, y], &self.points[self.found]) < radius {
+  //           return self.found;
+  //         }
+  //         else {
+  //           return None;
+  //         }
+  //       }
+  //       None => None,
+  //     };
+  //   }
+  //   }
+  // }
+
+  fn triangles(mut self, data: DataType<'a, F>) -> Option<DataObject<F>> {
+    match data {
+      DataType::Blank => {
+        // No op
+      }
+      _ => {
+        self = Voronoi::voronoi(data);
+      }
+    }
+
+    return match self.delaunay_return {
+      None => None,
+      Some(delaynay) => None, // Some(delaunay) => {
+
+                              //   Some(DataObject::FeaturesCollection {
+                              //     features: FeatureStruct{},
+                              //   features: self.
+                              //   .delaunay
+                              //   .triangles
+                              //   .iter()
+                              //   .enumerate()
+                              //   .map(|(tri, index)| {
+                              //     tri = tri.map(|i| self.points[i]);
+                              //     tri.center = self.delaunay.centers[index];
+                              //     return tri;
+                              //   })
+                              //   .filter(|tri| excess(tri) > F::zero())
+                              //   .map(|tri| FeatureStruct::<F> {
+                              //     properties: FeatureProperty::Circumecenter(tri.center),
+                              //     geometry: FeatureGeometry::Polygon {
+                              //       coordinates: [[..tri, tri[0]]],
+                              //     },
+                              //   })
+                              //   .collect()
+                              //   }
+                              // }
+    };
+  }
+
+  // fn link(mut self, data: DataType<'a, F>) -> Option<DataType<F>> {
+  //   match data {
+  //     DataType::Blank => {
+  //       // No op
+  //     }
+  //     _ => {
+  //       self = Voronoi::voronoi(data);
+  //     }
+  //   }
+
+  //   return match &self.delaunay_return {
+  //     None => None,
+  //     Some(delaunay_return) => {
+  //       let distances = delaunay_return
+  //         .edges
+  //         .iter()
+  //         .map(|e| distance(&(self.points)[e[0]], &(self.points)[e[0]]))
+  //         .collect();
+
+  //       {
+  //         let urquhart = (delaunay_return.urquhart)(distances);
+  //         let features: Vec<FeaturesStruct<F>> = delaunay_return
+  //           .edges
+  //           .iter()
+  //           .enumerate()
+  //           .map(|(i, e)| {
+  //             let coordinates = vec![&self.points[0], &self.points[e[1]]];
+  //             return FeaturesStruct {
+  //               properties: vec![
+  //                 FeatureProperty::Source(self.valid[e[0]]),
+  //                 FeatureProperty::Target(self.valid[e[1]]),
+  //                 FeatureProperty::Length(distances[i]),
+  //                 FeatureProperty::Urquhart(urquhart[i]),
+  //               ],
+  //               geometry: vec![FeatureGeometry::LineString { coordinates }],
+  //             };
+  //           })
+  //           .collect();
+  //         return Some(DataType::Object(DataObject::FeaturesCollection {
+  //           features,
+  //         }));
+  //       }
+  //     }
+  //   };
+  // }
+
+  //   v.mesh = function(data) {
+  //     if (data !== undefined) {
+  //       v(data);
+  //     }
+  //     if (!v.delaunay) return false;
+  //     return {
+  //       type: "MultiLineString",
+  //       coordinates: v.delaunay.edges.map(e => [v.points[e[0]], v.points[e[1]]])
+  //     };
+  //   };
+
+  // fn mesh(mut self, data: DataType<'a, F>) -> Option<DataObject<F>> {
+  //   match data {
+  //     DataType::Blank => {
+  //       // No op
+  //     }
+  //     _ => {
+  //       self = Voronoi::voronoi(data);
+  //     }
+  //   }
+
+  //   match &self.delaunay_return {
+  //     None => {
+  //       return None;
+  //     }
+  //     Some(delaunay_return) => {
+  //       let coordinates: Vec<Vec<&[F; 2]>> = delaunay_return
+  //         .edges
+  //         .iter()
+  //         .map(move |e| vec![&(self.points)[e[0]], &(self.points)[e[1]]])
+  //         .collect();
+  //       return Some(DataObject::MultiLineString { coordinates });
+  //     }
+  //   }
+  // }
+
+  // fn hull(mut self, data: DataType<'a, F>) -> Option<DataObject<F>> {
+  //   match data {
+  //     DataType::Blank => {
+  //       // No op
+  //     }
+  //     _ => {
+  //       self = Voronoi::voronoi(data);
+  //     }
+  //   }
+
+  //   match self.delaunay_return {
+  //     None => {
+  //       return None;
+  //     }
+  //     Some(delaunay_return) => {
+  //       let hull = delaunay_return.hull;
+  //       let points = self.points;
+  //       match hull.len() {
+  //         0usize => {
+  //           return None;
+  //         }
+  //         _ => {
+  //           let mut hull_points: Vec<&[F; 2]> = hull.iter().map(move |i| &points[*i]).collect();
+  //           hull_points.push(&points[0]);
+  //           return Some(DataObject::Polygon {
+  //             coordinates: vec![hull_points],
+  //           });
+  //         }
+  //       };
+  //     }
+  //   }
+  // }
+
+  fn x(mut self, f: Option<Box<dyn Fn(DataType<'a, F>) -> Option<F>>>) -> XYReturn<'a, F> {
+    return match f {
+      None => XYReturn::Func(self.vx),
+      Some(f) => {
+        self.vx = f;
+        return XYReturn::Voronoi(self);
+      }
+    };
+  }
+
+  fn y(mut self, f: Option<Box<dyn Fn(DataType<'a, F>) -> Option<F>>>) -> XYReturn<'a, F> {
+    return match f {
+      None => XYReturn::Func(self.vy),
+      Some(f) => {
+        self.vy = f;
+        return XYReturn::Voronoi(self);
+      }
     };
   }
 }
-// export function geoVoronoi(data) {
-//   const v = function(data) {
-//     v.delaunay = null;
-//     v._data = data;
-
-//     if (typeof v._data === "object" && v._data.type === "FeatureCollection") {
-//       v._data = v._data.features;
-//     }
-//     if (typeof v._data === "object") {
-//       const temp = v._data
-//         .map(d => [v._vx(d), v._vy(d), d])
-//         .filter(d => isFinite(d[0] + d[1]));
-//       v.points = temp.map(d => [d[0], d[1]]);
-//       v.valid = temp.map(d => d[2]);
-//       v.delaunay = geoDelaunay(v.points);
-//     }
-//     return v;
-//   };
-
-//   v._vx = function(d) {
-//     if (typeof d == "object" && "type" in d) {
-//       return geoCentroid(d)[0];
-//     }
-//     if (0 in d) return d[0];
-//   };
-
-//   v._vy = function(d) {
-//     if (typeof d == "object" && "type" in d) {
-//       return geoCentroid(d)[1];
-//     }
-//     if (1 in d) return d[1];
-//   };
-
-//   v.x = function(f) {
-//     if (!f) return v._vx;
-//     v._vx = f;
-//     return v;
-//   };
-//   v.y = function(f) {
-//     if (!f) return v._vy;
-//     v._vy = f;
-//     return v;
-//   };
-
-//   v.polygons = function(data) {
-//     if (data !== undefined) {
-//       v(data);
-//     }
-
-//     if (!v.delaunay) return false;
-//     const coll = {
-//       type: "FeatureCollection",
-//       features: []
-//     };
-//     if (v.valid.length === 0) return coll;
-//     v.delaunay.polygons.forEach((poly, i) =>
-//       coll.features.push({
-//         type: "Feature",
-//         geometry: !poly
-//           ? null
-//           : {
-//               type: "Polygon",
-//               coordinates: [[...poly, poly[0]].map(i => v.delaunay.centers[i])]
-//             },
-//         properties: {
-//           site: v.valid[i],
-//           sitecoordinates: v.points[i],
-//           neighbours: v.delaunay.neighbors[i] // not part of the public API
-//         }
-//       })
-//     );
-//     if (v.valid.length === 1)
-//       coll.features.push({
-//         type: "Feature",
-//         geometry: { type: "Sphere" },
-//         properties: {
-//           site: v.valid[0],
-//           sitecoordinates: v.points[0],
-//           neighbours: []
-//         }
-//       });
-//     return coll;
-//   };
-
-//   v.triangles = function(data) {
-//     if (data !== undefined) {
-//       v(data);
-//     }
-//     if (!v.delaunay) return false;
-
-//     return {
-//       type: "FeatureCollection",
-//       features: v.delaunay.triangles
-//         .map((tri, index) => {
-//           tri = tri.map(i => v.points[i]);
-//           tri.center = v.delaunay.centers[index];
-//           return tri;
-//         })
-//         .filter(tri => excess(tri) > 0)
-//         .map(tri => ({
-//           type: "Feature",
-//           properties: {
-//             circumcenter: tri.center
-//           },
-//           geometry: {
-//             type: "Polygon",
-//             coordinates: [[...tri, tri[0]]]
-//           }
-//         }))
-//     };
-//   };
-
-//   v.links = function(data) {
-//     if (data !== undefined) {
-//       v(data);
-//     }
-//     if (!v.delaunay) return false;
-//     const _distances = v.delaunay.edges.map(e =>
-//         geoDistance(v.points[e[0]], v.points[e[1]])
-//       ),
-//       _urquart = v.delaunay.urquhart(_distances);
-//     return {
-//       type: "FeatureCollection",
-//       features: v.delaunay.edges.map((e, i) => ({
-//         type: "Feature",
-//         properties: {
-//           source: v.valid[e[0]],
-//           target: v.valid[e[1]],
-//           length: _distances[i],
-//           urquhart: !!_urquart[i]
-//         },
-//         geometry: {
-//           type: "LineString",
-//           coordinates: [v.points[e[0]], v.points[e[1]]]
-//         }
-//       }))
-//     };
-//   };
-
-//   v.mesh = function(data) {
-//     if (data !== undefined) {
-//       v(data);
-//     }
-//     if (!v.delaunay) return false;
-//     return {
-//       type: "MultiLineString",
-//       coordinates: v.delaunay.edges.map(e => [v.points[e[0]], v.points[e[1]]])
-//     };
-//   };
-
-//   v.cellMesh = function(data) {
-//     if (data !== undefined) {
-//       v(data);
-//     }
-//     if (!v.delaunay) return false;
-//     const { centers, polygons } = v.delaunay;
-//     const coordinates = [];
-//     for (const p of polygons) {
-//       if (!p) continue;
-//       for (
-//         let n = p.length, p0 = p[n - 1], p1 = p[0], i = 0;
-//         i < n;
-//         p0 = p1, p1 = p[++i]
-//       ) {
-//         if (p1 > p0) {
-//           coordinates.push([centers[p0], centers[p1]]);
-//         }
-//       }
-//     }
-//     return {
-//       type: "MultiLineString",
-//       coordinates
-//     };
-//   };
-
-//   v._found = undefined;
-//   v.find = function(x, y, radius) {
-//     v._found = v.delaunay.find(x, y, v._found);
-//     if (!radius || geoDistance([x, y], v.points[v._found]) < radius)
-//       return v._found;
-//   };
-
-//   v.hull = function(data) {
-//     if (data !== undefined) {
-//       v(data);
-//     }
-//     const hull = v.delaunay.hull,
-//       points = v.points;
-//     return hull.length === 0
-//       ? null
-//       : {
-//           type: "Polygon",
-//           coordinates: [[...hull.map(i => points[i]), points[hull[0]]]]
-//         };
-//   };
-
-//   return data ? v(data) : v;
-// }

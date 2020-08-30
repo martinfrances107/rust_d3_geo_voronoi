@@ -3,7 +3,7 @@ use num_traits::Float;
 use super::excess::excess;
 use std::collections::HashMap;
 
-pub fn edges<F>(triangles: &Vec<[usize; 3]>, point: &Vec<[F; 2]>) -> Vec<[usize; 2]>
+pub fn edges<F>(triangles: &Vec<Vec<usize>>, point: &Vec<[F; 2]>) -> Vec<[usize; 2]>
 where
   F: Float,
 {
@@ -11,15 +11,18 @@ where
     return vec![[0usize, 1usize]];
   }
 
-  let h_index = HashMap::new();
+  let mut h_index = HashMap::new();
   for tri in triangles {
     if tri[0] == tri[1] {
       return Vec::new();
     }
-    let ex_in: [[F; 2]; 3];
-    for i in 0..3 {
-      ex_in[i] = point[i];
-    }
+
+    // let ex_in: [[F; 2]; 3];
+    // for i in 0..3 {
+    //   ex_in[i] = point[i];
+    // }
+    let ex_in = vec![point[0], point[1], point[2]];
+
     if excess(ex_in) < F::zero() {
       return Vec::new();
     }
@@ -31,7 +34,7 @@ where
     }
   }
 
-  let out: Vec<[usize; 2]> = Vec::new();
+  let mut out: Vec<[usize; 2]> = Vec::new();
   for key in h_index.keys() {
     let a_split: Vec<&str> = key.split('-').collect();
     out.push([a_split[0].parse().unwrap(), a_split[1].parse().unwrap()]);

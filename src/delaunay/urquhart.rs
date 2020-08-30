@@ -1,28 +1,30 @@
 use std::collections::HashMap;
+use std::rc::Rc;
 
 use num_traits::Float;
 use rust_d3_array::extent::extent;
 
 pub fn urquhart<F>(
-  edges: Vec<[usize; 2]>,
-  triangles: Vec<[usize; 3]>,
+  edges: Rc<Vec<[usize; 2]>>,
+  triangles: Rc<Vec<Vec<usize>>>,
 ) -> Box<dyn Fn(Vec<F>) -> Vec<bool>>
 where
   F: Float,
 {
-  return Box::new(|distances: Vec<F>| {
-    let h_lengths: HashMap<String, F> = HashMap::new();
-    let h_urquhart: HashMap<String, bool> = HashMap::new();
+  return Box::new(move |distances: Vec<F>| {
+    let mut h_lengths: HashMap<String, F> = HashMap::new();
+    let mut h_urquhart: HashMap<String, bool> = HashMap::new();
 
     for (i, edge) in edges.iter().enumerate() {
-      let u = format!("{}-{}", edge[0], edge[1]);
-      h_lengths.insert(u, distances[i]);
-      h_urquhart.insert(u, true);
+      let u_lengths = format!("{}-{}", edge[0], edge[1]);
+      let u_urquhart = format!("{}-{}", edge[0], edge[1]);
+      h_lengths.insert(u_lengths, distances[i]);
+      h_urquhart.insert(u_urquhart, true);
     }
 
     triangles.iter().for_each(|tri| {
-      let l = F::zero();
-      let remove: Option<String>;
+      let mut l = F::zero();
+      let mut remove: Option<String> = None;
       for j in 0..3 {
         // extent is used to order the two tri values  smallest to largest.
         let e = extent(vec![tri[j], tri[(j + 1usize) % 3usize]]);
@@ -32,6 +34,10 @@ where
           l = *h_lengths.get(&u).unwrap();
           remove = Some(u);
         }
+        else {
+          remove = None;
+        }
+
       }
       match remove {
         Some(r) => {
