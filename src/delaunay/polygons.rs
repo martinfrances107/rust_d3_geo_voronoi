@@ -62,22 +62,22 @@ where
           let d = cartesian_normalize(&cartesian_cross(&a, &b));
           let c = cartesian_cross(&m, &d);
 
-          // let supplement_copy = supplement.clone();
-          // let poly: Vec<usize> = [
-          //   m,
-          //   cartesian_cross(&m, &c),
-          //   cartesian_cross(&cartesian_cross(&m, &c), &c),
-          //   cartesian_cross(&cartesian_cross(&cartesian_cross(&m, &c), &c), &c),
-          // ]
-          // .iter()
-          // .map(|p| spherical(p))
-          // .map(|p| {
-          //   // let out: usize = supplement_copy(&p);
-          //   let out = 0; // TODO must resolve suppliment issues.
-          //   return out;
-          // })
-          // .collect();
-          // polygons.push(poly);
+          let supplement_copy = supplement.clone();
+          let poly: Vec<usize> = [
+            m,
+            cartesian_cross(&m, &c),
+            cartesian_cross(&cartesian_cross(&m, &c), &c),
+            cartesian_cross(&cartesian_cross(&cartesian_cross(&m, &c), &c), &c),
+          ]
+          .iter()
+          .map(|p| spherical(p))
+          .map(|p| {
+            // let out: usize = supplement_copy(&p);
+            let out = 0; // TODO must resolve suppliment issues.
+            return out;
+          })
+          .collect();
+          polygons.push(poly);
           // let rev: Vec<usize> = poly.iter().rev().map(|x| *x).collect();
           // polygons.push(rev);
           return (polygons, centers);
