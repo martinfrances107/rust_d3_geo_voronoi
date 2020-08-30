@@ -339,38 +339,42 @@ where
     }
   }
 
-  // fn hull(mut self, data: DataType<'a, F>) -> Option<DataObject<F>> {
-  //   match data {
-  //     DataType::Blank => {
-  //       // No op
-  //     }
-  //     _ => {
-  //       self = Voronoi::voronoi(data);
-  //     }
-  //   }
+  fn hull(mut self, data: DataType<'a, F>) -> Option<DataObject<F>> {
+    match data {
+      DataType::Blank => {
+        // No op
+      }
+      _ => {
+        self = Voronoi::voronoi(data);
+      }
+    }
 
-  //   match self.delaunay_return {
-  //     None => {
-  //       return None;
-  //     }
-  //     Some(delaunay_return) => {
-  //       let hull = delaunay_return.hull;
-  //       let points = self.points;
-  //       match hull.len() {
-  //         0usize => {
-  //           return None;
-  //         }
-  //         _ => {
-  //           let mut hull_points: Vec<&[F; 2]> = hull.iter().map(move |i| &points[*i]).collect();
-  //           hull_points.push(&points[0]);
-  //           return Some(DataObject::Polygon {
-  //             coordinates: vec![hull_points],
-  //           });
-  //         }
-  //       };
-  //     }
-  //   }
-  // }
+    match self.delaunay_return {
+      None => {
+        return None;
+      }
+      Some(ref delaunay_return) => {
+        match delaunay_return.hull.len() {
+          0usize => {
+            return None;
+          }
+          _ => {
+            let mut coordinates: Vec<[F; 2]> = delaunay_return
+              .hull
+              .iter()
+              .map(|i| {
+                return self.points[*i];
+              })
+              .collect();
+            coordinates.push(self.points[0].clone());
+            return Some(DataObject::Polygon {
+              coordinates: vec![coordinates],
+            });
+          }
+        };
+      }
+    }
+  }
 
   fn x(mut self, f: Option<Box<dyn Fn(DataType<'a, F>) -> Option<F>>>) -> XYReturn<'a, F> {
     return match f {
