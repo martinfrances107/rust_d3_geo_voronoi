@@ -72,18 +72,31 @@ where
     let points: Vec<[F; 2]>;
     let delaunay_return: Option<DelaunayReturn<F>> = None;
 
-    // On finding a Features Collection take t  he first element only, drop everything else.
+    // On finding a Features Collection take the first element only, drop everything else.
     // match v.data {
     //   DataType::Object(obj) => match obj {
-    //     DataObject::FeaturesCollection { features: f } => {
-    //       Some(f) => {
-    //         v.data = DataType::Object(DataObject::Feature(features));
+    //     DataObject::FeaturesCollection { features } => {
+    //       let featureMaybe = features.first();
+    //       match featureMaybe {
+    //         Some(feature) => {
+    //           v.data = DataType::Object(DataObject::Feature {
+    //             feature: FeatureStruct {
+    //               // TODO do I want to drop the assocated properites? No.
+    //               properties: Vec::new(),
+    //               geometry: *(feature.geometry.first().unwrap()),
+    //             },
+    //           });
+    //         }
+    //         None => {
+    //           panic!("found a collection with not elements");
+    //         }
     //       }
-    //       None => {
-    //         panic!("Found an empty feature Collection!");
-    //       }
-    //     },
+    //     }
+    //     _ => { // Other Data Objects.
+    //     }
     //   },
+    //   _ => { // Other Data Types
+    //   }
     // }
 
     let vx = Box::new(|d: DataType<'a, F>| -> Option<F> {
@@ -148,14 +161,19 @@ where
     //   _ => {}
     // }
 
-    v = Voronoi {
-      delaunay_return,
-      found: Vec::new(),
-      // valid,
-      vx,
-      vy,
-      ..v
-    };
+    // v = Voronoi {
+    //   delaunay_return,
+    //   found: Vec::new(),
+    //   // valid,
+    //   vx,
+    //   vy,
+    //   ..v
+    // };
+
+    v.delaunay_return = delaunay_return;
+    v.found = Vec::new();
+    v.vx = vx;
+    v.vy = vy;
 
     // let v = Voronoi {
     //   data,
@@ -296,30 +314,30 @@ where
   //     };
   //   };
 
-  // fn mesh(mut self, data: DataType<'a, F>) -> Option<DataObject<F>> {
-  //   match data {
-  //     DataType::Blank => {
-  //       // No op
-  //     }
-  //     _ => {
-  //       self = Voronoi::voronoi(data);
-  //     }
-  //   }
+  fn mesh(mut self, data: DataType<'a, F>) -> Option<DataObject<F>> {
+    match data {
+      DataType::Blank => {
+        // No op
+      }
+      _ => {
+        self = Voronoi::voronoi(data);
+      }
+    }
 
-  //   match &self.delaunay_return {
-  //     None => {
-  //       return None;
-  //     }
-  //     Some(delaunay_return) => {
-  //       let coordinates: Vec<Vec<&[F; 2]>> = delaunay_return
-  //         .edges
-  //         .iter()
-  //         .map(move |e| vec![&(self.points)[e[0]], &(self.points)[e[1]]])
-  //         .collect();
-  //       return Some(DataObject::MultiLineString { coordinates });
-  //     }
-  //   }
-  // }
+    match &self.delaunay_return {
+      None => {
+        return None;
+      }
+      Some(delaunay_return) => {
+        let coordinates: Vec<Vec<[F; 2]>> = delaunay_return
+          .edges
+          .iter()
+          .map(|e| vec![(self.points)[e[0]], (self.points)[e[1]]])
+          .collect();
+        return Some(DataObject::MultiLineString { coordinates });
+      }
+    }
+  }
 
   // fn hull(mut self, data: DataType<'a, F>) -> Option<DataObject<F>> {
   //   match data {
