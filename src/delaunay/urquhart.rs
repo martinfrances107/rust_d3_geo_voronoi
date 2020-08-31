@@ -7,11 +7,11 @@ use rust_d3_array::extent::extent;
 pub fn urquhart<F>(
   edges: Rc<Vec<[usize; 2]>>,
   triangles: Rc<Vec<Vec<usize>>>,
-) -> Box<dyn Fn(Vec<F>) -> Vec<bool>>
+) -> Box<dyn Fn(&Vec<F>) -> Vec<bool>>
 where
   F: Float,
 {
-  return Box::new(move |distances: Vec<F>| {
+  return Box::new(move |distances: &Vec<F>| {
     let mut h_lengths: HashMap<String, F> = HashMap::new();
     let mut h_urquhart: HashMap<String, bool> = HashMap::new();
 

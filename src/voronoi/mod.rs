@@ -277,51 +277,52 @@ where
     }
   }
 
-  // fn link(mut self, data: DataType<'a, F>) -> Option<DataType<F>> {
-  //   match data {
-  //     DataType::Blank => {
-  //       // No op
-  //     }
-  //     _ => {
-  //       self = Voronoi::voronoi(data);
-  //     }
-  //   }
+  fn link(mut self, data: DataType<F>) -> Option<DataType<F>> {
+    match data {
+      DataType::Blank => {
+        // No op
+      }
+      _ => {
+        self = Voronoi::voronoi(data);
+      }
+    }
 
-  //   return match &self.delaunay_return {
-  //     None => None,
-  //     Some(delaunay_return) => {
-  //       let distances = delaunay_return
-  //         .edges
-  //         .iter()
-  //         .map(|e| distance(&(self.points)[e[0]], &(self.points)[e[0]]))
-  //         .collect();
+    return match &self.delaunay_return {
+      None => None,
+      Some(delaunay_return) => {
+        let points = self.points.clone();
+        let distances: Rc<Vec<F>> = Rc::new(delaunay_return
+          .edges
+          .iter()
+          .map(|e| distance(&(points)[e[0]], &(points)[e[0]]))
+          .collect());
 
-  //       {
-  //         let urquhart = (delaunay_return.urquhart)(distances);
-  //         let features: Vec<FeaturesStruct<F>> = delaunay_return
-  //           .edges
-  //           .iter()
-  //           .enumerate()
-  //           .map(|(i, e)| {
-  //             let coordinates = vec![&self.points[0], &self.points[e[1]]];
-  //             return FeaturesStruct {
-  //               properties: vec![
-  //                 FeatureProperty::Source(self.valid[e[0]]),
-  //                 FeatureProperty::Target(self.valid[e[1]]),
-  //                 FeatureProperty::Length(distances[i]),
-  //                 FeatureProperty::Urquhart(urquhart[i]),
-  //               ],
-  //               geometry: vec![FeatureGeometry::LineString { coordinates }],
-  //             };
-  //           })
-  //           .collect();
-  //         return Some(DataType::Object(DataObject::FeaturesCollection {
-  //           features,
-  //         }));
-  //       }
-  //     }
-  //   };
-  // }
+        {
+          let urquhart = (delaunay_return.urquhart)(&distances);
+          let features: Vec<FeaturesStruct<F>> = delaunay_return
+            .edges
+            .iter()
+            .enumerate()
+            .map(|(i, e)| {
+              let coordinates = vec![points[0], points[e[1]]];
+              return FeaturesStruct {
+                properties: vec![
+                  FeatureProperty::Source(self.valid[e[0]]),
+                  FeatureProperty::Target(self.valid[e[1]]),
+                  FeatureProperty::Length(distances[i]),
+                  FeatureProperty::Urquhart(urquhart[i]),
+                ],
+                geometry: vec![FeatureGeometry::LineString { coordinates }],
+              };
+            })
+            .collect();
+          return Some(DataType::Object(DataObject::FeaturesCollection {
+            features,
+          }));
+        }
+      }
+    };
+  }
 
   fn mesh(mut self, data: DataType<F>) -> Option<DataObject<F>> {
     match data {

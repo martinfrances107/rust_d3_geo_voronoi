@@ -89,7 +89,7 @@ where
   pub polygons: Vec<Vec<usize>>,
   pub mesh: Vec<[usize; 2]>,
   pub hull: Vec<usize>,
-  pub urquhart: Box<dyn Fn(Vec<F>) -> Vec<bool> + 'a>,
+  pub urquhart: Box<dyn Fn(&Vec<F>) -> Vec<bool> + 'a>,
   pub find: Box<dyn Fn(F, F, Option<usize>) -> Option<usize> + 'a>,
 }
 
@@ -129,7 +129,7 @@ where
         // Borrow and release e, tri.
         let u;
         {
-          u = urquhart::<F>(e.clone(), tri.clone());
+          u = urquhart(e.clone(), tri.clone());
         }
 
         let f;
