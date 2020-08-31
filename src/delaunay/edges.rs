@@ -19,7 +19,7 @@ where
 
     let ex_in = vec![point[0], point[1], point[2]];
 
-    if excess(ex_in) < F::zero() {
+    if excess(&ex_in) < F::zero() {
       return Vec::new();
     }
 

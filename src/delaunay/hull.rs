@@ -25,7 +25,7 @@ where
       })
       .collect();
 
-    if excess(ex_in) < F::zero() {
+    if excess(&ex_in) < F::zero() {
       return Vec::new();
     }
 

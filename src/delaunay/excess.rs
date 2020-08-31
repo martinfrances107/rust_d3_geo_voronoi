@@ -5,7 +5,7 @@ use rust_d3_geo::cartesian::cartesian_cross;
 use rust_d3_geo::cartesian::cartesian_dot;
 
 /// Spherical excess of a triangle (in spherical coordinates)
-pub fn excess<F>(triangle_p: Vec<[F; 2]>) -> F
+pub fn excess<F>(triangle_p: &Vec<[F; 2]>) -> F
 where
   F: Float,
 {

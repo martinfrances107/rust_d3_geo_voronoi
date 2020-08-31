@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use num_traits::cast::FromPrimitive;
 use num_traits::Float;
 use num_traits::FloatConst;
@@ -21,7 +23,15 @@ where
   F: Float + FloatConst + FromPrimitive,
 {
   Voronoi(Voronoi<'a, F>),
-  Func(Box<dyn Fn(DataType<'a, F>) -> Option<F>>),
+  Func(Box<dyn Fn(DataType<F>) -> Option<F>>),
+}
+
+struct TriStruct<F>
+where
+  F: Float,
+{
+  tri_points: Vec<[F; 2]>,
+  center: [F; 2],
 }
 
 struct Voronoi<'a, F>
@@ -30,12 +40,13 @@ where
 {
   // cellMesh:
   delaunay_return: Option<DelaunayReturn<'a, F>>,
-  data: DataType<'a, F>,
+  data: DataType<F>,
   found: Vec<F>,
-  points: Vec<[F; 2]>,
+  //Points: Rc needed here as the egdes, triangles, neigbours etc all index into thts vec.
+  points: Rc<Vec<[F; 2]>>,
   valid: Vec<F>,
-  vx: Box<dyn Fn(DataType<'a, F>) -> Option<F>>,
-  vy: Box<dyn Fn(DataType<'a, F>) -> Option<F>>,
+  vx: Box<dyn Fn(DataType<F>) -> Option<F>>,
+  vy: Box<dyn Fn(DataType<F>) -> Option<F>>,
 }
 
 impl<'a, F> Default for Voronoi<'a, F>
@@ -47,7 +58,7 @@ where
       data: DataType::Blank,
       delaunay_return: None,
       found: Vec::new(),
-      points: Vec::new(),
+      points: Rc::new(Vec::new()),
       valid: Vec::new(),
       vx: Box::new(|_| None),
       vy: Box::new(|_| None),
@@ -59,11 +70,11 @@ impl<'a, F> Voronoi<'a, F>
 where
   F: Float + FloatConst + FromPrimitive,
 {
-  fn voronoi(data: DataType<'a, F>) -> Voronoi<F>
+  fn voronoi(data: DataType<F>) -> Voronoi<'a, F>
   where
     F: Float + FloatConst + FromPrimitive,
   {
-    let mut v: Voronoi<F> = Voronoi {
+    let mut v: Voronoi<'a, F> = Voronoi {
       data,
       ..Voronoi::default()
     };
@@ -99,7 +110,7 @@ where
     //   }
     // }
 
-    let vx = Box::new(|d: DataType<'a, F>| -> Option<F> {
+    let vx = Box::new(|d: DataType<F>| -> Option<F> {
       match d {
         DataType::Object(d) => {
           // TODO untested code slip centroid calc.
@@ -124,7 +135,7 @@ where
       }
     });
 
-    let vy = Box::new(|d: DataType<'a, F>| -> Option<F> {
+    let vy = Box::new(|d: DataType<F>| -> Option<F> {
       match d {
         DataType::Object(d) => {
           // TODO untested code slip centroid calc.
@@ -218,7 +229,7 @@ where
   //   }
   // }
 
-  fn triangles(mut self, data: DataType<'a, F>) -> Option<DataObject<F>> {
+  fn triangles(mut self, data: DataType<F>) -> Option<DataObject<F>> {
     match data {
       DataType::Blank => {
         // No op
@@ -228,33 +239,42 @@ where
       }
     }
 
-    return match self.delaunay_return {
-      None => None,
-      Some(delaynay) => None, // Some(delaunay) => {
+    match self.delaunay_return {
+      None => {
+        return None;
+      }
 
-                              //   Some(DataObject::FeaturesCollection {
-                              //     features: FeatureStruct{},
-                              //   features: self.
-                              //   .delaunay
-                              //   .triangles
-                              //   .iter()
-                              //   .enumerate()
-                              //   .map(|(tri, index)| {
-                              //     tri = tri.map(|i| self.points[i]);
-                              //     tri.center = self.delaunay.centers[index];
-                              //     return tri;
-                              //   })
-                              //   .filter(|tri| excess(tri) > F::zero())
-                              //   .map(|tri| FeatureStruct::<F> {
-                              //     properties: FeatureProperty::Circumecenter(tri.center),
-                              //     geometry: FeatureGeometry::Polygon {
-                              //       coordinates: [[..tri, tri[0]]],
-                              //     },
-                              //   })
-                              //   .collect()
-                              //   }
-                              // }
-    };
+      Some(delaunay_return) => {
+        let points = self.points.clone();
+        let features: Vec<FeaturesStruct<F>> = delaunay_return
+          .triangles
+          .iter()
+          .enumerate()
+          .map(|(index, tri)| {
+            let tri_points: Vec<[F; 2]> = tri.iter().map(|i| points[*i]).collect();
+            let tri_struct = TriStruct {
+              tri_points,
+              center: delaunay_return.centers[index],
+            };
+            return tri_struct;
+          })
+          .filter(|tri_struct| return excess(&tri_struct.tri_points) > F::zero())
+          .map(|tri_struct| {
+            let first = tri_struct.tri_points[0].clone();
+            let mut coordinates: Vec<[F; 2]> = tri_struct.tri_points;
+            coordinates.push(first);
+            FeaturesStruct::<F> {
+              properties: vec![FeatureProperty::Circumecenter(tri_struct.center)],
+              geometry: vec![FeatureGeometry::Polygon {
+                coordinates: vec![coordinates],
+              }],
+            }
+          })
+          .collect();
+
+        return Some(DataObject::FeaturesCollection { features });
+      }
+    }
   }
 
   // fn link(mut self, data: DataType<'a, F>) -> Option<DataType<F>> {
@@ -303,7 +323,7 @@ where
   //   };
   // }
 
-  fn mesh(mut self, data: DataType<'a, F>) -> Option<DataObject<F>> {
+  fn mesh(mut self, data: DataType<F>) -> Option<DataObject<F>> {
     match data {
       DataType::Blank => {
         // No op
@@ -328,7 +348,7 @@ where
     }
   }
 
-  fn hull(mut self, data: DataType<'a, F>) -> Option<DataObject<F>> {
+  fn hull(mut self, data: DataType<F>) -> Option<DataObject<F>> {
     match data {
       DataType::Blank => {
         // No op
@@ -365,7 +385,7 @@ where
     }
   }
 
-  fn x(mut self, f: Option<Box<dyn Fn(DataType<'a, F>) -> Option<F>>>) -> XYReturn<'a, F> {
+  fn x(mut self, f: Option<Box<dyn Fn(DataType<F>) -> Option<F>>>) -> XYReturn<'a, F> {
     return match f {
       None => XYReturn::Func(self.vx),
       Some(f) => {
@@ -375,7 +395,7 @@ where
     };
   }
 
-  fn y(mut self, f: Option<Box<dyn Fn(DataType<'a, F>) -> Option<F>>>) -> XYReturn<'a, F> {
+  fn y(mut self, f: Option<Box<dyn Fn(DataType<F>) -> Option<F>>>) -> XYReturn<'a, F> {
     return match f {
       None => XYReturn::Func(self.vy),
       Some(f) => {
