@@ -53,7 +53,6 @@ where
       }
       2 => {
         if points.len() == 2 {
-
           // two hemispheres.
           let a = cartesian(&points[0]);
           let b = cartesian(&points[0]);

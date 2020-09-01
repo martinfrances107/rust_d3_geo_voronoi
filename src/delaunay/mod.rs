@@ -40,7 +40,7 @@ where
   /// The coordinates of the points as an array [x0, y0, x1, y1, ...].
   /// TyPIcally, this is a Float64Array, however you can use any array-like type in the constructor.
   ///
-  points: Vec<F>,
+  pub points: Vec<F>,
 
   ///
   /// The halfedge indices as an Int32Array [j0, j1, ...].

@@ -12,9 +12,7 @@ use rust_d3_geo::data_object::FeatureStruct;
 use rust_d3_geo::data_object::FeaturesStruct;
 use rust_d3_geo::distance::distance;
 
-use crate::delaunay::delaunay_from::delaunay_from;
 use crate::delaunay::excess::excess;
-use crate::delaunay::Delaunay;
 use crate::delaunay::DelaunayReturn;
 
 /// Return type used by .x() and .y()
@@ -34,11 +32,10 @@ where
   center: [F; 2],
 }
 
-struct Voronoi<'a, F>
+pub struct Voronoi<'a, F>
 where
   F: Float + FloatConst + FromPrimitive,
 {
-  // cellMesh:
   delaunay_return: Option<DelaunayReturn<'a, F>>,
   data: DataType<F>,
   found: Option<usize>,
@@ -70,37 +67,65 @@ impl<'a, F> Voronoi<'a, F>
 where
   F: Float + FloatConst + FromPrimitive,
 {
-  fn voronoi(data: DataType<F>) -> Voronoi<'a, F>
+  pub fn new(data: DataType<F>) -> Voronoi<'a, F>
   where
     F: Float + FloatConst + FromPrimitive,
   {
-    let mut v: Voronoi<'a, F> = Voronoi {
-      data,
-      ..Voronoi::default()
-    };
-    // v.data = data;
+    let mut v: Voronoi<'a, F>;
 
     let points: Vec<[F; 2]>;
     let delaunay_return: Option<DelaunayReturn<F>> = None;
 
-    // On finding a Features Collection take the first element only, drop everything else.
-    // match v.data {
-    //   DataType::Object(obj) => match obj {
-    //     DataObject::FeaturesCollection { features } => {
-    //       let featureMaybe = features.first();
-    //       match featureMaybe {
-    //         Some(feature) => {
-    //           v.data = DataType::Object(DataObject::Feature {
-    //             feature: FeatureStruct {
-    //               // TODO do I want to drop the assocated properites? No.
-    //               properties: Vec::new(),
-    //               geometry: *(feature.geometry.first().unwrap()),
-    //             },
-    //           });
-    //         }
-    //         None => {
-    //           panic!("found a collection with not elements");
-    //         }
+    // On finding a Features Collection take the first element only, drop other elements.
+    match data {
+      DataType::Object(obj) => {
+        match obj {
+          DataObject::FeaturesCollection { mut features } => {
+            // TODO: .remove() panics it it can't complete - consider trapping.
+            let mut first_feature = features.remove(0);
+            let geometry = first_feature.geometry.remove(0);
+            let feature = FeatureStruct {
+              properties: Vec::new(),
+              geometry,
+            };
+            // v.data = DataType::Object(DataObject::Feature { feature });
+            v = Voronoi {
+              data: DataType::Object(DataObject::Feature { feature }),
+              ..Voronoi::default()
+            };
+          }
+          _=> {
+            // Other Data Objects
+            v = Voronoi {
+              data: DataType::Object(obj),
+              ..Voronoi::default()
+            };
+          }
+        }
+      }
+      _ => {
+        v = Voronoi {
+          data,
+          ..Voronoi::default()
+        };
+      }
+    };
+
+    // match features {
+    //   Some(mut feature) => {
+    //     let g = feature
+    //     let g0 = (*feature.geometry).remove(0);
+    //     v.data = DataType::Object(DataObject::Feature {
+    //       feature: FeatureStruct {
+    //         // TODO do I want to drop the assocated properites? No.
+    //         properties: Vec::new(),
+    //         geometry: g0,
+    //       },
+    //     });
+    //   }
+    //   None => {
+    //     panic!("found a collection with not elements");
+    //   }
     //       }
     //     }
     //     _ => { // Other Data Objects.
@@ -198,7 +223,7 @@ where
 
     return match v.data {
       DataType::Blank => v,
-      _ => Voronoi::voronoi(v.data),
+      _ => Voronoi::new(v.data),
     };
   }
 
@@ -208,7 +233,7 @@ where
         // No op
       }
       _ => {
-        self = Voronoi::voronoi(data);
+        self = Voronoi::new(data);
       }
     }
 
@@ -274,7 +299,7 @@ where
         // No op
       }
       _ => {
-        self = Voronoi::voronoi(data);
+        self = Voronoi::new(data);
       }
     }
 
@@ -322,7 +347,7 @@ where
         // No op
       }
       _ => {
-        self = Voronoi::voronoi(data);
+        self = Voronoi::new(data);
       }
     }
 
@@ -371,7 +396,7 @@ where
         // No op
       }
       _ => {
-        self = Voronoi::voronoi(data);
+        self = Voronoi::new(data);
       }
     }
 
@@ -396,7 +421,7 @@ where
         // No op
       }
       _ => {
-        self = Voronoi::voronoi(data);
+        self = Voronoi::new(data);
       }
     }
 
