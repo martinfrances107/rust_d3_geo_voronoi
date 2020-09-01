@@ -202,6 +202,46 @@ where
     };
   }
 
+  fn cell_mesh(mut self, data: DataType<F>) -> Option<DataObject<F>> {
+    match data {
+      DataType::Blank => {
+        // No op
+      }
+      _ => {
+        self = Voronoi::voronoi(data);
+      }
+    }
+
+    match self.delaunay_return {
+      None => {
+        return None;
+      }
+      Some(delaunay_return) => match delaunay_return.delaunay.centers {
+        None => {
+          panic!("Expected to be able to access centers here.");
+        }
+        Some(centers) => {
+          let polygons = delaunay_return.polygons;
+          let mut coordinates = vec![vec![]];
+          for p in polygons {
+            let n = p.len();
+            let mut p0 = *p.last().unwrap();
+            let mut p1 = p[0];
+            for i in 0..n {
+              if p1 > p0 {
+                coordinates.push(vec![centers[p0], centers[p1]]);
+              }
+              p0 = p1;
+              p1 = p[i + 1];
+            }
+          }
+
+          return Some(DataObject::MultiLineString { coordinates });
+        }
+      },
+    }
+  }
+
   //   v._found = undefined;
   //   v.find = function(x, y, radius) {
   //     v._found = v.delaunay.find(x, y, v._found);
@@ -291,11 +331,13 @@ where
       None => None,
       Some(delaunay_return) => {
         let points = self.points.clone();
-        let distances: Rc<Vec<F>> = Rc::new(delaunay_return
-          .edges
-          .iter()
-          .map(|e| distance(&(points)[e[0]], &(points)[e[0]]))
-          .collect());
+        let distances: Rc<Vec<F>> = Rc::new(
+          delaunay_return
+            .edges
+            .iter()
+            .map(|e| distance(&(points)[e[0]], &(points)[e[0]]))
+            .collect(),
+        );
 
         {
           let urquhart = (delaunay_return.urquhart)(&distances);

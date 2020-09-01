@@ -60,7 +60,7 @@ where
   ///
   pub triangles: Vec<usize>,
 
-  centers: Option<Vec<[F; 2]>>,
+  pub centers: Option<Vec<[F; 2]>>,
 
   /// The incoming halfedge indexes as a Int32Array [e0, e1, e2, ...].
   /// For each point i, inedges[i] is the halfedge index e of an incoming halfedge.
