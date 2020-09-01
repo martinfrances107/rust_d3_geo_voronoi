@@ -41,7 +41,7 @@ where
   // cellMesh:
   delaunay_return: Option<DelaunayReturn<'a, F>>,
   data: DataType<F>,
-  found: Vec<F>,
+  found: Option<usize>,
   //Points: Rc needed here as the egdes, triangles, neigbours etc all index into thts vec.
   points: Rc<Vec<[F; 2]>>,
   valid: Vec<F>,
@@ -57,7 +57,7 @@ where
     return Voronoi {
       data: DataType::Blank,
       delaunay_return: None,
-      found: Vec::new(),
+      found: None,
       points: Rc::new(Vec::new()),
       valid: Vec::new(),
       vx: Box::new(|_| None),
@@ -182,7 +182,7 @@ where
     // };
 
     v.delaunay_return = delaunay_return;
-    v.found = Vec::new();
+    v.found = None;
     v.vx = vx;
     v.vy = vy;
 
@@ -242,32 +242,30 @@ where
     }
   }
 
-  //   v._found = undefined;
-  //   v.find = function(x, y, radius) {
-  //     v._found = v.delaunay.find(x, y, v._found);
-  //     if (!radius || geoDistance([x, y], v.points[v._found]) < radius)
-  //       return v._found;
-  //   };
-
-  // fn find(&self, x: F, y: F, radius: Option<F>) -> Option<DataObject<F>> {
-  //   return match self.delaunay_return {
-  //     None => {None},
-  //     Some(delaunay_return) => {
-  //       self.found = (delaunay_return.find)(x, y, self.found);
-  //       return match radius {
-  //       Some(radius) => {
-  //         if distance(&[x, y], &self.points[self.found]) < radius {
-  //           return self.found;
-  //         }
-  //         else {
-  //           return None;
-  //         }
-  //       }
-  //       None => None,
-  //     };
-  //   }
-  //   }
-  // }
+  fn find(mut self, x: F, y: F, radius: Option<F>) -> Option<usize> {
+    return match self.delaunay_return {
+      None => {None},
+      Some(delaunay_return) => {
+        self.found = (delaunay_return.find)(x, y, self.found);
+        match self.found {
+          Some(found) => {
+            return match radius {
+              Some(radius) => {
+                if distance(&[x, y], &self.points[found]) < radius {
+                  return Some(found);
+                }
+                else {
+                  return None;
+                }
+              }
+              None => None,
+            };
+          },
+          None => {return None;}
+        }
+      }
+    }
+  }
 
   fn triangles(mut self, data: DataType<F>) -> Option<DataObject<F>> {
     match data {
