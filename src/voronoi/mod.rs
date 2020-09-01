@@ -244,7 +244,7 @@ where
 
   fn find(mut self, x: F, y: F, radius: Option<F>) -> Option<usize> {
     return match self.delaunay_return {
-      None => {None},
+      None => None,
       Some(delaunay_return) => {
         self.found = (delaunay_return.find)(x, y, self.found);
         match self.found {
@@ -253,18 +253,19 @@ where
               Some(radius) => {
                 if distance(&[x, y], &self.points[found]) < radius {
                   return Some(found);
-                }
-                else {
+                } else {
                   return None;
                 }
               }
               None => None,
             };
-          },
-          None => {return None;}
+          }
+          None => {
+            return None;
+          }
         }
       }
-    }
+    };
   }
 
   fn triangles(mut self, data: DataType<F>) -> Option<DataObject<F>> {
