@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::cell::RefCell;
 use std::rc::Rc;
 
 use num_traits::Float;
@@ -16,7 +17,7 @@ where
 }
 
 pub fn find<'a, F>(
-  neighbors: Rc<HashMap<usize, Vec<usize>>>,
+  neighbors: Rc<RefCell<HashMap<usize, Vec<usize>>>>,
   points: Rc<Vec<[F; 2]>>,
 ) -> Box<dyn Fn(F, F, Option<usize>) -> Option<usize> + 'a>
 where
@@ -35,7 +36,8 @@ where
       let cell = next_or_none.unwrap();
       let mut next_or_no = None;
       dist = distance2(xyz, cartesian(&points[cell]));
-      let row = neighbors.get(&cell);
+      let n = neighbors.borrow();
+      let row = n.get(&cell);
       match row {
         Some(row) => {
           for i in row {

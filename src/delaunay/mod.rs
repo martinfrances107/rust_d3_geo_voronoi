@@ -11,6 +11,7 @@ mod polygons;
 mod triangles;
 mod urquhart;
 
+use std::cell::RefCell;
 /// Delaunay triangulation
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -85,7 +86,8 @@ where
   pub edges: Rc<Vec<[usize; 2]>>,
   pub triangles: Rc<Vec<Vec<usize>>>,
   pub centers: Vec<[F; 2]>,
-  pub neghbors: Rc<HashMap<usize, Vec<usize>>>,
+  // neighbours:  passes to Voronoi::polygon() where it is consumed.
+  pub neighbors: Rc<RefCell<HashMap<usize, Vec<usize>>>>,
   pub polygons: Vec<Vec<usize>>,
   pub mesh: Vec<[usize; 2]>,
   pub hull: Vec<usize>,
@@ -112,7 +114,7 @@ where
         }
 
         // RC is needed here as it is both closed over in the find function an is part of the Delaunay return.
-        let n = Rc::new(neighbors(&tri, points.len()));
+        let n = Rc::new(RefCell::new(neighbors(&tri, points.len())));
 
         // Borrow and release polys.
         let m;
@@ -142,7 +144,7 @@ where
           edges: e,
           triangles: tri,
           centers,
-          neghbors: n,
+          neighbors: n,
           polygons: polys,
           mesh: m,
           hull: h,

@@ -1,24 +1,12 @@
 mod voronoi_test {
   extern crate pretty_assertions;
   use rust_d3_geo::data_object::DataObject;
+  use rust_d3_geo::data_object::DataType;
+  use rust_d3_geo::data_object::FeatureGeometry;
   use rust_d3_geo_voronoi::voronoi::Voronoi;
 
   #[cfg(test)]
   use pretty_assertions::assert_eq;
-
-  // tape("geoVoronoi() returns a Diagram.", function(test) {
-  //   test.equal(typeof geoVoronoi, 'object');
-  //   test.equal(typeof geoVoronoi.geoVoronoi, 'function');
-  //   test.equal(typeof geoVoronoi.geoVoronoi(), 'function');
-  //   test.equal(typeof geoVoronoi.geoVoronoi([]), 'function');
-  //   test.equal(typeof geoVoronoi.geoVoronoi().links, 'function');
-  //   test.equal(typeof geoVoronoi.geoVoronoi().links([]), 'object');
-  //   test.equal(typeof geoVoronoi.geoVoronoi().polygons, 'function');
-  //   test.equal(typeof geoVoronoi.geoVoronoi().polygons([]), 'object');
-  //   test.equal(typeof geoVoronoi.geoVoronoi().triangles, 'function');
-  //   test.equal(typeof geoVoronoi.geoVoronoi().triangles([]), 'object');
-  //   test.end();
-  // });
 
   // var sites = [[0,0], [10,0]];
 
@@ -29,20 +17,42 @@ mod voronoi_test {
   //   test.ok( (Math.abs(u[0]-v[0]) < 1e-6) && (Math.abs(u[1]-v[1]) < 1e-6) );
   //   test.end();
   // });
-  // static sites: Vec<[f64;2]> = vec![[0f64, 0f64], [10f64, 0f64]];
 
   #[test]
   pub fn voronoi_polygons_returns_polygons() {
     println!("geoVoronoi.polygons(sites) returns polygons.");
-    // let d = DataObject::Polygon{coordinates:vec![sites]};
-
-    // let u = Voronoi::new(d).polygons().features[0]
-    //   .geometry
-    //   .coordinates[0][0];
-    // let v = [-175f64, -4.981069f64];
-
-    // assert!((u[0] - v[0]).abs() < 1e-6f64);
-    // assert!((u[1] - v[1]).abs() < 1e-6f64);
+    let sites: Vec<[f64; 2]> = vec![[0f64, 0f64], [10f64, 0f64]];
+    let d_obj = DataObject::Polygon {
+      coordinates: vec![sites],
+    };
+    let d = DataType::Object(d_obj);
+    let v = Voronoi::new(d);
+    // match Voronoi::new(d).polygons(DataType::Blank) {
+    //   None => {
+    //     println!("Must return a DataObject");
+    //     assert!(false);
+    //   }
+    //   Some(DataObject::FeatureCollection { features }) => {
+    //     println!("found a Features Collection");
+    //     let g = &features[0].geometry[0];
+    //     match g {
+    //       FeatureGeometry::Polygon { coordinates } => {
+    //         let u = coordinates[0][0];
+    //         let v = [-175f64, -4.981069f64];
+    //         assert!((u[0] - v[0]).abs() < 1e-6f64);
+    //         assert!((u[1] - v[1]).abs() < 1e-6f64);
+    //       }
+    //       _ => {
+    //         println!("Expected a polygon object");
+    //         assert!(false);
+    //       }
+    //     }
+    //   }
+    //   _ => {
+    //     println!("Expected a FeaturesCollection.");
+    //     assert!(false);
+    //   }
+    // }
   }
 
   // tape("geoVoronoi.polygons(sites) tolerates NaN.", function(test) {

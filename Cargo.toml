@@ -7,6 +7,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+measureme = "0.7.1"
 geojson = "0.19.0"
 geo="0.14.2"
 num-traits="0.2.12"

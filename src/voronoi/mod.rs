@@ -80,7 +80,7 @@ where
     match data {
       DataType::Object(obj) => {
         match obj {
-          DataObject::FeaturesCollection { mut features } => {
+          DataObject::FeatureCollection { mut features } => {
             // TODO: .remove() panics it it can't complete - consider trapping.
             let mut first_feature = features.remove(0);
             let geometry = first_feature.geometry.remove(0);
@@ -94,8 +94,9 @@ where
               ..Voronoi::default()
             };
           }
-          _=> {
+          _ => {
             // Other Data Objects
+            println!("received ");
             v = Voronoi {
               data: DataType::Object(obj),
               ..Voronoi::default()
@@ -293,6 +294,53 @@ where
     };
   }
 
+  pub fn polygons(mut self, data: DataType<F>) -> Option<DataObject<F>> {
+    match data {
+      DataType::Blank => {
+        // No op
+      }
+      _ => {
+        self = Voronoi::new(data);
+      }
+    }
+
+    match self.delaunay_return {
+      None => {
+        return None;
+      }
+      Some(dr) => {
+        let features: Vec<FeaturesStruct<F>> = Vec::new();
+        for (i, ref poly) in dr.polygons.iter().enumerate() {
+          let first = poly[0].clone();
+          let mut coordinates_i: Vec<usize> = poly.to_vec();
+          coordinates_i.push(first);
+          let coordinates: Vec<Vec<[F; 2]>> =
+            vec![coordinates_i.iter().map(|i| dr.centers[*i]).collect()];
+
+          let geometry = FeatureGeometry::Polygon { coordinates };
+          let mut neighbors = dr.neighbors.borrow_mut();
+          let n: Vec<usize> = (neighbors.remove(&i)).unwrap();
+          let properties = vec![
+            // FeatureProperty::<F>::Site(self.valid[i]),
+            // FeatureProperty::<F>::Sitecoordinates(self.points[i]),
+            // The endpoint for neighbors.
+            // Consume neighbours here. Remove, and thereby destroy neighbours.
+            FeatureProperty::<F>::Neighbors(n),
+          ];
+          let f = DataObject::Feature {
+            feature: FeatureStruct {
+              geometry,
+              properties: Vec::new(),
+            },
+          };
+          //   coll.features.push();
+          // }
+        }
+        return Some(DataObject::FeatureCollection { features });
+      }
+    }
+  }
+
   fn triangles(mut self, data: DataType<F>) -> Option<DataObject<F>> {
     match data {
       DataType::Blank => {
@@ -336,7 +384,7 @@ where
           })
           .collect();
 
-        return Some(DataObject::FeaturesCollection { features });
+        return Some(DataObject::FeatureCollection { features });
       }
     }
   }
@@ -382,9 +430,7 @@ where
               };
             })
             .collect();
-          return Some(DataType::Object(DataObject::FeaturesCollection {
-            features,
-          }));
+          return Some(DataType::Object(DataObject::FeatureCollection { features }));
         }
       }
     };
