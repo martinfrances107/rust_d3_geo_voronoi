@@ -25,34 +25,33 @@ mod voronoi_test {
     let d_obj = DataObject::Polygon {
       coordinates: vec![sites],
     };
-    let d = DataType::Object(d_obj);
-    let v = Voronoi::new(d);
-    // match Voronoi::new(d).polygons(DataType::Blank) {
-    //   None => {
-    //     println!("Must return a DataObject");
-    //     assert!(false);
-    //   }
-    //   Some(DataObject::FeatureCollection { features }) => {
-    //     println!("found a Features Collection");
-    //     let g = &features[0].geometry[0];
-    //     match g {
-    //       FeatureGeometry::Polygon { coordinates } => {
-    //         let u = coordinates[0][0];
-    //         let v = [-175f64, -4.981069f64];
-    //         assert!((u[0] - v[0]).abs() < 1e-6f64);
-    //         assert!((u[1] - v[1]).abs() < 1e-6f64);
-    //       }
-    //       _ => {
-    //         println!("Expected a polygon object");
-    //         assert!(false);
-    //       }
-    //     }
-    //   }
-    //   _ => {
-    //     println!("Expected a FeaturesCollection.");
-    //     assert!(false);
-    //   }
-    // }
+    let data = DataType::Object(d_obj);
+    match Voronoi::new(data).polygons(DataType::Blank) {
+      None => {
+        println!("Must return a DataObject");
+        assert!(false);
+      }
+      Some(DataObject::FeatureCollection { features }) => {
+        println!("found a Features Collection");
+        let g = &features[0].geometry[0];
+        match g {
+          FeatureGeometry::Polygon { coordinates } => {
+            let u = coordinates[0][0];
+            let v = [-175f64, -4.981069f64];
+            assert!((u[0] - v[0]).abs() < 1e-6f64);
+            assert!((u[1] - v[1]).abs() < 1e-6f64);
+          }
+          _ => {
+            println!("Expected a polygon object");
+            assert!(false);
+          }
+        }
+      }
+      _ => {
+        println!("Expected a FeaturesCollection.");
+        assert!(false);
+      }
+    }
   }
 
   // tape("geoVoronoi.polygons(sites) tolerates NaN.", function(test) {
@@ -63,13 +62,17 @@ mod voronoi_test {
   //   test.end();
   // });
 
-  #[test]
-  pub fn voronoi_polygons_returns_polygons_tollerates_nan() {
-    println!("geoVoronoi.polygons(sites) tolerates NaN.");
-    // let sites_bad = vec![[0f64, 0f64], [2f64, 1f64], [f64::NAN, -1f64], [4f64, f64::NAN], [5f64,10f64]];
-    // let u = Voronoi::new(sites).polygons();
-    // assert!(u.is_some());
-  }
+  // #[test]
+  // pub fn voronoi_polygons_returns_polygons_tollerates_nan() {
+  //   println!("geoVoronoi.polygons(sites) tolerates NaN.");
+  //   let sites: Vec<[f64; 2]> = vec![[0f64, 0f64], [10f64, 0f64]];
+  //   let mut u = Voronoi::<f64>::new(DataType::Blank);
+  //   let up = u.polygons(DataType::<f64>::Vec(sites)).unwrap()[0][0];
+
+  //   let sites_bad = vec![[0f64, 0f64], [2f64, 1f64], [f64::NAN, -1f64], [4f64, f64::NAN], [5f64,10f64]];
+  //   let u = Voronoi::new(sites).polygons();
+  //   assert!(u.is_some());
+  // }
 
   // tape("geoVoronoi.polygons([no valid site]) returns an empty collection.", function(test) {
   //   const sites = [[NaN, -1], [4, NaN], [Infinity,10]];

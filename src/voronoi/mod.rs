@@ -6,6 +6,7 @@ use num_traits::FloatConst;
 
 use rust_d3_geo::data_object::DataObject;
 use rust_d3_geo::data_object::DataType;
+
 use rust_d3_geo::data_object::FeatureGeometry;
 use rust_d3_geo::data_object::FeatureProperty;
 use rust_d3_geo::data_object::FeatureStruct;
@@ -14,6 +15,7 @@ use rust_d3_geo::distance::distance;
 
 use crate::delaunay::excess::excess;
 use crate::delaunay::DelaunayReturn;
+use crate::delaunay::Delaunay;
 
 /// Return type used by .x() and .y()
 enum XYReturn<'a, F>
@@ -24,6 +26,7 @@ where
   Func(Box<dyn Fn(DataType<F>) -> Option<F>>),
 }
 
+#[derive(Debug)]
 struct TriStruct<F>
 where
   F: Float,
@@ -65,78 +68,43 @@ where
 
 impl<'a, F> Voronoi<'a, F>
 where
-  F: Float + FloatConst + FromPrimitive,
+  F: Float + FloatConst + FromPrimitive + 'static
 {
-  pub fn new(data: DataType<F>) -> Voronoi<'a, F>
+  pub fn new(mut data: DataType<F>) -> Voronoi<'a, F>
   where
-    F: Float + FloatConst + FromPrimitive,
+    F: Float + FloatConst + FromPrimitive + 'static,
   {
     let mut v: Voronoi<'a, F>;
 
-    let points: Vec<[F; 2]>;
+
     let delaunay_return: Option<DelaunayReturn<F>> = None;
 
     // On finding a Features Collection take the first element only, drop other elements.
     match data {
-      DataType::Object(obj) => {
-        match obj {
-          DataObject::FeatureCollection { mut features } => {
-            // TODO: .remove() panics it it can't complete - consider trapping.
-            let mut first_feature = features.remove(0);
-            let geometry = first_feature.geometry.remove(0);
-            let feature = FeatureStruct {
-              properties: Vec::new(),
-              geometry,
-            };
-            // v.data = DataType::Object(DataObject::Feature { feature });
-            v = Voronoi {
-              data: DataType::Object(DataObject::Feature { feature }),
-              ..Voronoi::default()
-            };
-          }
-          _ => {
-            // Other Data Objects
-            println!("received ");
-            v = Voronoi {
-              data: DataType::Object(obj),
-              ..Voronoi::default()
-            };
-          }
-        }
+      DataType::Object(DataObject::FeatureCollection{mut features}) => {
+
+        // TODO: .remove() panics it it can't complete - consider trapping.
+        let mut first_feature = features.remove(0);
+        let geometry = first_feature.geometry.remove(0);
+        let feature = FeatureStruct {
+          properties: Vec::new(),
+          geometry,
+        };
+        data =  DataType::Object(DataObject::Feature { feature });
+
       }
       _ => {
-        v = Voronoi {
-          data,
-          ..Voronoi::default()
-        };
+            // Other DataTypes variants.
       }
     };
 
-    // match features {
-    //   Some(mut feature) => {
-    //     let g = feature
-    //     let g0 = (*feature.geometry).remove(0);
-    //     v.data = DataType::Object(DataObject::Feature {
-    //       feature: FeatureStruct {
-    //         // TODO do I want to drop the assocated properites? No.
-    //         properties: Vec::new(),
-    //         geometry: g0,
-    //       },
-    //     });
-    //   }
-    //   None => {
-    //     panic!("found a collection with not elements");
-    //   }
-    //       }
-    //     }
-    //     _ => { // Other Data Objects.
-    //     }
-    //   },
-    //   _ => { // Other Data Types
-    //   }
-    // }
+    println!("received ");
+    v = Voronoi {
+      data,
+      ..Voronoi::default()
+    };
 
-    let vx = Box::new(|d: DataType<F>| -> Option<F> {
+    let vx = Box::new(|d: &DataType<F>| -> Option<F> {
       match d {
         DataType::Object(d) => {
           // TODO untested code slip centroid calc.
@@ -161,7 +129,7 @@ where
       }
     });
 
-    let vy = Box::new(|d: DataType<F>| -> Option<F> {
+    let vy = Box::new(|d: &DataType<F>| -> Option<F> {
       match d {
         DataType::Object(d) => {
           // TODO untested code slip centroid calc.
@@ -181,22 +149,36 @@ where
       }
     });
 
-    // match v.data {
-    //   DataType::Vec(data) => {
-    //     let temp = data
-    //       .iter()
-    //       .map(|d| {
-    //         return [vx(v.data), vy(v.data), Some(*d)];
-    //       })
-    //       .filter(|d| (d[0] + d[1]).is_finite())
-    //       .collect();
+    match v.data {
+      DataType::Vec(ref data) => {
+        let temp: Vec<(Option<F>, Option<F>, F)> = data
+          .iter()
+          .map(|d| {
+            return (vx(&v.data), vy(&v.data), *d);
+          })
+          .filter(|d| {
+            match d {
+              (Some(d0), Some(d1), _) => { return (*d0 + *d1).is_finite();}
+              _ => { return false;}
+              }
+            }
+          )
+          .collect();
 
-    //     points = temp.iter().map(|d| [d[0], d[1]]).collect();
-    //     valid = temp.map(|d| d[2]).collect();
-    //     delaunay_return = Delaunay::delaunay(&points);
-    //   }
-    //   _ => {}
-    // }
+        let points: Vec<[F; 2]> = temp.iter().map(|d| {
+          match d {
+            (Some(d0), Some(d1), _) => {return [*d0, *d1]; }
+            _ => { panic!("Unexpected Vec has been filtered ");}
+            }
+          }
+        ).collect();
+        v.points = Rc::new(points);
+        v.valid = temp.iter().map(|d| (*d).2 ).collect();
+        v.delaunay_return = Delaunay::delaunay(v.points.clone());
+      }
+      _ => {}
+    }
+
 
     // v = Voronoi {
     //   delaunay_return,
@@ -207,10 +189,11 @@ where
     //   ..v
     // };
 
-    v.delaunay_return = delaunay_return;
-    v.found = None;
-    v.vx = vx;
-    v.vy = vy;
+
+    // v.delaunay_return = delaunay_return;
+    // v.found = None;
+    // v.vx = vx;
+    // v.vy = vy;
 
     // let v = Voronoi {
     //   data,
@@ -222,10 +205,13 @@ where
     //   vy,
     // };
 
-    return match v.data {
-      DataType::Blank => v,
-      _ => Voronoi::new(v.data),
-    };
+    return v;
+
+    // TODO break recursion here.
+    // return match v.data {
+    //   DataType::Blank => v,
+    //   _ => Voronoi::new(v.data),
+    // };
   }
 
   fn cell_mesh(mut self, data: DataType<F>) -> Option<DataObject<F>> {
@@ -306,6 +292,7 @@ where
 
     match self.delaunay_return {
       None => {
+        panic!("the delaunay return is None");
         return None;
       }
       Some(dr) => {
