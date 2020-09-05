@@ -214,68 +214,22 @@ where
     // };
   }
 
-  fn cell_mesh(mut self, data: DataType<F>) -> Option<DataObject<F>> {
-    match data {
-      DataType::Blank => {
-        // No op
+  fn x(mut self, f: Option<Box<dyn Fn(DataType<F>) -> Option<F>>>) -> XYReturn<'a, F> {
+    return match f {
+      None => XYReturn::Func(self.vx),
+      Some(f) => {
+        self.vx = f;
+        return XYReturn::Voronoi(self);
       }
-      _ => {
-        self = Voronoi::new(data);
-      }
-    }
-
-    match self.delaunay_return {
-      None => {
-        return None;
-      }
-      Some(delaunay_return) => match delaunay_return.delaunay.centers {
-        None => {
-          panic!("Expected to be able to access centers here.");
-        }
-        Some(centers) => {
-          let polygons = delaunay_return.polygons;
-          let mut coordinates = vec![vec![]];
-          for p in polygons {
-            let n = p.len();
-            let mut p0 = *p.last().unwrap();
-            let mut p1 = p[0];
-            for i in 0..n {
-              if p1 > p0 {
-                coordinates.push(vec![centers[p0], centers[p1]]);
-              }
-              p0 = p1;
-              p1 = p[i + 1];
-            }
-          }
-
-          return Some(DataObject::MultiLineString { coordinates });
-        }
-      },
-    }
+    };
   }
 
-  fn find(mut self, x: F, y: F, radius: Option<F>) -> Option<usize> {
-    return match self.delaunay_return {
-      None => None,
-      Some(delaunay_return) => {
-        self.found = (delaunay_return.find)(x, y, self.found);
-        match self.found {
-          Some(found) => {
-            return match radius {
-              Some(radius) => {
-                if distance(&[x, y], &self.points[found]) < radius {
-                  return Some(found);
-                } else {
-                  return None;
-                }
-              }
-              None => None,
-            };
-          }
-          None => {
-            return None;
-          }
-        }
+  fn y(mut self, f: Option<Box<dyn Fn(DataType<F>) -> Option<F>>>) -> XYReturn<'a, F> {
+    return match f {
+      None => XYReturn::Func(self.vy),
+      Some(f) => {
+        self.vy = f;
+        return XYReturn::Voronoi(self);
       }
     };
   }
@@ -448,6 +402,72 @@ where
     }
   }
 
+  fn cell_mesh(mut self, data: DataType<F>) -> Option<DataObject<F>> {
+    match data {
+      DataType::Blank => {
+        // No op
+      }
+      _ => {
+        self = Voronoi::new(data);
+      }
+    }
+
+    match self.delaunay_return {
+      None => {
+        return None;
+      }
+      Some(delaunay_return) => match delaunay_return.delaunay.centers {
+        None => {
+          panic!("Expected to be able to access centers here.");
+        }
+        Some(centers) => {
+          let polygons = delaunay_return.polygons;
+          let mut coordinates = vec![vec![]];
+          for p in polygons {
+            let n = p.len();
+            let mut p0 = *p.last().unwrap();
+            let mut p1 = p[0];
+            for i in 0..n {
+              if p1 > p0 {
+                coordinates.push(vec![centers[p0], centers[p1]]);
+              }
+              p0 = p1;
+              p1 = p[i + 1];
+            }
+          }
+
+          return Some(DataObject::MultiLineString { coordinates });
+        }
+      },
+    }
+  }
+
+  fn find(mut self, x: F, y: F, radius: Option<F>) -> Option<usize> {
+    return match self.delaunay_return {
+      None => None,
+      Some(delaunay_return) => {
+        self.found = (delaunay_return.find)(x, y, self.found);
+        match self.found {
+          Some(found) => {
+            return match radius {
+              Some(radius) => {
+                if distance(&[x, y], &self.points[found]) < radius {
+                  return Some(found);
+                } else {
+                  return None;
+                }
+              }
+              None => None,
+            };
+          }
+          None => {
+            return None;
+          }
+        }
+      }
+    };
+  }
+
   fn hull(mut self, data: DataType<F>) -> Option<DataObject<F>> {
     match data {
       DataType::Blank => {
@@ -485,23 +505,4 @@ where
     }
   }
 
-  fn x(mut self, f: Option<Box<dyn Fn(DataType<F>) -> Option<F>>>) -> XYReturn<'a, F> {
-    return match f {
-      None => XYReturn::Func(self.vx),
-      Some(f) => {
-        self.vx = f;
-        return XYReturn::Voronoi(self);
-      }
-    };
-  }
-
-  fn y(mut self, f: Option<Box<dyn Fn(DataType<F>) -> Option<F>>>) -> XYReturn<'a, F> {
-    return match f {
-      None => XYReturn::Func(self.vy),
-      Some(f) => {
-        self.vy = f;
-        return XYReturn::Voronoi(self);
-      }
-    };
-  }
 }
