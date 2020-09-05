@@ -28,10 +28,10 @@ mod voronoi_test {
     let data = DataType::Object(d_obj);
     match Voronoi::new(data).polygons(DataType::Blank) {
       None => {
-        assert!(false, "Must return a DataObject");
+        assert!(false, "Must return a DataObject.");
       }
       Some(DataObject::FeatureCollection { features }) => {
-        println!("found a Features Collection");
+        println!("Found a Features Collection.");
         let g = &features[0].geometry[0];
         match g {
           FeatureGeometry::Polygon { coordinates } => {
@@ -41,7 +41,7 @@ mod voronoi_test {
             assert!((u[1] - v[1]).abs() < 1e-6f64);
           }
           _ => {
-            assert!(false, "Expected a polygon object");
+            assert!(false, "Expected a polygon object.");
           }
         }
       }
