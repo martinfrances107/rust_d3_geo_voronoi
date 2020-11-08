@@ -26,7 +26,7 @@ pub fn delaunay_from(points: Rc<Vec<Point>>) -> Option<Delaunay> {
 
     let mut projection = StereographicRaw::gen_projection_mutator();
     projection.translate(Some(&Point { x: 0f64, y: 0f64 }));
-    projection.scale(Some(&0f64));
+    projection.scale(Some(&1f64));
     let angles2: Point = r.invert(&Point { x: 180f64, y: 0f64 });
     let angles: [f64; 3] = [angles2.x, angles2.y, 0f64];
     projection.rotate(Some(angles));
