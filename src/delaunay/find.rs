@@ -2,13 +2,11 @@ use std::collections::HashMap;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use num_traits::Float;
+use delaunator::Point;
 
 use rust_d3_geo::cartesian::cartesian;
 
-fn distance2<F>(a: [F; 3], b: [F; 3]) -> F
-where
-  F: Float,
+fn distance2(a: [f64; 3], b: [f64; 3]) -> f64
 {
   let x = a[0] - b[0];
   let y = a[1] - b[1];
@@ -16,22 +14,20 @@ where
   return x * x + y * y + z * z;
 }
 
-pub fn find<'a, F>(
+pub fn find<'a>(
   neighbors: Rc<RefCell<HashMap<usize, Vec<usize>>>>,
-  points: Rc<Vec<[F; 2]>>,
-) -> Box<dyn Fn(F, F, Option<usize>) -> Option<usize> + 'a>
-where
-  F: Float + 'static,
+  points: Rc<Vec<Point>>,
+) -> Box<dyn Fn(f64, f64, Option<usize>) -> Option<usize> + 'a>
 {
   let points = points.clone();
-  return Box::new(move |x: F, y: F, next_p: Option<usize>| -> Option<usize> {
+  return Box::new(move |x: f64, y: f64, next_p: Option<usize>| -> Option<usize> {
     let next_or_none = match next_p {
       Some(n) => Some(n),
       None => Some(0usize),
     };
-    let mut dist: F;
+    let mut dist: f64;
     let mut found = next_or_none;
-    let xyz = cartesian(&[x, y]);
+    let xyz = cartesian(&Point{x, y});
     'outer: loop {
       let cell = next_or_none.unwrap();
       let mut next_or_no = None;

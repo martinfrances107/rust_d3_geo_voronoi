@@ -1,18 +1,16 @@
 use std::collections::HashMap;
 
-use num_traits::Float;
+use delaunator::Point;
 
 use super::excess::excess;
 
-pub fn hull<F>(triangles: &Vec<Vec<usize>>, points: &Vec<[F; 2]>) -> Vec<usize>
-where
-  F: Float,
+pub fn hull(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<usize>
 {
   let mut h_hull: HashMap<String, bool> = HashMap::new();
   let mut hull = Vec::new();
 
   for tri in triangles {
-    let ex_in: Vec<[F; 2]> = tri
+    let ex_in: Vec<Point> = tri
       .iter()
       .map(|i: &usize| {
         let index;
@@ -21,11 +19,11 @@ where
         } else {
           index = *i;
         };
-        return points[index];
+        return points[index].clone();
       })
       .collect();
 
-    if excess(&ex_in) < F::zero() {
+    if excess(&ex_in) < 0f64 {
       return Vec::new();
     }
 

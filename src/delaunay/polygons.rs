@@ -1,7 +1,6 @@
 use std::rc::Rc;
 
-use num_traits::cast::FromPrimitive;
-use num_traits::Float;
+use delaunator::Point;
 
 use rust_d3_geo::cartesian::cartesian;
 use rust_d3_geo::cartesian::cartesian_add;
@@ -11,30 +10,28 @@ use rust_d3_geo::cartesian::spherical;
 
 use super::o_midpoint::o_midpoint;
 
-pub fn polygons<'a, F>(
-  circumcenter: Vec<[F; 2]>,
+pub fn polygons<'a>(
+  circumcenter: Vec<Point>,
   triangles: &Vec<Vec<usize>>,
-  points: &'a Vec<[F; 2]>,
-) -> (Vec<Vec<usize>>, Vec<[F; 2]>)
-where
-  F: Float + FromPrimitive,
+  points: &'a Vec<Point>,
+) -> (Vec<Vec<usize>>, Vec<Point>)
 {
   let mut polygons: Vec<Vec<usize>> = Vec::new();
   let mut centers = circumcenter;
 
-  let supplement = Rc::new(|point: &[F; 2]| -> usize {
+  let supplement = Rc::new(|point: &Point| -> usize {
     let mut f: Option<usize> = None;
 
     let centers_slice = &centers[triangles.len()..centers.len()];
     centers_slice.iter().enumerate().map(|(i, p)| {
-      if p[0] == point[0] && p[1] == point[1] {
+      if p.x == point.x && p.y == point.y {
         f = Some(i + triangles.len());
       };
     });
 
     if f.is_none() {
       f = Some(centers.len());
-      centers.push(*point);
+      centers.push((*point).clone());
     }
     match f {
       Some(f) => {

@@ -1,18 +1,16 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use num_traits::Float;
+use delaunator::Point;
 use rust_d3_array::extent::extent;
 
-pub fn urquhart<F>(
+pub fn urquhart(
   edges: Rc<Vec<[usize; 2]>>,
   triangles: Rc<Vec<Vec<usize>>>,
-) -> Box<dyn Fn(&Vec<F>) -> Vec<bool>>
-where
-  F: Float,
+) -> Box<dyn Fn(&Vec<f64>) -> Vec<bool>>
 {
-  return Box::new(move |distances: &Vec<F>| {
-    let mut h_lengths: HashMap<String, F> = HashMap::new();
+  return Box::new(move |distances: &Vec<f64>| {
+    let mut h_lengths: HashMap<String, f64> = HashMap::new();
     let mut h_urquhart: HashMap<String, bool> = HashMap::new();
 
     for (i, edge) in edges.iter().enumerate() {
@@ -23,7 +21,7 @@ where
     }
 
     triangles.iter().for_each(|tri| {
-      let mut l = F::zero();
+      let mut l = 0f64;
       let mut remove: Option<String> = None;
       for j in 0..3 {
         // extent is used to order the two tri values  smallest to largest.

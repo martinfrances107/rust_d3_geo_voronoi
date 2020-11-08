@@ -1,5 +1,5 @@
-use num_traits::cast::FromPrimitive;
-use num_traits::Float;
+
+use delaunator::Point;
 
 use rust_d3_geo::cartesian::cartesian;
 use rust_d3_geo::cartesian::cartesian_add;
@@ -9,9 +9,7 @@ use rust_d3_geo::cartesian::cartesian_normalize;
 use rust_d3_geo::cartesian::cartesian_scale;
 use rust_d3_geo::cartesian::spherical;
 
-pub fn o_midpoint<F>(a: &[F; 2], b: &[F; 2], c: &[F; 2]) -> [F; 2]
-where
-  F: Float + FromPrimitive,
+pub fn o_midpoint(a: &Point, b: &Point, c: &Point) -> Point
 {
   let a = &cartesian(a);
   let b = &cartesian(b);

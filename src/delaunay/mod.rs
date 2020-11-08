@@ -15,10 +15,11 @@ use std::cell::RefCell;
 /// Delaunay triangulation
 use std::collections::HashMap;
 use std::rc::Rc;
+use std::fmt;
 
-use num_traits::cast::FromPrimitive;
-use num_traits::Float;
-use num_traits::FloatConst;
+
+use delaunator::Point;
+
 
 use rust_d3_geo::projection::projection_mutator::ProjectionMutator;
 
@@ -33,15 +34,13 @@ use polygons::polygons;
 use triangles::triangles;
 use urquhart::urquhart;
 
-#[derive(Default)]
-pub struct Delaunay<F>
-where
-  F: Float + FloatConst + FromPrimitive,
+// #[derive(Default, Debug)]
+pub struct Delaunay
 {
   /// The coordinates of the points as an array [x0, y0, x1, y1, ...].
   /// TyPIcally, this is a Float64Array, however you can use any array-like type in the constructor.
   ///
-  pub points: Vec<F>,
+  pub points: Vec<f64>,
 
   ///
   /// The halfedge indices as an Int32Array [j0, j1, ...].
@@ -61,7 +60,7 @@ where
   ///
   pub triangles: Vec<usize>,
 
-  pub centers: Option<Vec<[F; 2]>>,
+  pub centers: Option<Vec<Point>>,
 
   /// The incoming halfedge indexes as a Int32Array [e0, e1, e2, ...].
   /// For each point i, inedges[i] is the halfedge index e of an incoming halfedge.
@@ -74,32 +73,35 @@ where
   ///
   outedges: Vec<i32>,
 
-  pub projection: Option<ProjectionMutator<F>>,
+  pub projection: Option<ProjectionMutator>,
 }
 
-pub struct DelaunayReturn<'a, F>
-where
-  F: Float + FloatConst + FromPrimitive,
+// #[derive(Clone)]
+pub struct DelaunayReturn<'a>
 {
-  pub delaunay: Delaunay<F>,
+  pub delaunay: Delaunay,
   // The edges and triangles properties need RC because the values are close over in the urquhart function.
   pub edges: Rc<Vec<[usize; 2]>>,
   pub triangles: Rc<Vec<Vec<usize>>>,
-  pub centers: Vec<[F; 2]>,
+  pub centers: Vec<Point>,
   // neighbours:  passes to Voronoi::polygon() where it is consumed.
   pub neighbors: Rc<RefCell<HashMap<usize, Vec<usize>>>>,
   pub polygons: Vec<Vec<usize>>,
   pub mesh: Vec<[usize; 2]>,
   pub hull: Vec<usize>,
-  pub urquhart: Box<dyn Fn(&Vec<F>) -> Vec<bool> + 'a>,
-  pub find: Box<dyn Fn(F, F, Option<usize>) -> Option<usize> + 'a>,
+  pub urquhart: Box<dyn Fn(&Vec<f64>) -> Vec<bool> + 'a>,
+  pub find: Box<dyn Fn(f64, f64, Option<usize>) -> Option<usize> + 'a>,
 }
 
-impl<'a, F> Delaunay<F>
-where
-  F: Float + FloatConst + FromPrimitive + 'static,
+impl fmt::Display for DelaunayReturn<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "({:?}, {:?})", self.centers, self.hull)
+    }
+}
+
+impl<'a> Delaunay
 {
-  pub fn delaunay(points: Rc<Vec<[F; 2]>>) -> Option<DelaunayReturn<'a, F>> {
+  pub fn delaunay(points: Rc<Vec<Point>>) -> Option<DelaunayReturn<'a>> {
     match delaunay_from(points.clone()) {
       Some(delaunay) => {
         // RC is needed here as tri and e are both closed over in the urquhart function an is part of the Delaunay return.

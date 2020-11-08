@@ -1,11 +1,9 @@
-use num_traits::Float;
+use delaunator::Point;
 
 use super::excess::excess;
 use std::collections::HashMap;
 
-pub fn edges<F>(triangles: &Vec<Vec<usize>>, point: &Vec<[F; 2]>) -> Vec<[usize; 2]>
-where
-  F: Float,
+pub fn edges(triangles: &Vec<Vec<usize>>, point: &Vec<Point>) -> Vec<[usize; 2]>
 {
   if point.len() == 2usize {
     return vec![[0usize, 1usize]];
@@ -17,9 +15,9 @@ where
       return Vec::new();
     }
 
-    let ex_in = vec![point[0], point[1], point[2]];
+    let ex_in = vec![point[0].clone(), point[1].clone(), point[2].clone()];
 
-    if excess(&ex_in) < F::zero() {
+    if excess(&ex_in) < 0f64 {
       return Vec::new();
     }
 

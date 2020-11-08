@@ -1,9 +1,7 @@
 use std::cmp;
 use std::rc::Rc;
 
-use num_traits::cast::FromPrimitive;
-use num_traits::Float;
-use num_traits::FloatConst;
+use delaunator::Point;
 
 use rust_d3_geo::projection::projection::Projection;
 use rust_d3_geo::projection::stereographic::StereographicRaw;
@@ -12,9 +10,7 @@ use rust_d3_geo::Transform;
 
 use super::Delaunay;
 
-pub fn delaunay_from<F>(points: Rc<Vec<[F; 2]>>) -> Option<Delaunay<F>>
-where
-  F: Float + FloatConst + FromPrimitive + 'static,
+pub fn delaunay_from(points: Rc<Vec<Point>>) -> Option<Delaunay>
 {
   if points.len() < 2 {
     return None;
@@ -25,28 +21,28 @@ where
   // which the x or y component is not inifinty.
   let pivot: usize = points
     .iter()
-    .position(|p| (p[0] + p[1]).is_finite())
+    .position(|p| (p.x + p.y).is_finite())
     .unwrap();
 
   // TODO must fix this
   // let r = Rotation::new(points[pivot][0], points[pivot][1], points[pivot][2]);
-  let r = Rotation::new(points[pivot][0], points[pivot][1],F::zero());
+  let r = Rotation::new(points[pivot].x, points[pivot].y,0f64);
 
   let mut projection = StereographicRaw::gen_projection_mutator();
-  projection.translate(Some(&[F::zero(), F::zero()]));
-  projection.scale(Some(&F::one()));
-  let angles2: [F; 2] = r.invert(&[F::from(180f64).unwrap(), F::from(0f64).unwrap()]);
-  let angles: [F; 3] = [angles2[0], angles2[1], F::zero()];
+  projection.translate(Some(&Point{x:0f64, y:0f64}));
+  projection.scale(Some(&0f64));
+  let angles2: Point = r.invert(&Point{x:180f64, y:0f64});
+  let angles: [f64; 3] = [angles2.x, angles2.y, 0f64];
   projection.rotate(Some(angles));
 
-  let mut points: Vec<[F; 2]> = points.iter().map(|p| projection.transform(&p)).collect();
+  let mut points: Vec<Point> = points.iter().map(|p| projection.transform(&p)).collect();
 
   let mut zeros = Vec::new();
-  let mut max2 = F::one();
+  let mut max2 = 1f64;
   // for (i, elem) in points.iter().enumerate() {
   for i in 0..points.len() {
-    let m = points[i][0] * points[i][0] + points[i][1] * points[i][1];
-    if !m.is_finite() || m > F::from(1e32f64).unwrap() {
+    let m = points[i].x * points[i].x + points[i].y * points[i].y;
+    if !m.is_finite() || m > 1e32f64 {
       zeros.push(i);
     } else {
       if m > max2 {
@@ -54,19 +50,19 @@ where
       }
     }
   }
-  let far = F::from(1e6).unwrap() * (max2).sqrt();
+  let far = 1e6 * (max2).sqrt();
 
-  zeros.iter().for_each(|i| points[*i] = [far, F::zero()]);
+  zeros.iter().for_each(|i| points[*i] = Point{x:far, y:0f64});
 
   // Add infinite horizon points
-  points.push([F::zero(), far]);
-  points.push([-far, F::zero()]);
-  points.push([F::zero(), -far]);
+  points.push(Point{x:0f64, y:far});
+  points.push(Point{x:-far, y:0f64});
+  points.push(Point{x:0f64, y:-far});
 
   let points = Rc::new(points);
 
   // const delaunay = Delaunay.from(points);
-  let delaunay: Option<Delaunay<F>> = delaunay_from(points.clone());
+  let delaunay: Option<Delaunay> = delaunay_from(points.clone());
 
   match delaunay {
     Some(mut delaunay) => {

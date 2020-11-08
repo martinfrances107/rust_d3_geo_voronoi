@@ -1,32 +1,20 @@
 mod voronoi_test {
   extern crate pretty_assertions;
   use rust_d3_geo::data_object::DataObject;
-  use rust_d3_geo::data_object::DataType;
   use rust_d3_geo::data_object::FeatureGeometry;
   use rust_d3_geo_voronoi::voronoi::Voronoi;
+  use delaunator::Point;
 
   #[cfg(test)]
   use pretty_assertions::assert_eq;
 
-  // var sites = [[0,0], [10,0]];
-
-  // tape("geoVoronoi.polygons(sites) returns polygons.", function(test) {
-  //   var u = geoVoronoi.geoVoronoi(sites).polygons()
-  //             .features[0].geometry.coordinates[0][0],
-  //       v = [ -175, -4.981069 ];
-  //   test.ok( (Math.abs(u[0]-v[0]) < 1e-6) && (Math.abs(u[1]-v[1]) < 1e-6) );
-  //   test.end();
-  // });
-
   #[test]
   pub fn voronoi_polygons_returns_polygons() {
     println!("geoVoronoi.polygons(sites) returns polygons.");
-    let sites: Vec<[f64; 2]> = vec![[0f64, 0f64], [10f64, 0f64]];
-    let d_obj = DataObject::Polygon {
-      coordinates: vec![sites],
-    };
-    let data = DataType::Object(d_obj);
-    match Voronoi::new(data).polygons(DataType::Blank) {
+    let d_obj = DataObject::Vec(vec![Point{x:0f64, y:0f64}, Point{x:10f64, y:0f64}]);
+
+    let v = Voronoi::new(d_obj);
+    match v.polygons(DataObject::Blank) {
       None => {
         assert!(false, "Must return a DataObject.");
       }
@@ -35,10 +23,10 @@ mod voronoi_test {
         let g = &features[0].geometry[0];
         match g {
           FeatureGeometry::Polygon { coordinates } => {
-            let u = coordinates[0][0];
-            let v = [-175f64, -4.981069f64];
-            assert!((u[0] - v[0]).abs() < 1e-6f64);
-            assert!((u[1] - v[1]).abs() < 1e-6f64);
+            let u = coordinates[0][0].clone();
+            let v = Point{x:-175f64, y:-4.981069f64};
+            assert!((u.x - v.x).abs() < 1e-6f64);
+            assert!((u.y - v.y).abs() < 1e-6f64);
           }
           _ => {
             assert!(false, "Expected a polygon object.");
