@@ -1,4 +1,3 @@
-
 use delaunator::Point;
 
 use rust_d3_geo::cartesian::cartesian;
@@ -9,14 +8,13 @@ use rust_d3_geo::cartesian::cartesian_normalize;
 use rust_d3_geo::cartesian::cartesian_scale;
 use rust_d3_geo::cartesian::spherical;
 
-pub fn o_midpoint(a: &Point, b: &Point, c: &Point) -> Point
-{
-  let a = &cartesian(a);
-  let b = &cartesian(b);
-  let c = &cartesian(c);
-  let s = (cartesian_dot(&cartesian_cross(b, a), c)).signum();
+pub fn o_midpoint(a: &Point, b: &Point, c: &Point) -> Point {
+    let a = &cartesian(a);
+    let b = &cartesian(b);
+    let c = &cartesian(c);
+    let s = (cartesian_dot(&cartesian_cross(b, a), c)).signum();
 
-  let norm = cartesian_normalize(&mut cartesian_add(*a, *b));
-  let signed_norm = cartesian_scale(&norm, s);
-  return spherical(&signed_norm);
+    let norm = cartesian_normalize(&mut cartesian_add(*a, *b));
+    let signed_norm = cartesian_scale(&norm, s);
+    return spherical(&signed_norm);
 }
