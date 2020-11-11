@@ -11,13 +11,13 @@ mod voronoi_test {
     #[test]
     pub fn voronoi_polygons_returns_polygons() {
         println!("geoVoronoi.polygons(sites) returns polygons.");
-        let d_obj = DataObject::Vec(vec![
+        let sites = DataObject::Vec(vec![
             Point { x: 0f64, y: 0f64 },
             Point { x: 10f64, y: 0f64 },
+            Point { x: 0f64, y: 10f64 },
         ]);
 
-        let v = Voronoi::new(d_obj);
-        println!("about to polygon");
+        let v = Voronoi::new(sites);
         match v.polygons(DataObject::Blank) {
             None => {
                 assert!(false, "Must return a DataObject.");
@@ -46,13 +46,26 @@ mod voronoi_test {
         }
     }
 
-    // tape("geoVoronoi.polygons(sites) tolerates NaN.", function(test) {
-    //   //var u = geoVoronoi.geoVoronoi().polygons(sites)[0][0], v = [ 5, 4.981069 ];
-    //   //test.ok( (Math.abs(u[0]-v[0]) < 1e-6) && (Math.abs(u[1]-v[1]) < 1e-6) );
-    //   const sites = [[0, 0], [2, 1], [NaN, -1], [4, NaN], [5,10]];
-    //   var u = geoVoronoi.geoVoronoi(sites).polygons();
-    //   test.end();
-    // });
+    #[test]
+    fn test_polygon_tollerates_nan() {
+        println!("geoVoronoi.polygons(sites) tolerates NaN.");
+        //var u = geoVoronoi.geoVoronoi().polygons(sites)[0][0], v = [ 5, 4.981069 ];
+        //test.ok( (Math.abs(u[0]-v[0]) < 1e-6) && (Math.abs(u[1]-v[1]) < 1e-6) );
+        let sites = DataObject::Vec(vec![
+            Point { x: 0f64, y: 0f64 },
+            Point { x: 2f64, y: 1f64 },
+            Point {
+                x: f64::NAN,
+                y: -1f64,
+            },
+            Point {
+                x: 4f64,
+                y: f64::NAN,
+            },
+            Point { x: 5f64, y: 10f64 },
+        ]);
+        let u = Voronoi::new(sites).polygons(DataObject::Blank);
+    }
 
     // #[test]
     // pub fn voronoi_polygons_returns_polygons_tollerates_nan() {

@@ -1,6 +1,5 @@
 use delaunator::Point;
-
-use super::Delaunay;
+use rust_d3_delaunay::delaunay::Delaunay;
 
 pub fn triangles(delaunay: &Delaunay) -> Vec<Vec<usize>> {
     let Delaunay { triangles, .. } = delaunay;

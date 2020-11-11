@@ -12,8 +12,8 @@ use rust_d3_geo::data_object::FeaturesStruct;
 use rust_d3_geo::distance::distance;
 
 use crate::delaunay::excess::excess;
-use crate::delaunay::Delaunay;
-use crate::delaunay::DelaunayReturn;
+
+use super::delaunay::GeoDelaunay;
 
 /// Return type used by .x() and .y()
 enum XYReturn<'a> {
@@ -28,7 +28,7 @@ struct TriStruct {
 }
 // #[derive(Debug)]
 pub struct Voronoi<'a> {
-    delaunay_return: Option<DelaunayReturn<'a>>,
+    geo_delaunay: Option<GeoDelaunay<'a>>,
     data: DataObject,
     found: Option<usize>,
     //Points: Rc needed here as the egdes, triangles, neigbours etc all index into thts vec.
@@ -42,7 +42,7 @@ impl<'a> Default for Voronoi<'a> {
     fn default() -> Voronoi<'a> {
         return Voronoi {
             data: DataObject::Blank,
-            delaunay_return: None,
+            geo_delaunay: None,
             found: None,
             points: Rc::new(Vec::new()),
             valid: Vec::new(),
@@ -56,7 +56,7 @@ impl<'a> Voronoi<'a> {
     pub fn new(mut data: DataObject) -> Voronoi<'a> {
         let mut v: Voronoi<'a>;
 
-        let delaunay_return: Option<DelaunayReturn> = None;
+        let delaunay_return: Option<GeoDelaunay> = None;
 
         // On finding a Features Collection take the first element only, drop other elements.
         match data {
@@ -80,48 +80,14 @@ impl<'a> Voronoi<'a> {
             ..Voronoi::default()
         };
 
-        let vx = Box::new(|d: &DataObject| -> Option<f64> {
-            match d {
-                DataObject::Vec(d) => {
-                    match d.first() {
-                        Some(d) => {
-                            return Some(d.x);
-                        }
-                        None => {
-                            // Could panic here with
-                            //panic!("given a emtpy vector ");
-                            return None;
-                        }
-                    }
-                }
-                DataObject::Blank => {
-                    return None;
-                }
-                _ => {
-                    // TODO untested code slip centroid calc.
-                    // return Some(centroid(d)[0]);
-                    return None;
-                }
-            }
+        let vx = Box::new(|d: &Point| -> Option<f64> {
+            //TODO how to handle centroid.
+            return Some(d.x);
         });
 
-        let vy = Box::new(|d: &DataObject| -> Option<f64> {
-            match d {
-                DataObject::Vec(d) => {
-                    if d.len() > 1 {
-                        return Some(d[0].y);
-                    }
-                    return None;
-                }
-                DataObject::Blank => {
-                    return None;
-                }
-                _ => {
-                    // TODO untested code slip centroid calc.
-                    // return Some(centroid(d)[1]);
-                    return None;
-                }
-            }
+        let vy = Box::new(|d: &Point| -> Option<f64> {
+            // TODO how to handle centroid
+            return Some(d.y);
         });
 
         match v.data {
@@ -129,7 +95,7 @@ impl<'a> Voronoi<'a> {
                 let temp: Vec<(Option<f64>, Option<f64>, Point)> = data
                     .iter()
                     .map(|d| {
-                        return (vx(&v.data), vy(&v.data), d.clone());
+                        return (vx(&d), vy(&d), d.clone());
                     })
                     .filter(|d| match d {
                         (Some(d0), Some(d1), _) => {
@@ -154,7 +120,8 @@ impl<'a> Voronoi<'a> {
                     .collect();
                 v.points = Rc::new(points);
                 v.valid = temp.iter().map(|d| (d.2).clone()).collect();
-                v.delaunay_return = Delaunay::delaunay(v.points.clone());
+                let pclone = v.points.clone();
+                v.geo_delaunay = GeoDelaunay::delaunay(pclone.clone());
             }
             _ => {
                 panic!("Must implement Voronoi::new for other DataObject types");
@@ -170,7 +137,7 @@ impl<'a> Voronoi<'a> {
         //   ..v
         // };
 
-        // v.delaunay_return = delaunay_return;
+        // v.geo_delaunay = delaunay_return;
         // v.found = None;
         // v.vx = vx;
         // v.vy = vy;
@@ -224,13 +191,14 @@ impl<'a> Voronoi<'a> {
             }
         }
 
-        match self.delaunay_return {
+        match self.geo_delaunay {
             None => {
                 panic!("the delaunay return is None");
                 return None;
             }
             Some(dr) => {
                 let features: Vec<FeaturesStruct> = Vec::new();
+                println!("dr.plygons.len: {:?}", dr.polygons.len());
                 for (i, ref poly) in dr.polygons.iter().enumerate() {
                     let first = poly[0].clone();
                     let mut coordinates_i: Vec<usize> = poly.to_vec();
@@ -274,7 +242,7 @@ impl<'a> Voronoi<'a> {
             }
         }
 
-        match self.delaunay_return {
+        match self.geo_delaunay {
             None => {
                 return None;
             }
@@ -323,7 +291,7 @@ impl<'a> Voronoi<'a> {
             }
         }
 
-        return match &self.delaunay_return {
+        return match &self.geo_delaunay {
             None => None,
             Some(delaunay_return) => {
                 let points: &Vec<Point> = self.points.borrow();
@@ -370,7 +338,7 @@ impl<'a> Voronoi<'a> {
             }
         }
 
-        match &self.delaunay_return {
+        match &self.geo_delaunay {
             None => {
                 return None;
             }
@@ -395,38 +363,28 @@ impl<'a> Voronoi<'a> {
             }
         }
 
-        match self.delaunay_return {
-            None => {
-                return None;
+        let delaunay = self.geo_delaunay?;
+        let polygons = delaunay.polygons;
+        let mut coordinates = vec![vec![]];
+        let centers = delaunay.centers;
+        for p in polygons {
+            let n = p.len();
+            let mut p0 = *p.last().unwrap();
+            let mut p1 = p[0];
+            for i in 0..n {
+                if p1 > p0 {
+                    coordinates.push(vec![centers[p0].clone(), centers[p1].clone()]);
+                }
+                p0 = p1;
+                p1 = p[i + 1];
             }
-            Some(delaunay_return) => match delaunay_return.delaunay.centers {
-                None => {
-                    panic!("Expected to be able to access centers here.");
-                }
-                Some(centers) => {
-                    let polygons = delaunay_return.polygons;
-                    let mut coordinates = vec![vec![]];
-                    for p in polygons {
-                        let n = p.len();
-                        let mut p0 = *p.last().unwrap();
-                        let mut p1 = p[0];
-                        for i in 0..n {
-                            if p1 > p0 {
-                                coordinates.push(vec![centers[p0].clone(), centers[p1].clone()]);
-                            }
-                            p0 = p1;
-                            p1 = p[i + 1];
-                        }
-                    }
-
-                    return Some(DataObject::MultiLineString { coordinates });
-                }
-            },
         }
+
+        return Some(DataObject::MultiLineString { coordinates });
     }
 
     fn find(mut self, x: f64, y: f64, radius: Option<f64>) -> Option<usize> {
-        return match self.delaunay_return {
+        return match self.geo_delaunay {
             None => None,
             Some(delaunay_return) => {
                 self.found = (delaunay_return.find)(x, y, self.found);
@@ -461,7 +419,7 @@ impl<'a> Voronoi<'a> {
             }
         }
 
-        match self.delaunay_return {
+        match self.geo_delaunay {
             None => {
                 return None;
             }

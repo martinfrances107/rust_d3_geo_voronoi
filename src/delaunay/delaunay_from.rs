@@ -2,13 +2,14 @@ use std::cmp;
 use std::rc::Rc;
 
 use delaunator::Point;
+use rust_d3_delaunay::delaunay::Delaunay;
 
 use rust_d3_geo::projection::projection::Projection;
 use rust_d3_geo::projection::stereographic::StereographicRaw;
 use rust_d3_geo::rotation::rotation::Rotation;
 use rust_d3_geo::Transform;
 
-use super::Delaunay;
+use delaunator::EMPTY;
 
 pub fn delaunay_from(points: Rc<Vec<Point>>) -> Option<Delaunay> {
     if points.len() < 2 {
@@ -57,70 +58,66 @@ pub fn delaunay_from(points: Rc<Vec<Point>>) -> Option<Delaunay> {
     points.push(Point { x: -far, y: 0f64 });
     points.push(Point { x: 0f64, y: -far });
 
-    let points = Rc::new(points);
+    // let points = points;
+
+    let point_len = points.len();
 
     // const delaunay = Delaunay.from(points);
-    let delaunay: Option<Delaunay> = delaunay_from(points.clone());
+    let mut delaunay = Delaunay::new(points);
 
-    match delaunay {
-        Some(mut delaunay) => {
-            delaunay.projection = Some(projection);
+    
+    delaunay.projection = Box::new(projection);
 
-            // clean up the triangulation
-            // let  {triangles, halfedges, inedges} = delaunay;
-            // let triangles: &mut Vec<usize> = &mut delaunay.triangles;
-            // let halfedges: &mut Vec<i32> = &mut delaunay.halfedges;
-            // let mut inedges = delaunay.inedges;
+    // clean up the triangulation
+    // let  {triangles, half_edges, inedges} = delaunay;
+    // let triangles: &mut Vec<usize> = &mut delaunay.triangles;
+    // let half_edges: &mut Vec<i32> = &mut delaunay.half_edges;
+    // let mut inedges = delaunay.inedges;
 
-            // const degenerate = [];
-            let mut degenerate: Vec<usize> = Vec::new();
-            // for (let i = 0, l = halfedges.length; i < l; i++) {
-            for i in 0..delaunay.halfedges.len() {
-                if delaunay.halfedges[i] < 0 {
-                    let j = match i % 3 == 2 {
-                        true => i - 2,
-                        false => i + 1,
-                    };
-                    let k = match i % 3 == 0 {
-                        true => i + 2,
-                        false => i - 1,
-                    };
-                    let a = delaunay.halfedges[j] as usize;
-                    let b = delaunay.halfedges[k] as usize;
-                    delaunay.halfedges[a] = b as i32;
-                    delaunay.halfedges[b] = a as i32;
-                    delaunay.halfedges[j] = -1;
-                    delaunay.halfedges[k] = -1;
-                    delaunay.triangles[i] = pivot;
-                    delaunay.triangles[j] = pivot;
-                    delaunay.triangles[k] = pivot;
-                    match a % 3 == 0 {
-                        true => {
-                            delaunay.inedges[delaunay.triangles[a]] = a as i32 + 2;
-                            delaunay.inedges[delaunay.triangles[b]] = b as i32 + 2;
-                        }
-                        false => {
-                            delaunay.inedges[delaunay.triangles[a]] = a as i32 - 1;
-                            delaunay.inedges[delaunay.triangles[b]] = b as i32 - 1;
-                        }
-                    };
-                    let m = cmp::min(i, j);
-                    let m = cmp::min(m, k);
-                    degenerate.push(m);
-
-                // TODO must rework loop
-                // i += 2 - i % 3;
-                } else if delaunay.triangles[i] > points.len() - 3 - 1 {
-                    delaunay.triangles[i] = pivot;
+    // const degenerate = [];
+    let mut degenerate: Vec<usize> = Vec::new();
+    // for (let i = 0, l = half_edges.length; i < l; i++) {
+    for i in 0..delaunay.half_edges.len() {
+        if delaunay.half_edges[i] < 0 {
+            let j = match i % 3 == 2 {
+                true => i - 2,
+                false => i + 1,
+            };
+            let k = match i % 3 == 0 {
+                true => i + 2,
+                false => i - 1,
+            };
+            let a = delaunay.half_edges[j] as usize;
+            let b = delaunay.half_edges[k] as usize;
+            delaunay.half_edges[a] = b;
+            delaunay.half_edges[b] = a;
+            delaunay.half_edges[j] = EMPTY;
+            delaunay.half_edges[k] = EMPTY;
+            delaunay.triangles[i] = pivot;
+            delaunay.triangles[j] = pivot;
+            delaunay.triangles[k] = pivot;
+            match a % 3 == 0 {
+                true => {
+                    delaunay.inedges[delaunay.triangles[a]] = a + 2;
+                    delaunay.inedges[delaunay.triangles[b]] = b + 2;
                 }
-            }
+                false => {
+                    delaunay.inedges[delaunay.triangles[a]] = a - 1;
+                    delaunay.inedges[delaunay.triangles[b]] = b - 1;
+                }
+            };
+            let m = cmp::min(i, j);
+            let m = cmp::min(m, k);
+            degenerate.push(m);
 
-            // // there should always be 4 degenerate triangles
-            // // console.warn(degenerate);
-            return Some(delaunay);
-        }
-        None => {
-            return None;
+        // TODO must rework loop
+        // i += 2 - i % 3;
+        } else if delaunay.triangles[i] > point_len - 3 - 1 {
+            delaunay.triangles[i] = pivot;
         }
     }
+
+    // // there should always be 4 degenerate triangles
+    // // console.warn(degenerate);
+    return Some(delaunay);
 }
