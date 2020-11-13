@@ -90,7 +90,7 @@ pub struct GeoDelaunay<'a> {
     pub find: Box<dyn Fn(f64, f64, Option<usize>) -> Option<usize> + 'a>,
 }
 
-impl <'a> GeoDelaunay<'a> {
+impl<'a> GeoDelaunay<'a> {
     pub fn delaunay(points: Rc<Vec<Point>>) -> Option<GeoDelaunay<'a>> {
         let p = points.clone();
         match delaunay_from(p) {
@@ -98,7 +98,7 @@ impl <'a> GeoDelaunay<'a> {
                 // RC is needed here as tri and e are both closed over in the urquhart function an is part of the Delaunay return.
                 let tri = Rc::new(triangles(&delaunay));
                 let e = Rc::new(edges(&tri, &points));
-                let polys;
+                let polys: Vec<Vec<usize>>;
                 let centers;
                 {
                     let pr = polygons(circumcenters(&tri, &points), &tri, &points);
@@ -152,4 +152,3 @@ impl <'a> GeoDelaunay<'a> {
         }
     }
 }
-

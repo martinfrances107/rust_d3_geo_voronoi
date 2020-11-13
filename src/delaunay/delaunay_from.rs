@@ -65,7 +65,6 @@ pub fn delaunay_from(points: Rc<Vec<Point>>) -> Option<Delaunay> {
     // const delaunay = Delaunay.from(points);
     let mut delaunay = Delaunay::new(points);
 
-    
     delaunay.projection = Box::new(projection);
 
     // clean up the triangulation

@@ -1,6 +1,8 @@
 use std::rc::Rc;
 
 use delaunator::Point;
+use delaunator::EMPTY;
+use std::collections::HashMap;
 
 use rust_d3_geo::cartesian::cartesian;
 use rust_d3_geo::cartesian::cartesian_add;
@@ -18,29 +20,23 @@ pub fn polygons<'a>(
     let mut polygons: Vec<Vec<usize>> = Vec::new();
     let mut centers = circumcenter;
 
-    let supplement = Rc::new(|point: &Point| -> usize {
-        let mut f: Option<usize> = None;
+    let supplement = |point: &Point, c: &mut Vec<Point>| -> usize {
+        let mut f: i64 = -1;
 
-        let centers_slice = &centers[triangles.len()..centers.len()];
-        centers_slice.iter().enumerate().map(|(i, p)| {
+        // let centers_slice = (centers[triangles.len()..]);
+        c[triangles.len()..].iter().enumerate().map(|(i, p)| {
             if p.x == point.x && p.y == point.y {
-                f = Some(i + triangles.len());
+                f = (i  + triangles.len()) as i64;
             };
         });
 
-        if f.is_none() {
-            f = Some(centers.len());
-            centers.push((*point).clone());
+        if f < 0  {
+            f = c.len() as i64;
+            c.push((*point).clone());
         }
-        match f {
-            Some(f) => {
-                return f;
-            }
-            None => {
-                panic!("Suppliment did not find a value to return");
-            }
-        }
-    });
+        
+        return f as usize;
+    };
 
     if triangles.len() == 0 {
         match points.len() {
@@ -48,8 +44,9 @@ pub fn polygons<'a>(
                 return (polygons, centers);
             }
             2 => {
+                // // WARNING in the original javascript this block is never tested.
                 if points.len() == 2 {
-                    // two hemispheres.
+                    // Two hemispheres.
                     let a = cartesian(&points[0]);
                     let b = cartesian(&points[0]);
                     let m = cartesian_normalize(&cartesian_add(a, b));
@@ -57,7 +54,7 @@ pub fn polygons<'a>(
                     let d = cartesian_normalize(&cartesian_cross(&a, &b));
                     let c = cartesian_cross(&m, &d);
 
-                    let supplement_copy = supplement.clone();
+                    // let supplement_copy = supplement.clone();
                     let poly: Vec<usize> = [
                         m,
                         cartesian_cross(&m, &c),
@@ -83,23 +80,32 @@ pub fn polygons<'a>(
         }
     };
 
-    let mut polygons_tuple: Vec<Vec<(usize, usize, usize, (usize, usize, usize))>> = Vec::new();
+    let mut polygons_map: HashMap<usize, Vec<(usize, usize, usize, (usize, usize, usize))>> = HashMap::new();
     for (t, tri) in triangles.iter().enumerate() {
+
         for j in 0..3 {
             let a = tri[j];
             let b = tri[(j + 1) % 3];
             let c = tri[(j + 2) % 3];
-            // if polygons[a].is_none() {
-            //   polygons[a] = Vec::new();
-            // }
-            polygons_tuple[a].push((b, c, t, (a, b, c)));
+            let mut tuple_vec: Vec<(usize, usize, usize, (usize, usize, usize))>;
+            match polygons_map.get(&a) {
+                Some(t) => {
+                    tuple_vec = (*t).clone();
+                }
+                None => {
+                    tuple_vec = Vec::new();
+                }
+            }
+            tuple_vec.push((b, c, t, (a, b, c)));
+            polygons_map.insert(a, tuple_vec);
         }
     }
 
-    // reorder each polygon.
-    let reordered: Vec<Vec<usize>> = polygons_tuple
+    // Reorder each polygon.
+    let reordered: Vec<Vec<usize>> = polygons_map
         .iter()
-        .map(|poly| {
+        .map(|poly_ind| {
+            let poly = poly_ind.1;
             let mut p = vec![poly[0].2]; // t
             let mut k = poly[0].1; // k = c
 
@@ -133,11 +139,9 @@ pub fn polygons<'a>(
                             &points[(poly[0].3).0],
                             &centers[p[0]],
                         );
-                        // i0 = supplement(&R0);
-                        // i1 = supplement(&R1);
-                        // TODO must reolsve suppliement issues
-                        i0 = 0;
-                        i1 = 0;
+
+                        i0 = supplement(&r0, &mut centers);
+                        i1 = supplement(&r1, &mut centers);                        
                     }
                     return vec![p[0], i1, p[1], i0];
                 }
@@ -148,5 +152,5 @@ pub fn polygons<'a>(
         })
         .collect();
 
-    return (reordered, centers);
+    return ((*reordered).to_vec(), centers);
 }
