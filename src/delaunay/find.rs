@@ -4,7 +4,7 @@ use std::rc::Rc;
 
 use delaunator::Point;
 
-use rust_d3_geo::cartesian::cartesian;
+use super::cartesian::cartesian;
 
 fn distance2(a: [f64; 3], b: [f64; 3]) -> f64 {
     let x = a[0] - b[0];

@@ -1,3 +1,4 @@
+mod cartesian;
 mod circumcenters;
 pub mod delaunay_from;
 mod edges;

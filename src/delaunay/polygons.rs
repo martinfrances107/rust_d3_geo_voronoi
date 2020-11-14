@@ -4,12 +4,12 @@ use delaunator::Point;
 use delaunator::EMPTY;
 use std::collections::HashMap;
 
-use rust_d3_geo::cartesian::cartesian;
 use rust_d3_geo::cartesian::cartesian_add;
 use rust_d3_geo::cartesian::cartesian_cross;
 use rust_d3_geo::cartesian::cartesian_normalize;
 use rust_d3_geo::cartesian::spherical;
 
+use super::cartesian::cartesian;
 use super::o_midpoint::o_midpoint;
 
 pub fn polygons<'a>(
@@ -26,15 +26,15 @@ pub fn polygons<'a>(
         // let centers_slice = (centers[triangles.len()..]);
         c[triangles.len()..].iter().enumerate().map(|(i, p)| {
             if p.x == point.x && p.y == point.y {
-                f = (i  + triangles.len()) as i64;
+                f = (i + triangles.len()) as i64;
             };
         });
 
-        if f < 0  {
+        if f < 0 {
             f = c.len() as i64;
             c.push((*point).clone());
         }
-        
+
         return f as usize;
     };
 
@@ -80,9 +80,9 @@ pub fn polygons<'a>(
         }
     };
 
-    let mut polygons_map: HashMap<usize, Vec<(usize, usize, usize, (usize, usize, usize))>> = HashMap::new();
+    let mut polygons_map: HashMap<usize, Vec<(usize, usize, usize, (usize, usize, usize))>> =
+        HashMap::new();
     for (t, tri) in triangles.iter().enumerate() {
-
         for j in 0..3 {
             let a = tri[j];
             let b = tri[(j + 1) % 3];
@@ -141,7 +141,7 @@ pub fn polygons<'a>(
                         );
 
                         i0 = supplement(&r0, &mut centers);
-                        i1 = supplement(&r1, &mut centers);                        
+                        i1 = supplement(&r1, &mut centers);
                     }
                     return vec![p[0], i1, p[1], i0];
                 }

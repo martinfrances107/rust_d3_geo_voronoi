@@ -67,6 +67,37 @@ mod voronoi_test {
         let u = Voronoi::new(sites).polygons(DataObject::Blank);
     }
 
+    #[test]
+    fn test_computes_the_hull() {
+        let sites = DataObject::Vec(vec![
+            Point { x: 10f64, y: 0f64 },
+            Point { x: 10f64, y: 10f64 },
+            Point { x: 3f64, y: 5f64 },
+            Point { x: -2f64, y: 5f64 },
+            Point { x: 0f64, y: 0f64 },
+        ]);
+        let hull = Voronoi::new(DataObject::Blank).hull(sites);
+        match hull {
+            Some(DataObject::Polygon { coordinates }) => {
+                let expected_coordinates: Vec<Vec<Point>> = vec![vec![
+                    Point { x: 10f64, y: 10f64 },
+                    Point { x: 10f64, y: 0f64 },
+                    Point { x: 0f64, y: 0f64 },
+                    Point { x: -2f64, y: 5f64 },
+                    Point { x: 10f64, y: 10f64 },
+                ]];
+                assert_eq!(coordinates, expected_coordinates);
+            }
+            Some(_) => {
+                assert!(false, "Expecting a DataObject::Polygon()");
+            }
+
+            None => {
+                assert!(false, "Expecting a DataObject");
+            }
+        }
+    }
+
     // #[test]
     // pub fn voronoi_polygons_returns_polygons_tollerates_nan() {
     //   println!("geoVoronoi.polygons(sites) tolerates NaN.");
@@ -107,15 +138,6 @@ mod voronoi_test {
     //   	geoVoronoi.geoVoronoi().x(d => +d.lon).y(d => +d.lat)
     //   		(sites).points,
     //   	[ [ 10, 0 ], [ 3, 5 ], [ -2, 5 ] ]
-    //   );
-    //   test.end();
-    // });
-
-    // tape("geoVoronoi.hull() computes the hull.", function(test) {
-    //   var sites = [[10,0],[10,10],[3,5],[-2,5],[0,0]];
-    //   test.deepEqual(
-    //   	geoVoronoi.geoVoronoi().hull(sites),
-    //   	{ type: 'Polygon', coordinates: [ [ [ 10, 10 ], [ 10, 0 ], [ 0, 0 ], [ -2, 5 ], [ 10, 10 ] ] ] }
     //   );
     //   test.end();
     // });

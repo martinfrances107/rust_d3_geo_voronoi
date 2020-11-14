@@ -1,10 +1,11 @@
 use delaunator::Point;
 
-use rust_d3_geo::cartesian::cartesian;
 use rust_d3_geo::cartesian::cartesian_add;
 use rust_d3_geo::cartesian::cartesian_cross;
 use rust_d3_geo::cartesian::cartesian_normalize;
 use rust_d3_geo::cartesian::spherical;
+
+use super::cartesian::cartesian;
 
 pub fn circumcenters(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<Point> {
     return triangles
@@ -24,23 +25,3 @@ pub fn circumcenters(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<Po
         })
         .collect();
 }
-
-// function geo_circumcenters(triangles, points) {
-//   // if (!use_centroids) {
-//   return triangles.map(tri => {
-//     const c = tri.map(i => points[i]).map(cartesian),
-//       V = cartesianAdd(
-//         cartesianAdd(cross(c[1], c[0]), cross(c[2], c[1])),
-//         cross(c[0], c[2])
-//       );
-//     return spherical(normalize(V));
-//   });
-//   /*} else {
-//     return triangles.map(tri => {
-//       return d3.geoCentroid({
-//         type: "MultiPoint",
-//         coordinates: tri.map(i => points[i])
-//       });
-//     });
-//   }*/
-// }

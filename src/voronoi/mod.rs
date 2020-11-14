@@ -123,6 +123,9 @@ impl<'a> Voronoi<'a> {
                 let pclone = v.points.clone();
                 v.geo_delaunay = GeoDelaunay::delaunay(pclone.clone());
             }
+            DataObject::Blank => {
+                v = Self::default();
+            }
             _ => {
                 panic!("Must implement Voronoi::new for other DataObject types");
             }
@@ -409,7 +412,7 @@ impl<'a> Voronoi<'a> {
         };
     }
 
-    fn hull(mut self, data: DataObject) -> Option<DataObject> {
+    pub fn hull(mut self, data: DataObject) -> Option<DataObject> {
         match data {
             DataObject::Blank => {
                 // No op
@@ -421,11 +424,14 @@ impl<'a> Voronoi<'a> {
 
         match self.geo_delaunay {
             None => {
+                println!("Empty deo delaunay");
+                panic!("Empty");
                 return None;
             }
             Some(ref delaunay_return) => {
                 match delaunay_return.hull.len() {
                     0usize => {
+                        println!("hull is empty");
                         return None;
                     }
                     _ => {
