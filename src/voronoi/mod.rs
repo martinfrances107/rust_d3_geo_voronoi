@@ -190,7 +190,7 @@ impl<'a> Voronoi<'a> {
                 // No op
             }
             _ => {
-                self = Voronoi::new(data);
+                self = Self::new(data);
             }
         }
 
@@ -241,7 +241,7 @@ impl<'a> Voronoi<'a> {
                 // No op
             }
             _ => {
-                self = Voronoi::new(data);
+                self = Self::new(data);
             }
         }
 
@@ -290,7 +290,7 @@ impl<'a> Voronoi<'a> {
                 // No op
             }
             _ => {
-                self = Voronoi::new(data);
+                self = Self::new(data);
             }
         }
 
@@ -337,7 +337,7 @@ impl<'a> Voronoi<'a> {
                 // No op
             }
             _ => {
-                self = Voronoi::new(data);
+                self = Self::new(data);
             }
         }
 
@@ -362,7 +362,7 @@ impl<'a> Voronoi<'a> {
                 // No op
             }
             _ => {
-                self = Voronoi::new(data);
+                self = Self::new(data);
             }
         }
 
@@ -418,7 +418,7 @@ impl<'a> Voronoi<'a> {
                 // No op
             }
             _ => {
-                self = Voronoi::new(data);
+                self = Self::new(data);
             }
         }
 
