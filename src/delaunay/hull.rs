@@ -27,11 +27,13 @@ pub fn hull(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<usize> {
         }
 
         for i in 0usize..3usize {
-            let e = [tri[i], tri[(i + 1usize) % 3]];
+            let e = [tri[i], tri[(i + 1) % 3]];
             let code = format!("{}-{}", e[1], e[0]);
             match h_hull.get(&code) {
-                Some(_) => {
-                    h_hull.remove(&code);
+                Some(value) => {
+                    if *value {
+                        h_hull.remove(&code);
+                    }
                 }
                 None => {
                     h_hull.insert(code, true);
