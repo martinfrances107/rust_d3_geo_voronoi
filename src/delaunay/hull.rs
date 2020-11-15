@@ -23,7 +23,7 @@ pub fn hull(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<usize> {
             .collect();
 
         if excess(&ex_in) < 0f64 {
-            return Vec::new();
+            break;
         }
 
         for i in 0usize..3usize {
