@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use delaunator::Point;
+use delaunator::EMPTY;
 
 use super::excess::excess;
 
@@ -23,7 +24,7 @@ pub fn hull(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<usize> {
             .collect();
 
         if excess(&ex_in) < 0f64 {
-            break;
+            continue;
         }
 
         for i in 0usize..3usize {
@@ -33,9 +34,13 @@ pub fn hull(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<usize> {
                 Some(value) => {
                     if *value {
                         h_hull.remove(&code);
+                    } else {
+                        let code = format!("{}-{}", e[0], e[1]);
+                        h_hull.insert(code, true);
                     }
                 }
                 None => {
+                    let code = format!("{}-{}", e[0], e[1]);
                     h_hull.insert(code, true);
                 }
             }
@@ -43,13 +48,14 @@ pub fn hull(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<usize> {
     }
 
     let mut start: Option<usize> = None;
-    let mut h_index: HashMap<usize, Option<usize>> = HashMap::new();
+    let mut h_index: HashMap<usize, usize> = HashMap::new();
 
+    // TODO Unresolved. The javascript implementation enumerates the keys differently.
+    // does this make a difference?
     for key in h_hull.keys() {
-        let a_split: Vec<&str> = key.split('-').collect();
-        let e: [usize; 2] = [a_split[0].parse().unwrap(), a_split[1].parse().unwrap()];
-
-        h_index.insert(e[0], Some(e[1]));
+        let e_split: Vec<&str> = key.split('-').collect();
+        let e: [usize; 2] = [e_split[0].parse().unwrap(), e_split[1].parse().unwrap()];
+        h_index.insert(e[0], e[1]);
         start = Some(e[0]);
     }
 
@@ -58,17 +64,11 @@ pub fn hull(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<usize> {
         Some(start) => {
             let mut next = start;
             'l: loop {
-                let n: Option<usize> = h_index.get(&next).unwrap().clone();
                 hull.push(next.clone());
-                h_index.insert(next.clone(), None);
-                match n {
-                    Some(n) => {
-                        next = n;
-                    }
-                    None => {}
-                }
-
-                if next == start {
+                let n: usize = *h_index.get(&next).expect("must pull a valid element");
+                h_index.insert(next.clone(), EMPTY);
+                next = n;
+                if next == EMPTY || next == start {
                     break 'l;
                 }
             }
