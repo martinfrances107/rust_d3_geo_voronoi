@@ -1,4 +1,6 @@
 use std::collections::HashMap;
+use std::collections::HashSet;
+
 
 use delaunator::Point;
 use delaunator::EMPTY;
@@ -6,7 +8,7 @@ use delaunator::EMPTY;
 use super::excess::excess;
 
 pub fn hull(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<usize> {
-    let mut h_hull: HashMap<String, bool> = HashMap::new();
+    let mut h_hull: HashSet<String> = HashSet::new();
     let mut hull = Vec::new();
 
     for tri in triangles {
@@ -32,16 +34,11 @@ pub fn hull(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<usize> {
             let code = format!("{}-{}", e[1], e[0]);
             match h_hull.get(&code) {
                 Some(value) => {
-                    if *value {
                         h_hull.remove(&code);
-                    } else {
-                        let code = format!("{}-{}", e[0], e[1]);
-                        h_hull.insert(code, true);
-                    }
                 }
                 None => {
                     let code = format!("{}-{}", e[0], e[1]);
-                    h_hull.insert(code, true);
+                    h_hull.insert(code);
                 }
             }
         }
@@ -52,7 +49,7 @@ pub fn hull(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<usize> {
 
     // TODO Unresolved. The javascript implementation enumerates the keys differently.
     // does this make a difference?
-    for key in h_hull.keys() {
+    for key in h_hull.drain() {
         let e_split: Vec<&str> = key.split('-').collect();
         let e: [usize; 2] = [e_split[0].parse().unwrap(), e_split[1].parse().unwrap()];
         h_index.insert(e[0], e[1]);
@@ -65,15 +62,15 @@ pub fn hull(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<usize> {
             let mut next = start;
             'l: loop {
                 hull.push(next.clone());
-                let n: usize = *h_index.get(&next).expect("must pull a valid element");
-                h_index.insert(next.clone(), EMPTY);
+                let n = *h_index.get(&next).expect("must pull a valid value from h_index");
+                h_index.insert(next, EMPTY);
                 next = n;
                 if next == EMPTY || next == start {
                     break 'l;
                 }
             }
+            return hull;
         }
-    }
 
-    return hull;
+    }
 }
