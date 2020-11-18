@@ -435,14 +435,14 @@ impl<'a> Voronoi<'a> {
                         return None;
                     }
                     _ => {
-                        let mut coordinates: Vec<Point> = delaunay_return
-                            .hull
+                        let hull = &delaunay_return.hull;
+                        let mut coordinates: Vec<Point> = hull
                             .iter()
                             .map(|i| {
                                 return self.points[*i].clone();
                             })
                             .collect();
-                        coordinates.push(self.points[0].clone());
+                        coordinates.push(self.points[hull[0]].clone());
                         return Some(DataObject::Polygon {
                             coordinates: vec![coordinates],
                         });
