@@ -131,37 +131,7 @@ impl<'a> Voronoi<'a> {
             }
         }
 
-        // v = Voronoi {
-        //   delaunay_return,
-        //   found: Vec::new(),
-        //   // valid,
-        //   vx,
-        //   vy,
-        //   ..v
-        // };
-
-        // v.geo_delaunay = delaunay_return;
-        // v.found = None;
-        // v.vx = vx;
-        // v.vy = vy;
-
-        // let v = Voronoi {
-        //   data,
-        //   delaunay_return,
-        //   found: Vec::new(),
-        //   points,
-        //   valid,
-        //   vx,
-        //   vy,
-        // };
-
         return v;
-
-        // TODO break recursion here.
-        // return match v.data {
-        //   DataType::Blank => v,
-        //   _ => Voronoi::new(v.data),
-        // };
     }
 
     fn x(mut self, f: Option<Box<dyn Fn(&DataObject) -> Option<f64>>>) -> XYReturn<'a> {
@@ -196,7 +166,6 @@ impl<'a> Voronoi<'a> {
 
         match self.geo_delaunay {
             None => {
-                panic!("the delaunay return is None");
                 return None;
             }
             Some(dr) => {
@@ -424,14 +393,11 @@ impl<'a> Voronoi<'a> {
 
         match self.geo_delaunay {
             None => {
-                println!("Empty deo delaunay");
-                panic!("Empty");
                 return None;
             }
             Some(ref delaunay_return) => {
                 match delaunay_return.hull.len() {
                     0usize => {
-                        println!("hull is empty");
                         return None;
                     }
                     _ => {

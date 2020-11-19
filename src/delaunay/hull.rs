@@ -11,6 +11,7 @@ pub fn hull(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<usize> {
     let mut h_hull: HashSet<String> = HashSet::new();
     let mut hull = Vec::new();
 
+    println!("triangles {:?}", triangles);
     for tri in triangles {
         let ex_in: Vec<Point> = tri
             .iter()
@@ -69,6 +70,7 @@ pub fn hull(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<usize> {
                     break 'l;
                 }
             }
+            println!("hull {:?}", hull);
             return hull;
         }
 
