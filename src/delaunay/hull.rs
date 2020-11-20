@@ -1,13 +1,12 @@
 use std::collections::HashMap;
 use std::collections::HashSet;
 
-
 use delaunator::Point;
 use delaunator::EMPTY;
 
 use super::excess::excess;
 
-pub fn hull(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<usize> {
+pub fn hull(triangles: &Vec<Vec<usize>>, points: &[Point]) -> Vec<usize> {
     let mut h_hull: HashSet<String> = HashSet::new();
     let mut hull = Vec::new();
 
@@ -35,7 +34,7 @@ pub fn hull(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<usize> {
             let code = format!("{}-{}", e[1], e[0]);
             match h_hull.get(&code) {
                 Some(value) => {
-                        h_hull.remove(&code);
+                    h_hull.remove(&code);
                 }
                 None => {
                     let code = format!("{}-{}", e[0], e[1]);
@@ -62,8 +61,10 @@ pub fn hull(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<usize> {
         Some(start) => {
             let mut next = start;
             'l: loop {
-                hull.push(next.clone());
-                let n = *h_index.get(&next).expect("must pull a valid value from h_index");
+                hull.push(next);
+                let n = *h_index
+                    .get(&next)
+                    .expect("must pull a valid value from h_index");
                 h_index.insert(next, EMPTY);
                 next = n;
                 if next == EMPTY || next == start {
@@ -73,6 +74,5 @@ pub fn hull(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<usize> {
             println!("hull {:?}", hull);
             return hull;
         }
-
     }
 }

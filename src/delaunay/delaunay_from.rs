@@ -36,9 +36,8 @@ pub fn delaunay_from(points: Rc<Vec<Point>>) -> Option<Delaunay> {
 
     let mut zeros = Vec::new();
     let mut max2 = 1f64;
-    // for (i, elem) in points.iter().enumerate() {
-    for i in 0..points.len() {
-        let m = points[i].x * points[i].x + points[i].y * points[i].y;
+    for (i, point) in points.iter().enumerate() {
+        let m = point.x * point.x + point.y * point.y;
         if !m.is_finite() || m > 1e32f64 {
             zeros.push(i);
         } else {

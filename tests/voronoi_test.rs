@@ -64,7 +64,9 @@ mod voronoi_test {
             },
             Point { x: 5f64, y: 10f64 },
         ]);
-        let u = Voronoi::new(sites).polygons(DataObject::Blank);
+        // TODO the javascript version makes no assertions - if the test ends without expception then PASS!
+        // This should be tightened up.
+        let _u = Voronoi::new(sites).polygons(DataObject::Blank);
     }
 
     #[test]

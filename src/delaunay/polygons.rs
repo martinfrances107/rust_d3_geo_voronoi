@@ -1,13 +1,14 @@
+use std::collections::HashMap;
 use std::rc::Rc;
 
 use delaunator::Point;
 use delaunator::EMPTY;
-use std::collections::HashMap;
-
 use rust_d3_geo::cartesian::cartesian_add;
 use rust_d3_geo::cartesian::cartesian_cross;
 use rust_d3_geo::cartesian::cartesian_normalize;
 use rust_d3_geo::cartesian::spherical;
+
+use crate::math::EPSILON;
 
 use super::cartesian::cartesian;
 use super::o_midpoint::o_midpoint;
@@ -15,7 +16,7 @@ use super::o_midpoint::o_midpoint;
 pub fn polygons<'a>(
     circumcenter: Vec<Point>,
     triangles: &Vec<Vec<usize>>,
-    points: &'a Vec<Point>,
+    points: &'a [Point],
 ) -> (Vec<Vec<usize>>, Vec<Point>) {
     let mut polygons: Vec<Vec<usize>> = Vec::new();
     let mut centers = circumcenter;
@@ -25,7 +26,7 @@ pub fn polygons<'a>(
 
         // let centers_slice = (centers[triangles.len()..]);
         c[triangles.len()..].iter().enumerate().map(|(i, p)| {
-            if p.x == point.x && p.y == point.y {
+            if (p.x - point.x).abs() < EPSILON && (p.y - point.y) < EPSILON {
                 f = (i + triangles.len()) as i64;
             };
         });
@@ -38,7 +39,7 @@ pub fn polygons<'a>(
         return f as usize;
     };
 
-    if triangles.len() == 0 {
+    if triangles.is_empty() {
         match points.len() {
             0 | 1 => {
                 return (polygons, centers);
@@ -111,10 +112,10 @@ pub fn polygons<'a>(
 
             for _i in 0..poly.len() {
                 // look for b = k
-                for j in 0..poly.len() {
-                    if poly[j].0 == k {
-                        k = poly[j].1;
-                        p.push(poly[j].2);
+                for pj in poly {
+                    if pj.0 == k {
+                        k = pj.1;
+                        p.push(pj.2);
                         break;
                     }
                 }

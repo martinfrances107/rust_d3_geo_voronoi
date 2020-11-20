@@ -17,7 +17,7 @@ pub fn find<'a>(
     neighbors: Rc<RefCell<HashMap<usize, Vec<usize>>>>,
     points: Rc<Vec<Point>>,
 ) -> Box<dyn Fn(f64, f64, Option<usize>) -> Option<usize> + 'a> {
-    let points = points.clone();
+    let points = points;
     return Box::new(
         move |x: f64, y: f64, next_p: Option<usize>| -> Option<usize> {
             let next_or_none = match next_p {

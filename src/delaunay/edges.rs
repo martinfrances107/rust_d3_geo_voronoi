@@ -3,7 +3,7 @@ use delaunator::Point;
 use super::excess::excess;
 use std::collections::HashMap;
 
-pub fn edges(triangles: &Vec<Vec<usize>>, point: &Vec<Point>) -> Vec<[usize; 2]> {
+pub fn edges(triangles: &Vec<Vec<usize>>, point: &[Point]) -> Vec<[usize; 2]> {
     if point.len() == 2usize {
         return vec![[0usize, 1usize]];
     }

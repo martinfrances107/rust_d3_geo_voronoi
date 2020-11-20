@@ -121,7 +121,7 @@ impl<'a> Voronoi<'a> {
                 v.points = Rc::new(points);
                 v.valid = temp.iter().map(|d| (d.2).clone()).collect();
                 let pclone = v.points.clone();
-                v.geo_delaunay = GeoDelaunay::delaunay(pclone.clone());
+                v.geo_delaunay = GeoDelaunay::delaunay(pclone);
             }
             DataObject::Blank => {
                 v = Self::default();
@@ -172,7 +172,7 @@ impl<'a> Voronoi<'a> {
                 let features: Vec<FeaturesStruct> = Vec::new();
                 println!("dr.plygons.len: {:?}", dr.polygons.len());
                 for (i, ref poly) in dr.polygons.iter().enumerate() {
-                    let first = poly[0].clone();
+                    let first = poly[0];
                     let mut coordinates_i: Vec<usize> = poly.to_vec();
                     coordinates_i.push(first);
                     let coordinates: Vec<Vec<Point>> = vec![coordinates_i

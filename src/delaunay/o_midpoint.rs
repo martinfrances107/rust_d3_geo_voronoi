@@ -15,7 +15,7 @@ pub fn o_midpoint(a: &Point, b: &Point, c: &Point) -> Point {
     let c = &cartesian(c);
     let s = (cartesian_dot(&cartesian_cross(b, a), c)).signum();
 
-    let norm = cartesian_normalize(&mut cartesian_add(*a, *b));
+    let norm = cartesian_normalize(&cartesian_add(*a, *b));
     let signed_norm = cartesian_scale(&norm, s);
     return spherical(&signed_norm);
 }
