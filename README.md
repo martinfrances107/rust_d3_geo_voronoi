@@ -18,13 +18,15 @@ Modules, passing test ready for phase 2 evaluation :-
 
 # Instructions:
 
+* Run the test suite.
+
         `cargo test`
 
-* runs the test suite.
-
-        `wasm-pack build`
 
 * Build the libray with javascript bindings for use in a web browser.  ( See ./pkg/ )
+
+        wasm-pack build
+
 
 <br/>
 <br/>
@@ -43,8 +45,6 @@ Modules, passing test ready for phase 2 evaluation :-
 
 * [`rust_d3_geo`]("https://github.com/martinfrances107/rust_d3_geo.git")
 
-* [`wasm-bindgen`](https://github.com/rustwasm/wasm-bindgen) for communicating
-  between WebAssembly and JavaScript.
-  for logging panic messages to the developer console.
+* [`wasm-bindgen`](https://github.com/rustwasm/wasm-bindgen) for communicating between WebAssembly and JavaScript. For logging panic messages to the developer console.
 * [`wee_alloc`](https://github.com/rustwasm/wee_alloc), an allocator optimized
   for small code size.
