@@ -6,7 +6,7 @@ use delaunator::EMPTY;
 
 use super::excess::excess;
 
-pub fn hull(triangles: &Vec<Vec<usize>>, points: &[Point]) -> Vec<usize> {
+pub fn hull(triangles: &[Vec<usize>], points: &[Point]) -> Vec<usize> {
     let mut h_hull: HashSet<String> = HashSet::new();
     let mut hull = Vec::new();
 

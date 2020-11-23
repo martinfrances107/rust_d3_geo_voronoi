@@ -7,7 +7,7 @@ use rust_d3_geo::cartesian::spherical;
 
 use super::cartesian::cartesian;
 
-pub fn circumcenters(triangles: &Vec<Vec<usize>>, points: &Vec<Point>) -> Vec<Point> {
+pub fn circumcenters(triangles: &[Vec<usize>], points: &[Point]) -> Vec<Point> {
     return triangles
         .iter()
         .map(|tri| {

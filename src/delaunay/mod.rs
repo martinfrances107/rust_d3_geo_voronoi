@@ -1,3 +1,4 @@
+#![allow(clippy::many_single_char_names)]
 mod cartesian;
 mod circumcenters;
 pub mod delaunay_from;
@@ -134,7 +135,7 @@ impl<'a> GeoDelaunay<'a> {
                 }
 
                 return Some(Self {
-                    delaunay: delaunay,
+                    delaunay,
                     edges: e,
                     triangles: tri,
                     centers,

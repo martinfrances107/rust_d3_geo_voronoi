@@ -107,7 +107,7 @@ impl<'a> Voronoi<'a> {
                     })
                     .collect();
 
-                let points: Vec<Point> = temp
+                let points = temp
                     .iter()
                     .map(|d| match d {
                         (Some(d0), Some(d1), _) => {

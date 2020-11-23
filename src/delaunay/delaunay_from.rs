@@ -1,3 +1,4 @@
+#![allow(clippy::many_single_char_names)]
 use std::cmp;
 use std::rc::Rc;
 
@@ -57,11 +58,8 @@ pub fn delaunay_from(points: Rc<Vec<Point>>) -> Option<Delaunay> {
     points.push(Point { x: -far, y: 0f64 });
     points.push(Point { x: 0f64, y: -far });
 
-    // let points = points;
-
     let point_len = points.len();
 
-    // const delaunay = Delaunay.from(points);
     let mut delaunay = Delaunay::new(points);
 
     delaunay.projection = Box::new(projection);
@@ -72,9 +70,7 @@ pub fn delaunay_from(points: Rc<Vec<Point>>) -> Option<Delaunay> {
     // let half_edges: &mut Vec<i32> = &mut delaunay.half_edges;
     // let mut inedges = delaunay.inedges;
 
-    // const degenerate = [];
     let mut degenerate: Vec<usize> = Vec::new();
-    // for (let i = 0, l = half_edges.length; i < l; i++) {
     for i in 0..delaunay.half_edges.len() {
         if delaunay.half_edges[i] < 0 {
             let j = match i % 3 == 2 {
