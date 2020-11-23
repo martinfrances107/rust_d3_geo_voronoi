@@ -1,19 +1,42 @@
 [package]
 name = "rust_d3_geo_voronoi"
-version = "0.1.0"
+description="A port into rustlang of the javascript library d3-geo-voronoi"
 authors = ["martin frances <martinfrances107@hotmail.com"]
+repository="https://github.com/martinfrances107/rust_d3_geo_voronoi.git"
 edition = "2018"
+version = "0.1.0"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["console_error_panic_hook"]
 
 [dependencies]
-measureme = "9.0.0"
+wasm-bindgen = "0.2.63"
 geojson = "0.20.0"
 geo="0.15.0"
 delaunator = { git = "https://github.com/mourner/delaunator-rs.git" }
 rust_d3_array = { git = "https://github.com/martinfrances107/rust_d3_array.git" }
 rust_d3_delaunay = { git = "https://github.com/martinfrances107/rust_d3_delaunay.git", branch = "main" }
 rust_d3_geo = { git = "https://github.com/martinfrances107/rust_d3_geo.git" }
+# The `console_error_panic_hook` crate provides better debugging of panics by
+# logging them with `console.error`. This is great for development, but requires
+# all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
+# code size when deploying.
+console_error_panic_hook = { version = "0.1.6", optional = true }
+
+# `wee_alloc` is a tiny allocator for wasm that is only ~1K in code size
+# compared to the default allocator's ~10K. It is slower than the default
+# allocator, however.
+#
+# Unfortunately, `wee_alloc` requires nightly Rust when targeting wasm for now.
+wee_alloc = { version = "0.4.5", optional = true }
 
 [dev-dependencies]
+measureme = "9.0.0"
 pretty_assertions = "0.6.1"
+
+[profile.release]
+# Tell `rustc` to optimize for small code size.
+opt-level = "s"
