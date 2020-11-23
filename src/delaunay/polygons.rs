@@ -26,7 +26,7 @@ pub fn polygons<'a>(
 
         // let centers_slice = (centers[triangles.len()..]);
         c[triangles.len()..].iter().enumerate().map(|(i, p)| {
-            if (p.x - point.x).abs() < EPSILON && (p.y - point.y) < EPSILON {
+            if (p.x - point.x).abs() < EPSILON && (p.y - point.y).abs() < EPSILON {
                 f = (i + triangles.len()) as i64;
             };
         });
