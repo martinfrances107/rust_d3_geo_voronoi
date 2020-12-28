@@ -1,14 +1,25 @@
 use std::borrow::Borrow;
 use std::rc::Rc;
 
-use delaunator::Point;
-
+use geo::centroid::Centroid;
+use geo::prelude::*;
+use geo::Coordinate;
+use geo::CoordinateType;
+use geo::Geometry;
+use geo::GeometryCollection;
+use geo::LineString;
+use geo::MultiLineString;
+use geo::Point;
+use geo::Polygon;
+use geo::{line_string, MultiPoint};
+use num_traits::{AsPrimitive, Float, FloatConst, FromPrimitive};
+use rust_d3_geo::data_object::feature_collection::FeatureCollection;
+use rust_d3_geo::data_object::feature_geometry::FeatureGeometry;
+use rust_d3_geo::data_object::feature_property::FeatureProperty;
+use rust_d3_geo::data_object::feature_struct::FeatureStruct;
+use rust_d3_geo::data_object::features_struct::FeaturesStruct;
 use rust_d3_geo::data_object::DataObject;
 
-use rust_d3_geo::data_object::FeatureGeometry;
-use rust_d3_geo::data_object::FeatureProperty;
-use rust_d3_geo::data_object::FeatureStruct;
-use rust_d3_geo::data_object::FeaturesStruct;
 use rust_d3_geo::distance::distance;
 
 use crate::delaunay::excess::excess;
@@ -16,125 +27,141 @@ use crate::delaunay::excess::excess;
 use super::delaunay::GeoDelaunay;
 
 /// Return type used by .x() and .y()
-enum XYReturn<'a> {
-    Voronoi(Voronoi<'a>),
-    Func(Box<dyn Fn(&DataObject) -> Option<f64>>),
+enum XYReturn<'a, T>
+where
+    T: Float + AsPrimitive<T>,
+{
+    Voronoi(Voronoi<'a, T>),
+    Func(Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>),
 }
 
-#[derive(Debug)]
-struct TriStruct {
-    tri_points: Vec<Point>,
-    center: Point,
-}
 // #[derive(Debug)]
-pub struct Voronoi<'a> {
-    geo_delaunay: Option<GeoDelaunay<'a>>,
-    data: DataObject,
+struct TriStruct<T>
+where
+    T: CoordinateType,
+{
+    tri_points: Vec<Coordinate<T>>,
+    center: Coordinate<T>,
+}
+
+// #[derive(Debug)]
+pub struct Voronoi<'a, T>
+where
+    T: AsPrimitive<T> + CoordinateType + Float,
+{
+    geo_delaunay: Option<GeoDelaunay<'a, T>>,
+    data: Option<Geometry<T>>,
     found: Option<usize>,
     //Points: Rc needed here as the egdes, triangles, neigbours etc all index into thts vec.
-    points: Rc<Vec<Point>>,
-    valid: Vec<Point>,
-    vx: Box<dyn Fn(&DataObject) -> Option<f64>>,
-    vy: Box<dyn Fn(&DataObject) -> Option<f64>>,
+    points: Rc<Vec<Coordinate<T>>>,
+    valid: Vec<Point<T>>,
+    // Option<Box<impl Fn(&dyn Centroid<Output = Coordinate<T>>) -> T>>
+    vx: Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>,
+    vy: Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>,
 }
 
-impl<'a> Default for Voronoi<'a> {
-    fn default() -> Voronoi<'a> {
+impl<'a, T> Default for Voronoi<'a, T>
+where
+    T: AsPrimitive<T> + CoordinateType + Float,
+{
+    fn default() -> Voronoi<'a, T> {
         return Voronoi {
-            data: DataObject::Blank,
+            data: None,
             geo_delaunay: None,
             found: None,
             points: Rc::new(Vec::new()),
             valid: Vec::new(),
-            vx: Box::new(|_| None),
-            vy: Box::new(|_| None),
+            vx: Box::new(|d: &dyn Centroid<Output = Point<T>>| d.centroid().x()),
+            vy: Box::new(|d: &dyn Centroid<Output = Point<T>>| d.centroid().y()),
         };
     }
 }
 
-impl<'a> Voronoi<'a> {
-    pub fn new(mut data: DataObject) -> Voronoi<'a> {
-        let mut v: Voronoi<'a>;
+impl<'a, T> Voronoi<'a, T>
+where
+    T: CoordinateType + AsPrimitive<T> + Float + FloatConst + FromPrimitive,
+{
+    /// If the input is a collection we act only on the first element in the collection.
+    /// by copying over the data into a new single element before proceeding.
+    pub fn new(data: Option<Geometry<T>>) -> Voronoi<'a, T> {
+        let mut v: Voronoi<'a, T>;
 
-        let delaunay_return: Option<GeoDelaunay> = None;
+        // let delaunay_return: Option<GeoDelaunay> = None;
 
         // On finding a Features Collection take the first element only, drop other elements.
-        match data {
-            DataObject::FeatureCollection { mut features } => {
-                // TODO: .remove() panics it it can't complete - consider trapping.
-                let mut first_feature = features.remove(0);
-                let geometry = first_feature.geometry.remove(0);
-                let feature = FeatureStruct {
-                    properties: Vec::new(),
-                    geometry,
-                };
-                data = DataObject::Feature { feature };
-            }
-            _ => {
-                // Other DataTypes variants.
-            }
-        };
+        // match data {
+        //     DataObject<T>::FeatureCollection { mut features } => {
+        //         // TODO: .remove() panics it it can't complete - consider trapping.
+        //         let mut first_feature = features.remove(0);
+        //         let geometry = first_feature.geometry.remove(0);
+        //         let feature = FeatureStruct {
+        //             properties: Vec::new(),
+        //             geometry,
+        //         };
+        //         data = DataObject<T>::Feature { feature };
+        //     }
+        //     _ => {
+        //         // Other DataTypes variants.
+        //     }
+        // };
 
         v = Voronoi {
             data,
             ..Voronoi::default()
         };
 
-        let vx = Box::new(|d: &Point| -> Option<f64> {
-            //TODO how to handle centroid.
-            return Some(d.x);
-        });
-
-        let vy = Box::new(|d: &Point| -> Option<f64> {
-            // TODO how to handle centroid
-            return Some(d.y);
-        });
-
+        // Data sanitization:-
+        // Transform points using vx() and vy().
+        // Remove infinities, store list of untransformed - valid points.
+        let mut temp: Vec<(T, T, Point<T>)> = Vec::new();
         match v.data {
-            DataObject::Vec(ref data) => {
-                let temp: Vec<(Option<f64>, Option<f64>, Point)> = data
+            // Some(FeatureCollection { features: f }) => {
+            //     f.iter()
+            //         .map(|d| ((v.vx)(d), (v.vy)(d), d.clone()))
+            //         .filter(|t| (t.0 + t.1).is_finite());
+            // }
+            Some(Geometry::MultiPoint(ref data)) => {
+                temp = data
                     .iter()
                     .map(|d| {
-                        return (vx(&d), vy(&d), d.clone());
+                        return (
+                            (Self::default().vx)(&d.clone()),
+                            (Self::default().vy)(&d.clone()),
+                            d.clone(),
+                        );
                     })
-                    .filter(|d| match d {
-                        (Some(d0), Some(d1), _) => {
-                            return (*d0 + *d1).is_finite();
-                        }
-                        _ => {
-                            return false;
-                        }
-                    })
+                    .filter(|(d0, d1, _)| (*d0 + *d1).is_finite())
                     .collect();
-
-                let points = temp
-                    .iter()
-                    .map(|d| match d {
-                        (Some(d0), Some(d1), _) => {
-                            return Point { x: *d0, y: *d1 };
-                        }
-                        _ => {
-                            panic!("Unexpected Vec has been filtered ");
-                        }
-                    })
-                    .collect();
-                v.points = Rc::new(points);
-                v.valid = temp.iter().map(|d| (d.2).clone()).collect();
-                let pclone = v.points.clone();
-                v.geo_delaunay = GeoDelaunay::delaunay(pclone);
             }
-            DataObject::Blank => {
+            None => {
                 v = Self::default();
             }
             _ => {
-                panic!("Must implement Voronoi::new for other DataObject types");
+                panic!("Must implement Voronoi::new for other DataObject<T> types");
             }
         }
+
+        let points: Vec<Coordinate<T>> = temp
+            .iter()
+            .map(|d| match d {
+                (d0, d1, _) => Coordinate { x: *d0, y: *d1 },
+                _ => {
+                    panic!("Unexpected Vec has been filtered ");
+                }
+            })
+            .collect();
+        v.points = Rc::new(points);
+        v.valid = temp.iter().map(|d| (d.2).clone()).collect();
+        let pclone = v.points.clone();
+        v.geo_delaunay = GeoDelaunay::delaunay(pclone);
 
         return v;
     }
 
-    fn x(mut self, f: Option<Box<dyn Fn(&DataObject) -> Option<f64>>>) -> XYReturn<'a> {
+    fn x(
+        mut self,
+        f: Option<Box<impl Fn(&dyn Centroid<Output = Point<T>>) -> T + 'static>>,
+    ) -> XYReturn<'a, T> {
         return match f {
             None => XYReturn::Func(self.vx),
             Some(f) => {
@@ -144,7 +171,10 @@ impl<'a> Voronoi<'a> {
         };
     }
 
-    fn y(mut self, f: Option<Box<dyn Fn(&DataObject) -> Option<f64>>>) -> XYReturn<'a> {
+    fn y(
+        mut self,
+        f: Option<Box<impl Fn(&dyn Centroid<Output = Point<T>>) -> T + 'static>>,
+    ) -> XYReturn<'a, T> {
         return match f {
             None => XYReturn::Func(self.vy),
             Some(f) => {
@@ -154,62 +184,59 @@ impl<'a> Voronoi<'a> {
         };
     }
 
-    pub fn polygons(mut self, data: DataObject) -> Option<DataObject> {
+    pub fn polygons(&mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
         match data {
-            DataObject::Blank => {
-                // No op
-            }
-            _ => {
-                self = Self::new(data);
+            None => {}
+            Some(_) => {
+                *self = Self::new(data);
             }
         }
 
-        match self.geo_delaunay {
+        match &self.geo_delaunay {
             None => {
                 return None;
             }
             Some(dr) => {
-                let features: Vec<FeaturesStruct> = Vec::new();
+                let features: Vec<FeaturesStruct<T>> = Vec::new();
                 println!("dr.plygons.len: {:?}", dr.polygons.len());
                 for (i, ref poly) in dr.polygons.iter().enumerate() {
                     let first = poly[0];
                     let mut coordinates_i: Vec<usize> = poly.to_vec();
                     coordinates_i.push(first);
-                    let coordinates: Vec<Vec<Point>> = vec![coordinates_i
+                    let coordinates: Vec<Coordinate<T>> = coordinates_i
                         .iter()
                         .map(|i| (dr.centers[*i]).clone())
-                        .collect()];
+                        .collect();
 
-                    let geometry = FeatureGeometry::Polygon { coordinates };
+                    let geometry =
+                        FeatureGeometry::Polygon(Polygon::new(coordinates.into(), vec![]));
                     let mut neighbors = dr.neighbors.borrow_mut();
                     let n: Vec<usize> = (neighbors.remove(&i)).unwrap();
-                    let properties = vec![
+                    let properties: Vec<FeatureProperty<T>> = vec![
                         // FeatureProperty::<F>::Site(self.valid[i]),
                         // FeatureProperty::<F>::Sitecoordinates(self.points[i]),
                         // The endpoint for neighbors.
                         // Consume neighbours here. Remove, and thereby destroy neighbours.
                         FeatureProperty::Neighbors(n),
                     ];
-                    let f = DataObject::Feature {
-                        feature: FeatureStruct {
-                            geometry,
-                            properties: Vec::new(),
-                        },
+                    let fs = FeatureStruct {
+                        geometry,
+                        properties: Vec::new(),
                     };
                     //   coll.features.push();
                     // }
                 }
-                return Some(DataObject::FeatureCollection { features });
+                return Some(FeatureCollection(features));
             }
         }
     }
 
-    fn triangles(mut self, data: DataObject) -> Option<DataObject> {
+    fn triangles(mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
         match data {
-            DataObject::Blank => {
+            None => {
                 // No op
             }
-            _ => {
+            Some(_) => {
                 self = Self::new(data);
             }
         }
@@ -221,41 +248,42 @@ impl<'a> Voronoi<'a> {
 
             Some(delaunay_return) => {
                 let points = self.points.clone();
-                let features: Vec<FeaturesStruct> = delaunay_return
+                let features: Vec<FeaturesStruct<T>> = delaunay_return
                     .triangles
                     .iter()
                     .enumerate()
                     .map(|(index, tri)| {
-                        let tri_points: Vec<Point> =
-                            tri.iter().map(|i| (points[*i]).clone()).collect();
+                        let tri_points: Vec<Coordinate<T>> =
+                            tri.iter().map(|i| (points[*i]).clone().into()).collect();
                         let tri_struct = TriStruct {
                             tri_points,
                             center: (delaunay_return.centers[index]).clone(),
                         };
                         return tri_struct;
                     })
-                    .filter(|tri_struct| return excess(&tri_struct.tri_points) > 0f64)
+                    .filter(|tri_struct| return excess(&tri_struct.tri_points) > T::zero())
                     .map(|tri_struct| {
-                        let first = tri_struct.tri_points[0].clone();
-                        let mut coordinates: Vec<Point> = tri_struct.tri_points;
+                        let first = tri_struct.tri_points[0].clone().into();
+                        let mut coordinates: Vec<Coordinate<T>> = tri_struct.tri_points.into();
                         coordinates.push(first);
                         FeaturesStruct {
                             properties: vec![FeatureProperty::Circumecenter(tri_struct.center)],
-                            geometry: vec![FeatureGeometry::Polygon {
-                                coordinates: vec![coordinates],
-                            }],
+                            geometry: vec![Geometry::Polygon(Polygon::new(
+                                coordinates.into(),
+                                vec![],
+                            ))],
                         }
                     })
                     .collect();
 
-                return Some(DataObject::FeatureCollection { features });
+                return Some(FeatureCollection(features));
             }
         }
     }
 
-    fn link(mut self, data: DataObject) -> Option<DataObject> {
+    fn link(mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
         match data {
-            DataObject::Blank => {
+            None => {
                 // No op
             }
             _ => {
@@ -266,8 +294,8 @@ impl<'a> Voronoi<'a> {
         return match &self.geo_delaunay {
             None => None,
             Some(delaunay_return) => {
-                let points: &Vec<Point> = self.points.borrow();
-                let distances: Rc<Vec<f64>> = Rc::new(
+                let points: &Vec<Coordinate<T>> = self.points.borrow();
+                let distances: Rc<Vec<T>> = Rc::new(
                     delaunay_return
                         .edges
                         .iter()
@@ -277,12 +305,13 @@ impl<'a> Voronoi<'a> {
 
                 {
                     let urquhart = (delaunay_return.urquhart)(&distances);
-                    let features: Vec<FeaturesStruct> = delaunay_return
+                    let features: Vec<FeaturesStruct<T>> = delaunay_return
                         .edges
                         .iter()
                         .enumerate()
                         .map(|(i, e)| {
-                            let coordinates = vec![points[0].clone(), points[e[1]].clone()];
+                            let ls: LineString<T> =
+                                vec![points[0].clone(), points[e[1]].clone()].into();
                             return FeaturesStruct {
                                 properties: vec![
                                     FeatureProperty::Source(self.valid[e[0]].clone()),
@@ -290,19 +319,19 @@ impl<'a> Voronoi<'a> {
                                     FeatureProperty::Length(distances[i]),
                                     FeatureProperty::Urquhart(urquhart[i]),
                                 ],
-                                geometry: vec![FeatureGeometry::LineString { coordinates }],
+                                geometry: vec![Geometry::LineString(ls)],
                             };
                         })
                         .collect();
-                    return Some(DataObject::FeatureCollection { features });
+                    return Some(FeatureCollection(features));
                 }
             }
         };
     }
 
-    fn mesh(mut self, data: DataObject) -> Option<DataObject> {
+    fn mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
         match data {
-            DataObject::Blank => {
+            None => {
                 // No op
             }
             _ => {
@@ -315,29 +344,34 @@ impl<'a> Voronoi<'a> {
                 return None;
             }
             Some(delaunay_return) => {
-                let coordinates: Vec<Vec<Point>> = delaunay_return
+                let coordinates: Vec<LineString<T>> = delaunay_return
                     .edges
                     .iter()
-                    .map(|e| vec![(self.points)[e[0]].clone(), (self.points)[e[1]].clone()])
+                    .map(|e| {
+                        line_string![
+                            (self.points)[e[0]].clone().into(),
+                            (self.points)[e[1]].clone().into()
+                        ]
+                    })
                     .collect();
-                return Some(DataObject::MultiLineString { coordinates });
+                return Some(MultiLineString(coordinates));
             }
         }
     }
 
-    fn cell_mesh(mut self, data: DataObject) -> Option<DataObject> {
+    fn cell_mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
         match data {
-            DataObject::Blank => {
+            None => {
                 // No op
             }
-            _ => {
+            Some(_) => {
                 self = Self::new(data);
             }
         }
 
         let delaunay = self.geo_delaunay?;
         let polygons = delaunay.polygons;
-        let mut coordinates = vec![vec![]];
+        let mut coordinates: Vec<LineString<T>> = Vec::new();
         let centers = delaunay.centers;
         for p in polygons {
             let n = p.len();
@@ -345,26 +379,32 @@ impl<'a> Voronoi<'a> {
             let mut p1 = p[0];
             for i in 0..n {
                 if p1 > p0 {
-                    coordinates.push(vec![centers[p0].clone(), centers[p1].clone()]);
+                    // coordinates.push(vec![centers[p0].clone(), centers[p1].clone()]);
+                    coordinates.push(line_string![
+                        centers[p0].clone().into(),
+                        centers[p1].clone().into()
+                    ]);
                 }
                 p0 = p1;
                 p1 = p[i + 1];
             }
         }
 
-        return Some(DataObject::MultiLineString { coordinates });
+        return Some(MultiLineString(coordinates));
     }
 
-    fn find(mut self, x: f64, y: f64, radius: Option<f64>) -> Option<usize> {
+    fn find(mut self, p: Coordinate<T>, radius: Option<T>) -> Option<usize> {
         return match self.geo_delaunay {
             None => None,
             Some(delaunay_return) => {
-                self.found = (delaunay_return.find)(x, y, self.found);
+                self.found = (delaunay_return.find)(p, self.found);
                 match self.found {
                     Some(found) => {
                         return match radius {
                             Some(radius) => {
-                                if distance(&Point { x, y }, &self.points[found]) < radius {
+                                // TODO confirm the eclidean_distance is the same as the rust_geo::distance....
+                                if distance(&p, &self.points[found]) < radius {
+                                    // if p.euclidean_distance(&self.points[found]) < radius {
                                     return Some(found);
                                 } else {
                                     return None;
@@ -381,9 +421,9 @@ impl<'a> Voronoi<'a> {
         };
     }
 
-    pub fn hull(mut self, data: DataObject) -> Option<DataObject> {
+    pub fn hull(mut self, data: Option<Geometry<T>>) -> Option<Polygon<T>> {
         match data {
-            DataObject::Blank => {
+            None => {
                 // No op
             }
             _ => {
@@ -402,16 +442,14 @@ impl<'a> Voronoi<'a> {
                     }
                     _ => {
                         let hull = &delaunay_return.hull;
-                        let mut coordinates: Vec<Point> = hull
+                        let mut coordinates: Vec<Coordinate<T>> = hull
                             .iter()
                             .map(|i| {
-                                return self.points[*i].clone();
+                                return self.points[*i].clone().into();
                             })
                             .collect();
-                        coordinates.push(self.points[hull[0]].clone());
-                        return Some(DataObject::Polygon {
-                            coordinates: vec![coordinates],
-                        });
+                        coordinates.push(self.points[hull[0]].clone().into());
+                        return Some(Polygon::new(coordinates.into(), vec![]));
                     }
                 };
             }

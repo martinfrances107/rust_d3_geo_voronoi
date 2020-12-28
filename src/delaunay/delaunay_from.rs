@@ -2,7 +2,10 @@
 use std::cmp;
 use std::rc::Rc;
 
-use delaunator::Point;
+use geo::Point;
+use geo::{Coordinate, CoordinateType};
+use num_traits::{float::Float, float::FloatConst, AsPrimitive, FromPrimitive};
+
 use rust_d3_delaunay::delaunay::Delaunay;
 
 use rust_d3_geo::projection::projection::Projection;
@@ -12,7 +15,12 @@ use rust_d3_geo::Transform;
 
 use delaunator::EMPTY;
 
-pub fn delaunay_from(points: Rc<Vec<Point>>) -> Option<Delaunay> {
+// Wanted delaunay_from<T> to be generic .. but .is_finite() assumes float type.
+// TODO find a way arround the F64 issue.
+pub fn delaunay_from<T>(points: Rc<Vec<Coordinate<T>>>) -> Option<Delaunay<T>>
+where
+    T: CoordinateType + Float + FloatConst + AsPrimitive<T> + FromPrimitive,
+{
     if points.len() < 2 {
         return None;
     };
@@ -24,22 +32,28 @@ pub fn delaunay_from(points: Rc<Vec<Point>>) -> Option<Delaunay> {
 
     // TODO must fix this
     // let r = Rotation::new(points[pivot][0], points[pivot][1], points[pivot][2]);
-    let r = Rotation::new(points[pivot].x, points[pivot].y, 0f64);
+    let r = Rotation::new(points[pivot].x, points[pivot].y, T::zero());
 
     let mut projection = StereographicRaw::gen_projection_mutator();
-    projection.translate(Some(&Point { x: 0f64, y: 0f64 }));
-    projection.scale(Some(&1f64));
-    let angles2: Point = r.invert(&Point { x: 180f64, y: 0f64 });
-    let angles: [f64; 3] = [angles2.x, angles2.y, 0f64];
+    projection.translate(Some(&Coordinate {
+        x: T::zero(),
+        y: T::zero(),
+    }));
+    projection.scale(Some(&T::one()));
+    let angles2 = r.invert(&Coordinate {
+        x: T::from(180).unwrap(),
+        y: T::zero(),
+    });
+    let angles: [T; 3] = [angles2.x, angles2.y, T::zero()];
     projection.rotate(Some(angles));
 
-    let mut points: Vec<Point> = points.iter().map(|p| projection.transform(&p)).collect();
+    let mut points: Vec<Coordinate<T>> = points.iter().map(|p| projection.transform(&p)).collect();
 
     let mut zeros = Vec::new();
-    let mut max2 = 1f64;
+    let mut max2 = T::one();
     for (i, point) in points.iter().enumerate() {
         let m = point.x * point.x + point.y * point.y;
-        if !m.is_finite() || m > 1e32f64 {
+        if !m.is_finite() || m > T::from(1e32f64).unwrap() {
             zeros.push(i);
         } else {
             if m > max2 {
@@ -47,22 +61,34 @@ pub fn delaunay_from(points: Rc<Vec<Point>>) -> Option<Delaunay> {
             }
         }
     }
-    let far = 1e6 * (max2).sqrt();
+    let far = T::from(1e6).unwrap() * (max2).sqrt();
 
-    zeros
-        .iter()
-        .for_each(|i| points[*i] = Point { x: far, y: 0f64 });
+    zeros.iter().for_each(|i| {
+        points[*i] = Coordinate {
+            x: far,
+            y: T::zero(),
+        }
+    });
 
     // Add infinite horizon points
-    points.push(Point { x: 0f64, y: far });
-    points.push(Point { x: -far, y: 0f64 });
-    points.push(Point { x: 0f64, y: -far });
+    points.push(Coordinate {
+        x: T::zero(),
+        y: far,
+    });
+    points.push(Coordinate {
+        x: -far,
+        y: T::zero(),
+    });
+    points.push(Coordinate {
+        x: T::zero(),
+        y: -far,
+    });
 
     let point_len = points.len();
 
     let mut delaunay = Delaunay::new(points);
 
-    delaunay.projection = Box::new(projection);
+    delaunay.projection = Some(projection);
 
     // clean up the triangulation
     // let  {triangles, half_edges, inedges} = delaunay;

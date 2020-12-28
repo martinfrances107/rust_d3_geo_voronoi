@@ -1,7 +1,8 @@
 use delaunator::Point;
+use num_traits::{AsPrimitive, Float};
 use rust_d3_delaunay::delaunay::Delaunay;
 
-pub fn triangles(delaunay: &Delaunay) -> Vec<Vec<usize>> {
+pub fn triangles<T: Float + AsPrimitive<T>>(delaunay: &Delaunay<T>) -> Vec<Vec<usize>> {
     let Delaunay { triangles, .. } = delaunay;
     if triangles.is_empty() {
         return Vec::new();

@@ -19,7 +19,11 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
-use delaunator::Point;
+use geo::Point;
+use geo::{Coordinate, CoordinateType};
+use num_traits::AsPrimitive;
+use num_traits::FloatConst;
+use num_traits::{float::Float, FromPrimitive};
 
 use rust_d3_delaunay::delaunay::Delaunay;
 use rust_d3_geo::projection::projection_mutator::ProjectionMutator;
@@ -77,23 +81,29 @@ use urquhart::urquhart;
 // }
 
 // #[derive(Clone)]
-pub struct GeoDelaunay<'a> {
-    pub delaunay: Delaunay,
+pub struct GeoDelaunay<'a, T>
+where
+    T: CoordinateType + AsPrimitive<T> + Float,
+{
+    pub delaunay: Delaunay<T>,
     // The edges and triangles properties need RC because the values are close over in the urquhart function.
     pub edges: Rc<Vec<[usize; 2]>>,
     pub triangles: Rc<Vec<Vec<usize>>>,
-    pub centers: Vec<Point>,
+    pub centers: Vec<Coordinate<T>>,
     // neighbours:  passes to Voronoi::polygon() where it is consumed.
     pub neighbors: Rc<RefCell<HashMap<usize, Vec<usize>>>>,
     pub polygons: Vec<Vec<usize>>,
     pub mesh: Vec<[usize; 2]>,
     pub hull: Vec<usize>,
-    pub urquhart: Box<dyn Fn(&Vec<f64>) -> Vec<bool> + 'a>,
-    pub find: Box<dyn Fn(f64, f64, Option<usize>) -> Option<usize> + 'a>,
+    pub urquhart: Box<dyn Fn(&Vec<T>) -> Vec<bool> + 'a>,
+    pub find: Box<dyn Fn(Coordinate<T>, Option<usize>) -> Option<usize> + 'a>,
 }
 
-impl<'a> GeoDelaunay<'a> {
-    pub fn delaunay(points: Rc<Vec<Point>>) -> Option<GeoDelaunay<'a>> {
+impl<'a, T> GeoDelaunay<'a, T>
+where
+    T: CoordinateType + AsPrimitive<T> + Float + FloatConst + FromPrimitive,
+{
+    pub fn delaunay(points: Rc<Vec<Coordinate<T>>>) -> Option<GeoDelaunay<'a, T>> {
         let p = points.clone();
         match delaunay_from(p) {
             Some(delaunay) => {

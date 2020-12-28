@@ -1,15 +1,15 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use delaunator::Point;
+use num_traits::Float;
 use rust_d3_array::extent::extent;
 
-pub fn urquhart(
+pub fn urquhart<T: Float>(
     edges: Rc<Vec<[usize; 2]>>,
     triangles: Rc<Vec<Vec<usize>>>,
-) -> Box<dyn Fn(&Vec<f64>) -> Vec<bool>> {
-    return Box::new(move |distances: &Vec<f64>| {
-        let mut h_lengths: HashMap<String, f64> = HashMap::new();
+) -> Box<dyn Fn(&Vec<T>) -> Vec<bool>> {
+    return Box::new(move |distances: &Vec<T>| {
+        let mut h_lengths: HashMap<String, T> = HashMap::new();
         let mut h_urquhart: HashMap<String, bool> = HashMap::new();
 
         for (i, edge) in edges.iter().enumerate() {
@@ -20,11 +20,11 @@ pub fn urquhart(
         }
 
         triangles.iter().for_each(|tri| {
-            let mut l = 0f64;
+            let mut l = T::zero();
             let mut remove: Option<String> = None;
             for j in 0..3 {
                 // extent is used to order the two tri values  smallest to largest.
-                let e = extent(vec![tri[j], tri[(j + 1usize) % 3usize]]);
+                let e = extent(vec![tri[j], tri[(j + 1usize) % 3usize]], None);
 
                 let u = format!("{}-{}", e[0], e[1]);
                 if *h_lengths.get(&u).unwrap() > l {

@@ -1,18 +1,19 @@
 use std::collections::HashMap;
 use std::collections::HashSet;
 
-use delaunator::Point;
 use delaunator::EMPTY;
+use geo::{Coordinate, Point};
+use num_traits::Float;
 
 use super::excess::excess;
 
-pub fn hull(triangles: &[Vec<usize>], points: &[Point]) -> Vec<usize> {
+pub fn hull<T: Float>(triangles: &[Vec<usize>], points: &[Coordinate<T>]) -> Vec<usize> {
     let mut h_hull: HashSet<String> = HashSet::new();
     let mut hull = Vec::new();
 
     println!("triangles {:?}", triangles);
     for tri in triangles {
-        let ex_in: Vec<Point> = tri
+        let ex_in: Vec<Coordinate<T>> = tri
             .iter()
             .map(|i: &usize| {
                 let index;
@@ -25,7 +26,7 @@ pub fn hull(triangles: &[Vec<usize>], points: &[Point]) -> Vec<usize> {
             })
             .collect();
 
-        if excess(&ex_in) < 0f64 {
+        if excess(&ex_in) < T::zero() {
             continue;
         }
 

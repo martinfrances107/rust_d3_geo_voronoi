@@ -13,13 +13,17 @@ crate-type = ["cdylib", "rlib"]
 default = ["console_error_panic_hook"]
 
 [dependencies]
-wasm-bindgen = "0.2.63"
-geojson = "0.20.0"
-geo="0.15.0"
+num-traits = "0.2.14"
+wasm-bindgen = "0.2.68"
+geojson = "0.21.0"
+geo="0.16.0"
+proj="0.20.5"
 delaunator = { git = "https://github.com/mourner/delaunator-rs.git" }
-rust_d3_array = { git = "https://github.com/martinfrances107/rust_d3_array.git" }
-rust_d3_delaunay = { git = "https://github.com/martinfrances107/rust_d3_delaunay.git", branch = "main" }
-rust_d3_geo = { git = "https://github.com/martinfrances107/rust_d3_geo.git" }
+# d3_geo: At the moment just use for math carteasian functions.
+rust_d3_geo = { path = "../rust_d3_geo"}
+rust_d3_array = { path = "../rust_d3_array" }
+rust_d3_delaunay = { path = "../rust_d3_delaunay" }
+# rust_d3_geo = { path = "../rust_d3_geo" }
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
 # all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
@@ -32,6 +36,23 @@ console_error_panic_hook = { version = "0.1.6", optional = true }
 #
 # Unfortunately, `wee_alloc` requires nightly Rust when targeting wasm for now.
 wee_alloc = { version = "0.4.5", optional = true }
+
+[dependencies.web-sys]
+version = "0.3.45"
+features = [
+    "Attr",
+    "CanvasRenderingContext2d",
+    "Document",
+    "Element",
+    "Event",
+    "EventTarget",
+    "HtmlCanvasElement",
+    "HtmlElement",
+    "HtmlInputElement",
+    "Node",
+    "Text",
+    "Window"
+]
 
 [dev-dependencies]
 measureme = "9.0.0"

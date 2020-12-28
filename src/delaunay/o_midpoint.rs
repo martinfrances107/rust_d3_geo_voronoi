@@ -1,4 +1,6 @@
-use delaunator::Point;
+// use delaunator::Point;
+use geo::Coordinate;
+use num_traits::float::Float;
 
 use rust_d3_geo::cartesian::cartesian_add;
 use rust_d3_geo::cartesian::cartesian_cross;
@@ -9,7 +11,11 @@ use rust_d3_geo::cartesian::spherical;
 
 use super::cartesian::cartesian;
 
-pub fn o_midpoint(a: &Point, b: &Point, c: &Point) -> Point {
+pub fn o_midpoint<T: Float>(
+    a: &Coordinate<T>,
+    b: &Coordinate<T>,
+    c: &Coordinate<T>,
+) -> Coordinate<T> {
     let a = &cartesian(a);
     let b = &cartesian(b);
     let c = &cartesian(c);

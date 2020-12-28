@@ -1,9 +1,10 @@
-use delaunator::Point;
+use geo::{Coordinate, Point};
+use num_traits::Float;
 
 use super::excess::excess;
 use std::collections::HashMap;
 
-pub fn edges(triangles: &[Vec<usize>], point: &[Point]) -> Vec<[usize; 2]> {
+pub fn edges<T: Float>(triangles: &[Vec<usize>], point: &[Coordinate<T>]) -> Vec<[usize; 2]> {
     if point.len() == 2usize {
         return vec![[0usize, 1usize]];
     }
@@ -16,7 +17,7 @@ pub fn edges(triangles: &[Vec<usize>], point: &[Point]) -> Vec<[usize; 2]> {
 
         let ex_in = vec![point[0].clone(), point[1].clone(), point[2].clone()];
 
-        if excess(&ex_in) < 0f64 {
+        if excess(&ex_in) < T::zero() {
             return Vec::new();
         }
 

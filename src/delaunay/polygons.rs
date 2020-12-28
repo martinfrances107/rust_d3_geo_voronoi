@@ -2,32 +2,35 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use delaunator::Point;
+// use delaunator::Point;
 use delaunator::EMPTY;
+use geo::Coordinate;
+use num_traits::Float;
 use rust_d3_geo::cartesian::cartesian_add;
 use rust_d3_geo::cartesian::cartesian_cross;
 use rust_d3_geo::cartesian::cartesian_normalize;
 use rust_d3_geo::cartesian::spherical;
 
-use crate::math::EPSILON;
+use crate::math::{EPSILON, EPSILON2};
 
 use super::cartesian::cartesian;
 use super::o_midpoint::o_midpoint;
 
-pub fn polygons<'a>(
-    circumcenter: Vec<Point>,
+pub fn polygons<'a, T: Float>(
+    circumcenter: Vec<Coordinate<T>>,
     triangles: &Vec<Vec<usize>>,
-    points: &'a [Point],
-) -> (Vec<Vec<usize>>, Vec<Point>) {
+    points: &'a [Coordinate<T>],
+) -> (Vec<Vec<usize>>, Vec<Coordinate<T>>) {
+    let EPSILON_T = T::from(EPSILON).unwrap();
     let mut polygons: Vec<Vec<usize>> = Vec::new();
     let mut centers = circumcenter;
 
-    let supplement = |point: &Point, c: &mut Vec<Point>| -> usize {
+    let supplement = |point: &Coordinate<T>, c: &mut Vec<Coordinate<T>>| -> usize {
         let mut f: i64 = -1;
 
         // let centers_slice = (centers[triangles.len()..]);
         c[triangles.len()..].iter().enumerate().map(|(i, p)| {
-            if (p.x - point.x).abs() < EPSILON && (p.y - point.y).abs() < EPSILON {
+            if p.x - point.x.abs() < EPSILON_T && (p.y - point.y).abs() < EPSILON_T {
                 f = (i + triangles.len()) as i64;
             };
         });
