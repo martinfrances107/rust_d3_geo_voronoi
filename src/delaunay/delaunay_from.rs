@@ -30,8 +30,6 @@ where
     // which the x or y component is not inifinty.
     let pivot: usize = points.iter().position(|p| (p.x + p.y).is_finite()).unwrap();
 
-    // TODO must fix this
-    // let r = Rotation::new(points[pivot][0], points[pivot][1], points[pivot][2]);
     let r = Rotation::new(points[pivot].x, points[pivot].y, T::zero());
 
     let mut projection = StereographicRaw::gen_projection_mutator();
@@ -55,10 +53,8 @@ where
         let m = point.x * point.x + point.y * point.y;
         if !m.is_finite() || m > T::from(1e32f64).unwrap() {
             zeros.push(i);
-        } else {
-            if m > max2 {
-                max2 = m;
-            }
+        } else if m > max2 {
+            max2 = m;
         }
     }
     let far = T::from(1e6).unwrap() * (max2).sqrt();

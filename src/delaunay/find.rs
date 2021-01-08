@@ -3,7 +3,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use geo::{Coordinate, Point};
+use geo::Coordinate;
 use num_traits::Float;
 
 use super::cartesian::cartesian;

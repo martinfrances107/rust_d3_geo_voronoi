@@ -21,7 +21,7 @@ pub fn polygons<'a, T: Float>(
     triangles: &Vec<Vec<usize>>,
     points: &'a [Coordinate<T>],
 ) -> (Vec<Vec<usize>>, Vec<Coordinate<T>>) {
-    let EPSILON_T = T::from(EPSILON).unwrap();
+    let epsilon_t = T::from(EPSILON).unwrap();
     let mut polygons: Vec<Vec<usize>> = Vec::new();
     let mut centers = circumcenter;
 
@@ -30,14 +30,14 @@ pub fn polygons<'a, T: Float>(
 
         // let centers_slice = (centers[triangles.len()..]);
         c[triangles.len()..].iter().enumerate().map(|(i, p)| {
-            if p.x - point.x.abs() < EPSILON_T && (p.y - point.y).abs() < EPSILON_T {
+            if p.x - point.x.abs() < epsilon_t && (p.y - point.y).abs() < epsilon_t {
                 f = (i + triangles.len()) as i64;
             };
         });
 
         if f < 0 {
             f = c.len() as i64;
-            c.push((*point).clone());
+            c.push(*point);
         }
 
         return f as usize;

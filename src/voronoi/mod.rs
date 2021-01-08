@@ -1,5 +1,5 @@
-use std::borrow::Borrow;
 use std::rc::Rc;
+use std::{borrow::Borrow, collections::HashMap};
 
 use geo::centroid::Centroid;
 use geo::prelude::*;
@@ -19,7 +19,6 @@ use rust_d3_geo::data_object::feature_property::FeatureProperty;
 use rust_d3_geo::data_object::feature_struct::FeatureStruct;
 use rust_d3_geo::data_object::features_struct::FeaturesStruct;
 use rust_d3_geo::data_object::DataObject;
-
 use rust_d3_geo::distance::distance;
 
 use crate::delaunay::excess::excess;
@@ -54,7 +53,7 @@ where
     found: Option<usize>,
     //Points: Rc needed here as the egdes, triangles, neigbours etc all index into thts vec.
     points: Rc<Vec<Coordinate<T>>>,
-    valid: Vec<Point<T>>,
+    valid: Vec<Coordinate<T>>,
     // Option<Box<impl Fn(&dyn Centroid<Output = Coordinate<T>>) -> T>>
     vx: Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>,
     vy: Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>,
@@ -127,11 +126,26 @@ where
                         return (
                             (Self::default().vx)(&d.clone()),
                             (Self::default().vy)(&d.clone()),
-                            d.clone(),
+                            *d,
                         );
                     })
                     .filter(|(d0, d1, _)| (*d0 + *d1).is_finite())
                     .collect();
+
+                let points: Vec<Coordinate<T>> = temp
+                    .iter()
+                    .map(|(d0, d1, _)| Coordinate { x: *d0, y: *d1 })
+                    .collect();
+                v.points = Rc::new(points);
+                v.valid = temp
+                    .iter()
+                    .map(|d| Coordinate {
+                        x: d.2.x(),
+                        y: d.2.y(),
+                    })
+                    .collect();
+                let pclone = v.points.clone();
+                v.geo_delaunay = GeoDelaunay::delaunay(pclone);
             }
             None => {
                 v = Self::default();
@@ -140,20 +154,6 @@ where
                 panic!("Must implement Voronoi::new for other DataObject<T> types");
             }
         }
-
-        let points: Vec<Coordinate<T>> = temp
-            .iter()
-            .map(|d| match d {
-                (d0, d1, _) => Coordinate { x: *d0, y: *d1 },
-                _ => {
-                    panic!("Unexpected Vec has been filtered ");
-                }
-            })
-            .collect();
-        v.points = Rc::new(points);
-        v.valid = temp.iter().map(|d| (d.2).clone()).collect();
-        let pclone = v.points.clone();
-        v.geo_delaunay = GeoDelaunay::delaunay(pclone);
 
         return v;
     }
@@ -197,34 +197,32 @@ where
                 return None;
             }
             Some(dr) => {
-                let features: Vec<FeaturesStruct<T>> = Vec::new();
-                println!("dr.plygons.len: {:?}", dr.polygons.len());
-                for (i, ref poly) in dr.polygons.iter().enumerate() {
-                    let first = poly[0];
-                    let mut coordinates_i: Vec<usize> = poly.to_vec();
-                    coordinates_i.push(first);
-                    let coordinates: Vec<Coordinate<T>> = coordinates_i
-                        .iter()
-                        .map(|i| (dr.centers[*i]).clone())
-                        .collect();
+                if self.valid.is_empty() {
+                    return Some(FeatureCollection(Vec::new()));
+                }
 
-                    let geometry =
-                        FeatureGeometry::Polygon(Polygon::new(coordinates.into(), vec![]));
-                    let mut neighbors = dr.neighbors.borrow_mut();
-                    let n: Vec<usize> = (neighbors.remove(&i)).unwrap();
+                let mut features: Vec<FeaturesStruct<T>> = Vec::new();
+                println!("dr.polygons.len: {:?}", dr.polygons.len());
+                for (i, poly) in dr.polygons.iter().enumerate() {
+                    let mut poly_closed: Vec<usize> = poly.to_vec();
+                    poly_closed.push(poly[0]);
+                    let coordinates: Vec<Coordinate<T>> =
+                        poly_closed.iter().map(|&i| (dr.centers[i])).collect();
+
+                    let geometry = Geometry::Polygon(Polygon::new(coordinates.into(), vec![]));
+                    // TODO why does this need to be borrow_mut
+                    let neighbors = dr.neighbors.borrow_mut();
+                    let n = neighbors.get(&i).unwrap().to_vec();
                     let properties: Vec<FeatureProperty<T>> = vec![
-                        // FeatureProperty::<F>::Site(self.valid[i]),
-                        // FeatureProperty::<F>::Sitecoordinates(self.points[i]),
-                        // The endpoint for neighbors.
-                        // Consume neighbours here. Remove, and thereby destroy neighbours.
+                        FeatureProperty::Site(self.valid[i]),
+                        FeatureProperty::Sitecoordinates(self.points[i]),
                         FeatureProperty::Neighbors(n),
                     ];
-                    let fs = FeatureStruct {
-                        geometry,
+                    let fs = FeaturesStruct {
+                        geometry: vec![geometry],
                         properties: Vec::new(),
                     };
-                    //   coll.features.push();
-                    // }
+                    features.push(fs);
                 }
                 return Some(FeatureCollection(features));
             }
@@ -254,17 +252,17 @@ where
                     .enumerate()
                     .map(|(index, tri)| {
                         let tri_points: Vec<Coordinate<T>> =
-                            tri.iter().map(|i| (points[*i]).clone().into()).collect();
+                            tri.iter().map(|i| (points[*i])).collect();
                         let tri_struct = TriStruct {
                             tri_points,
-                            center: (delaunay_return.centers[index]).clone(),
+                            center: (delaunay_return.centers[index]),
                         };
                         return tri_struct;
                     })
                     .filter(|tri_struct| return excess(&tri_struct.tri_points) > T::zero())
                     .map(|tri_struct| {
-                        let first = tri_struct.tri_points[0].clone().into();
-                        let mut coordinates: Vec<Coordinate<T>> = tri_struct.tri_points.into();
+                        let first = tri_struct.tri_points[0];
+                        let mut coordinates: Vec<Coordinate<T>> = tri_struct.tri_points;
                         coordinates.push(first);
                         FeaturesStruct {
                             properties: vec![FeatureProperty::Circumecenter(tri_struct.center)],
@@ -310,12 +308,11 @@ where
                         .iter()
                         .enumerate()
                         .map(|(i, e)| {
-                            let ls: LineString<T> =
-                                vec![points[0].clone(), points[e[1]].clone()].into();
+                            let ls: LineString<T> = vec![points[0], points[e[1]]].into();
                             return FeaturesStruct {
                                 properties: vec![
-                                    FeatureProperty::Source(self.valid[e[0]].clone()),
-                                    FeatureProperty::Target(self.valid[e[1]].clone()),
+                                    FeatureProperty::Source(self.valid[e[0]]),
+                                    FeatureProperty::Target(self.valid[e[1]]),
                                     FeatureProperty::Length(distances[i]),
                                     FeatureProperty::Urquhart(urquhart[i]),
                                 ],
@@ -347,12 +344,7 @@ where
                 let coordinates: Vec<LineString<T>> = delaunay_return
                     .edges
                     .iter()
-                    .map(|e| {
-                        line_string![
-                            (self.points)[e[0]].clone().into(),
-                            (self.points)[e[1]].clone().into()
-                        ]
-                    })
+                    .map(|e| line_string![(self.points)[e[0]], (self.points)[e[1]]])
                     .collect();
                 return Some(MultiLineString(coordinates));
             }
@@ -380,10 +372,7 @@ where
             for i in 0..n {
                 if p1 > p0 {
                     // coordinates.push(vec![centers[p0].clone(), centers[p1].clone()]);
-                    coordinates.push(line_string![
-                        centers[p0].clone().into(),
-                        centers[p1].clone().into()
-                    ]);
+                    coordinates.push(line_string![centers[p0], centers[p1]]);
                 }
                 p0 = p1;
                 p1 = p[i + 1];
@@ -442,13 +431,9 @@ where
                     }
                     _ => {
                         let hull = &delaunay_return.hull;
-                        let mut coordinates: Vec<Coordinate<T>> = hull
-                            .iter()
-                            .map(|i| {
-                                return self.points[*i].clone().into();
-                            })
-                            .collect();
-                        coordinates.push(self.points[hull[0]].clone().into());
+                        let mut coordinates: Vec<Coordinate<T>> =
+                            hull.iter().map(|i| self.points[*i]).collect();
+                        coordinates.push(self.points[hull[0]]);
                         return Some(Polygon::new(coordinates.into(), vec![]));
                     }
                 };

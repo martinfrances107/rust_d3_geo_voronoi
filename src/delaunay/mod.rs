@@ -13,6 +13,7 @@ mod polygons;
 mod triangles;
 mod urquhart;
 
+// use core::future::poll_fn;
 use std::cell::RefCell;
 /// Delaunay triangulation
 use std::collections::HashMap;
@@ -110,13 +111,11 @@ where
                 // RC is needed here as tri and e are both closed over in the urquhart function an is part of the Delaunay return.
                 let tri = Rc::new(triangles(&delaunay));
                 let e = Rc::new(edges(&tri, &points));
-                let polys: Vec<Vec<usize>>;
-                let centers;
-                {
-                    let pr = polygons(circumcenters(&tri, &points), &tri, &points);
-                    polys = pr.0;
-                    centers = pr.1;
-                }
+
+                let circumcenters = circumcenters(&tri, &points);
+                println!("returned circumcenters");
+
+                let (polys, centers) = polygons(circumcenters, &tri, &points);
 
                 // RC is needed here as it is both closed over in the find function an is part of the Delaunay return.
                 let n = Rc::new(RefCell::new(neighbors(&tri, points.len())));

@@ -1,13 +1,13 @@
 mod voronoi_test {
     extern crate pretty_assertions;
+
     use geo::Point;
     use rust_d3_geo::data_object::feature_collection::FeatureCollection;
-    // use rust_d3_geo::data_object::DataObject<T>;
+
+    use geo::algorithm::cyclic_match::CyclicMatch;
     use geo::Geometry;
     use geo::LineString;
     use geo::MultiPoint;
-    use geo::Polygon;
-    use rust_d3_geo::data_object::feature_geometry::FeatureGeometry;
     use rust_d3_geo_voronoi::voronoi::Voronoi;
 
     #[cfg(test)]
@@ -42,9 +42,6 @@ mod voronoi_test {
                     }
                 }
             }
-            _ => {
-                assert!(false, "Expected a FeaturesCollection.");
-            }
         }
     }
     #[test]
@@ -64,36 +61,33 @@ mod voronoi_test {
         let _u = Voronoi::new(Some(Geometry::MultiPoint(sites))).polygons(None);
     }
 
-    // #[test]
-    // fn test_computes_the_hull() {
-    //     let sites = DataObject<T>::Vec(vec![
-    //         Point { x: 10f64, y: 0f64 },
-    //         Point { x: 10f64, y: 10f64 },
-    //         Point { x: 3f64, y: 5f64 },
-    //         Point { x: -2f64, y: 5f64 },
-    //         Point { x: 0f64, y: 0f64 },
-    //     ]);
-    //     let hull = Voronoi::new(DataObject<T>::Blank).hull(sites);
-    //     match hull {
-    //         Some(Polygon { coordinates }) => {
-    //             let expected_coordinates: Vec<Vec<Point>> = vec![vec![
-    //                 Point { x: 10f64, y: 10f64 },
-    //                 Point { x: 10f64, y: 0f64 },
-    //                 Point { x: 0f64, y: 0f64 },
-    //                 Point { x: -2f64, y: 5f64 },
-    //                 Point { x: 10f64, y: 10f64 },
-    //             ]];
-    //             assert_eq!(coordinates, expected_coordinates);
-    //         }
-    //         Some(_) => {
-    //             assert!(false, "Expecting a Polygon()");
-    //         }
-
-    //         None => {
-    //             assert!(false, "Expecting a DataObject<T>");
-    //         }
-    //     }
-    // }
+    #[test]
+    fn test_computes_the_hull() {
+        let sites = MultiPoint(vec![
+            Point::new(10f64, 0f64),
+            Point::new(10f64, 10f64),
+            Point::new(3f64, 5f64),
+            Point::new(-2f64, 5f64),
+            Point::new(0f64, 0f64),
+        ]);
+        let hull = Voronoi::new(None).hull(Some(Geometry::MultiPoint(sites)));
+        match hull {
+            Some(polygon) => {
+                let actual_ls = polygon.exterior();
+                let expected_ls = LineString::from(vec![
+                    Point::new(10f64, 10f64),
+                    Point::new(10f64, 0f64),
+                    Point::new(0f64, 0f64),
+                    Point::new(-2f64, 5f64),
+                    Point::new(10f64, 10f64),
+                ]);
+                assert!(actual_ls.is_cyclic_match(expected_ls));
+            }
+            None => {
+                panic!("expecting a polygon");
+            }
+        }
+    }
 
     // #[test]
     // pub fn voronoi_polygons_returns_polygons_tollerates_nan() {
@@ -150,21 +144,22 @@ mod voronoi_test {
 
     #[test]
     fn computes_the_delaunay_mesh() {
-        // let sites = DataObject<T>::Vec(vec![
-        //     Point { x: 10f64, y: 0f64 },
-        //     Point { x: 10f64, y: 10f64 },
-        //     Point { x: 3f64, y: 5f64 },
-        //     Point { x: -2f64, y: 5f64 },
-        //     Point { x: 0f64, y: 0f64 },
+        // let sites = MultiPoint(vec![
+        //     Point::new( 10f64,  0f64 ),
+        //     Point::new( 10f64,  10f64 ),
+        //     Point::new( 3f64,  5f64 ),
+        //     Point::new( -2f64,  5f64 ),
+        //     Point::new( 0f64,  0f64 ),
         // ]);
         // let mesh = Voronoi::new(sites).mesh(DataObject<T>::Blank);
         // match mesh {
-        //     Some(DataObject<T>::MultiLineString { coordinates }) => {
+        //     Some(MultiLineString { coordinates }) => {
         //         assert_eq!(coordinates, vec![vec![Point { x: 3f64, y: 5f64 }]]);
         //     }
         //     _ => assert!(false, "was expecting a MultiLineString"),
         // }
     }
+
     // tape("geoVoronoi.cellMesh() computes the Polygons mesh.", function(test) {
     //   var sites = [[10,0],[10,10],[3,5],[-2,5],[0,0]];
     //   var cellMesh = geoVoronoi.geoVoronoi().cellMesh(sites),

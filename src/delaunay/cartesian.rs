@@ -1,4 +1,4 @@
-use geo::{Coordinate, Point};
+use geo::Coordinate;
 use num_traits::Float;
 
 /// Converts spherical coordinates (degrees) to 3D Cartesian.

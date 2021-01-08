@@ -1,4 +1,4 @@
-use geo::{Coordinate, Point};
+use geo::Coordinate;
 use num_traits::Float;
 use rust_d3_geo::cartesian::cartesian_add;
 use rust_d3_geo::cartesian::cartesian_cross;
@@ -16,7 +16,7 @@ pub fn circumcenters<T: Float>(
         .map(|tri| {
             let c: Vec<[T; 3]> = tri
                 .iter()
-                .map(|i| points[*i].clone())
+                .map(|i| points[*i])
                 .map(|i| cartesian(&i))
                 .collect();
 

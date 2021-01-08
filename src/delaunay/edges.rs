@@ -1,4 +1,4 @@
-use geo::{Coordinate, Point};
+use geo::Coordinate;
 use num_traits::Float;
 
 use super::excess::excess;
@@ -15,7 +15,7 @@ pub fn edges<T: Float>(triangles: &[Vec<usize>], point: &[Coordinate<T>]) -> Vec
             return Vec::new();
         }
 
-        let ex_in = vec![point[0].clone(), point[1].clone(), point[2].clone()];
+        let ex_in = vec![point[0], point[1], point[2]];
 
         if excess(&ex_in) < T::zero() {
             return Vec::new();
