@@ -1,10 +1,11 @@
 mod voronoi_test {
     extern crate pretty_assertions;
 
-    use geo::Point;
+    use geo::{MultiLineString, Point};
     use rust_d3_geo::data_object::feature_collection::FeatureCollection;
 
     use geo::algorithm::cyclic_match::CyclicMatch;
+    use geo::line_string;
     use geo::Geometry;
     use geo::LineString;
     use geo::MultiPoint;
@@ -144,20 +145,34 @@ mod voronoi_test {
 
     #[test]
     fn computes_the_delaunay_mesh() {
-        // let sites = MultiPoint(vec![
-        //     Point::new( 10f64,  0f64 ),
-        //     Point::new( 10f64,  10f64 ),
-        //     Point::new( 3f64,  5f64 ),
-        //     Point::new( -2f64,  5f64 ),
-        //     Point::new( 0f64,  0f64 ),
-        // ]);
-        // let mesh = Voronoi::new(sites).mesh(DataObject<T>::Blank);
-        // match mesh {
-        //     Some(MultiLineString { coordinates }) => {
-        //         assert_eq!(coordinates, vec![vec![Point { x: 3f64, y: 5f64 }]]);
-        //     }
-        //     _ => assert!(false, "was expecting a MultiLineString"),
-        // }
+        let sites = MultiPoint(vec![
+            Point::new(10f64, 0f64),
+            Point::new(10f64, 10f64),
+            Point::new(3f64, 5f64),
+            Point::new(-2f64, 5f64),
+            Point::new(0f64, 0f64),
+        ]);
+        let mesh = Voronoi::new(Some(Geometry::MultiPoint(sites))).mesh(None);
+
+        let ls: Vec<LineString<f64>> = vec![
+            vec![[3., 5.], [-2., 5.]].into(),
+            vec![[3., 5.], [0., 0.]].into(),
+            vec![[-2., 5.], [0., 0.]].into(),
+            vec![[10., 10.], [-2., 5.]].into(),
+            vec![[10., 10.], [3., 5.]].into(),
+            vec![[10., 0.], [3., 5.]].into(),
+            vec![[10., 0.], [0., 0.]].into(),
+            vec![[10., 0.], [10., 10.]].into(),
+        ];
+
+        let mls = MultiLineString(ls);
+        match mesh {
+            Some(computed_mesh) => {
+                // let ls = mls.0;
+                assert_eq!(computed_mesh, mls);
+            }
+            _ => assert!(false, "was expecting a MultiLineString"),
+        }
     }
 
     // tape("geoVoronoi.cellMesh() computes the Polygons mesh.", function(test) {
