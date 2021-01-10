@@ -11,7 +11,6 @@ pub fn hull<T: Float>(triangles: &[Vec<usize>], points: &[Coordinate<T>]) -> Vec
     let mut h_hull: HashSet<String> = HashSet::new();
     let mut hull = Vec::new();
 
-    println!("triangles {:?}", triangles);
     for tri in triangles {
         let ex_in: Vec<Coordinate<T>> = tri
             .iter()

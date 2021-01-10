@@ -326,7 +326,7 @@ where
         };
     }
 
-    fn mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
+    pub fn mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
         match data {
             None => {
                 // No op

@@ -20,7 +20,6 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
-use geo::Point;
 use geo::{Coordinate, CoordinateType};
 use num_traits::AsPrimitive;
 use num_traits::FloatConst;
