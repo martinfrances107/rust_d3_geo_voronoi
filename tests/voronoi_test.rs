@@ -1,11 +1,10 @@
 mod voronoi_test {
     extern crate pretty_assertions;
 
-    use geo::{MultiLineString, Point};
+    use geo::Point;
     use rust_d3_geo::data_object::feature_collection::FeatureCollection;
 
     use geo::algorithm::cyclic_match::CyclicMatch;
-    use geo::line_string;
     use geo::Geometry;
     use geo::LineString;
     use geo::MultiPoint;
@@ -143,6 +142,8 @@ mod voronoi_test {
     //   test.end();
     // });
 
+    use approx::AbsDiffEq;
+
     #[test]
     fn computes_the_delaunay_mesh() {
         let sites = MultiPoint(vec![
@@ -154,7 +155,7 @@ mod voronoi_test {
         ]);
         let mesh = Voronoi::new(Some(Geometry::MultiPoint(sites))).mesh(None);
 
-        let ls: Vec<LineString<f64>> = vec![
+        let golden: Vec<LineString<f64>> = vec![
             vec![[3., 5.], [-2., 5.]].into(),
             vec![[3., 5.], [0., 0.]].into(),
             vec![[-2., 5.], [0., 0.]].into(),
@@ -165,13 +166,26 @@ mod voronoi_test {
             vec![[10., 0.], [10., 10.]].into(),
         ];
 
-        let mls = MultiLineString(ls);
         match mesh {
-            Some(computed_mesh) => {
-                // let ls = mls.0;
-                assert_eq!(computed_mesh, mls);
+            Some(mesh) => {
+                for computed_ls in mesh {
+                    let mut found = false;
+                    for golden_ls in &golden {
+                        if computed_ls.abs_diff_eq(&golden_ls, 1e-2) {
+                            found = true;
+                            continue; // Skip golden loop.
+                        }
+                    }
+                    if !found {
+                        assert!(false, "linestring not found in golden list.");
+                    }
+                }
+                // All mesh points inspected no rejections
+                assert!(true, "all linestrings found.")
             }
-            _ => assert!(false, "was expecting a MultiLineString"),
+            None => {
+                assert!(false);
+            }
         }
     }
 
@@ -194,6 +208,19 @@ mod voronoi_test {
     //   test.equal(voro.find(1,1,4),4);
     //   test.end();
     // });
+
+    // fn geoVoronoi_finds_p() {
+    //     let sites = MultiPoint(vec![
+    //         Point::new(10f64, 0f64),
+    //         Point::new(10f64, 10f64),
+    //         Point::new(3f64, 5f64),
+    //         Point::new(-2f64, 5f64),
+    //         Point::new(0f64, 0f64),
+    //     ]);
+    //     let voro = Voronoi::new(Some(Geometry::MultiPoint(sites)));
+    //     assert!(voro.find(Coordinate{x:1,y:1}, Some(4)));
+
+    // }
 
     // tape("geoVoronoi.links(sites) returns links.", function(test) {
     //   test.deepEqual(geoVoronoi.geoVoronoi().links(sites).features.map(function(d) { return d.properties.source[0]; }), [ 10, 0, 0 ]);
