@@ -28,13 +28,6 @@ pub fn polygons<'a, T: Float>(
     let supplement = |point: &Coordinate<T>, c: &mut Vec<Coordinate<T>>| -> usize {
         let mut f: i64 = -1;
 
-        // let centers_slice = (centers[triangles.len()..]);
-        c[triangles.len()..].iter().enumerate().map(|(i, p)| {
-            if p.x - point.x.abs() < epsilon_t && (p.y - point.y).abs() < epsilon_t {
-                f = (i + triangles.len()) as i64;
-            };
-        });
-
         if f < 0 {
             f = c.len() as i64;
             c.push(*point);

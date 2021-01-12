@@ -80,7 +80,7 @@ use urquhart::urquhart;
 //     pub projection: Option<ProjectionMutator>,
 // }
 
-// #[derive(Clone)]
+// #[derive(Clone, Copy, Debug)]
 pub struct GeoDelaunay<'a, T>
 where
     T: CoordinateType + AsPrimitive<T> + Float,

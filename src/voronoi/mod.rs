@@ -351,7 +351,7 @@ where
         }
     }
 
-    fn cell_mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
+    pub fn cell_mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
         match data {
             None => {
                 // No op
@@ -361,21 +361,23 @@ where
             }
         }
 
-        let delaunay = self.geo_delaunay?;
+        if self.geo_delaunay.is_none() {
+            return None;
+        }
+        let delaunay = self.geo_delaunay.unwrap();
         let polygons = delaunay.polygons;
-        let mut coordinates: Vec<LineString<T>> = Vec::new();
         let centers = delaunay.centers;
+        let mut coordinates: Vec<LineString<T>> = Vec::new();
         for p in polygons {
             let n = p.len();
             let mut p0 = *p.last().unwrap();
             let mut p1 = p[0];
             for i in 0..n {
                 if p1 > p0 {
-                    // coordinates.push(vec![centers[p0].clone(), centers[p1].clone()]);
                     coordinates.push(line_string![centers[p0], centers[p1]]);
                 }
                 p0 = p1;
-                p1 = p[i + 1];
+                p1 = p[i];
             }
         }
 

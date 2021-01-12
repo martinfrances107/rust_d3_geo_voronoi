@@ -1,13 +1,14 @@
 mod voronoi_test {
     extern crate pretty_assertions;
 
-    use geo::Point;
-    use rust_d3_geo::data_object::feature_collection::FeatureCollection;
-
+    use approx::AbsDiffEq;
     use geo::algorithm::cyclic_match::CyclicMatch;
+    use geo::coords_iter::CoordsIter;
     use geo::Geometry;
     use geo::LineString;
     use geo::MultiPoint;
+    use geo::Point;
+    use rust_d3_geo::data_object::feature_collection::FeatureCollection;
     use rust_d3_geo_voronoi::voronoi::Voronoi;
 
     #[cfg(test)]
@@ -133,17 +134,6 @@ mod voronoi_test {
     //   test.end();
     // });
 
-    // tape("geoVoronoi.mesh() computes the Delaunay mesh.", function(test) {
-    //   var sites = [[10,0],[10,10],[3,5],[-2,5],[0,0]];
-    //   test.deepEqual(
-    //   	geoVoronoi.geoVoronoi().mesh(sites),
-    //   	{ type: 'MultiLineString', coordinates: [ [ [ 3, 5 ], [ -2, 5 ] ], [ [ 3, 5 ], [ 0, 0 ] ], [ [ -2, 5 ], [ 0, 0 ] ], [ [ 10, 10 ], [ -2, 5 ] ], [ [ 10, 10 ], [ 3, 5 ] ], [ [ 10, 0 ], [ 3, 5 ] ], [ [ 10, 0 ], [ 0, 0 ] ], [ [ 10, 0 ], [ 10, 10 ] ] ] }
-    //   );
-    //   test.end();
-    // });
-
-    use approx::AbsDiffEq;
-
     #[test]
     fn computes_the_delaunay_mesh() {
         let sites = MultiPoint(vec![
@@ -200,7 +190,50 @@ mod voronoi_test {
     //   );
     //   test.end();
     // });
+    #[test]
+    fn computes_the_polygons_mesh() {
+        let sites = MultiPoint(vec![
+            Point::new(10f64, 0f64),
+            Point::new(10f64, 10f64),
+            Point::new(3f64, 5f64),
+            Point::new(-2f64, 5f64),
+            Point::new(0f64, 0f64),
+        ]);
 
+        let ls_string_golden: Vec<String> = vec![
+            "-175 -5/-175 -5".into(),
+            "-175 -5/0 3".into(),
+            "-175 -5/1 15".into(),
+            "-175 -5/5 0".into(),
+            "-175 -5/8 5".into(),
+            "0 3/1 15".into(),
+            "0 3/5 0".into(),
+            "1 15/8 5".into(),
+            "5 0/8 5".into(),
+        ];
+        let cell_mesh_maybe = Voronoi::new(None).cell_mesh(Some(Geometry::MultiPoint(sites)));
+        match cell_mesh_maybe {
+            Some(cell_mesh) => {
+                let c_string: Vec<Vec<String>> = cell_mesh
+                    .iter()
+                    .map(|ls| {
+                        let d = ls.coords_iter();
+                        let mut e: Vec<String> = d
+                            .map(|p| format!("{} {}", p.x.round(), p.y.round()))
+                            .collect::<Vec<String>>();
+                        e.sort();
+                        e
+                    })
+                    .collect();
+                let mut ls_string: Vec<String> = c_string.iter().map(|ls| ls.join("/")).collect();
+                ls_string.sort();
+                assert_eq!(ls_string, ls_string_golden);
+            }
+            None => {
+                panic!("expecting a MultiLineString");
+            }
+        }
+    }
     // tape("geoVoronoi.find() finds p", function(test) {
     //   var sites = [[10,0],[10,10],[3,5],[-2,5],[0,0]],
     //       voro = geoVoronoi.geoVoronoi(sites);
