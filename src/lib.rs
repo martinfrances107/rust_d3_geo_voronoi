@@ -3,7 +3,6 @@
 #![allow(unused_imports)]
 #![allow(clippy::needless_return)]
 extern crate geo;
-extern crate proj;
 extern crate rust_d3_array;
 extern crate rust_d3_geo;
 
