@@ -1,50 +1,16 @@
+use geo::MultiPoint;
+use geo::Point;
+use rand::prelude::*;
 use wasm_bindgen::prelude::*;
-use web_sys::Document;
-use web_sys::HtmlElement;
-use web_sys::Element;
 use wasm_bindgen::JsCast;
+use web_sys::Document;
+use web_sys::Element;
+use web_sys::HtmlElement;
 
-macro_rules! append_attrs {
-    ($document:ident, $el:ident, $( $attr:expr ),* ) => {
-        $(
-            let attr = $document.create_attribute($attr.0)?;
-            attr.set_value($attr.1);
-            $el.set_attribute_node(&attr)?;
-        )*
-    }
-}
-
-macro_rules! append_text_child {
-    ($document:ident, $el:ident, $text:expr ) => {
-        let text = $document.create_text_node($text);
-        $el.append_child(&text)?;
-    };
-}
-
-macro_rules! create_element_attrs {
-    ($document:ident, $type:expr, $( $attr:expr ),* ) => {{
-        let el = $document.create_element($type)?;
-        append_attrs!($document, el, $( $attr ),*);
-        el}
-    }
-}
-
-macro_rules! append_element_attrs {
-    ($document:ident, $parent:ident, $type:expr, $( $attr:expr ),* ) => {
-        let el = create_element_attrs!($document, $type, $( $attr ),* );
-        $parent.append_child(&el)?;
-    }
-}
-
-macro_rules! append_text_element_attrs {
-    ($document:ident, $parent:ident, $type:expr, $text:expr, $( $attr:expr ),*) => {
-        let el = create_element_attrs!($document, $type, $( $attr ),* );
-        append_text_child!($document, el, $text);
-        $parent.append_child(&el)?;
-    }
-}
+mod dom_macros;
 
 const STARTING_SIZE: u32 = 5;
+const TWO_PI: f64 = 2.0 * std::f64::consts::PI;
 
 type Result<T> = std::result::Result<T, JsValue>;
 
@@ -54,7 +20,7 @@ fn get_document() -> Result<Document> {
 }
 
 #[wasm_bindgen]
-pub fn run() -> Result<()>{
+pub fn run() -> Result<()> {
     // get window/document/body
     // let window = web_sys::window().expect("Could not get window");
     let document = get_document()?;
@@ -68,7 +34,14 @@ pub fn run() -> Result<()>{
 
 fn mount_canvas(document: &Document, parent: &Element) -> Result<()> {
     let p = create_element_attrs!(document, "p",);
-    append_element_attrs!(document, p, "canvas", ("id", "dot-canvas"));
+    append_element_attrs!(
+        document,
+        p,
+        "canvas",
+        ("id", "dot-canvas"),
+        ("width", "200"),
+        ("height", "200")
+    );
     parent.append_child(&p)?;
     Ok(())
 }
@@ -116,10 +89,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
         .get_element_by_id("dot-canvas")
         .unwrap()
         .dyn_into::<web_sys::HtmlCanvasElement>()?;
-    // resize canvas to size * 2
-    let canvas_dim = size * 2;
-    canvas.set_width(canvas_dim);
-    canvas.set_height(canvas_dim);
+
     let context = canvas
         .get_context("2d")?
         .unwrap()
@@ -127,18 +97,33 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
 
     // draw
 
-    context.clear_rect(0.0, 0.0, canvas.width().into(), canvas.height().into());
-    // create shape of radius 'size' around center point (size, size)
-    context.begin_path();
-    context.arc(
-        size.into(),
-        size.into(),
-        size.into(),
-        0.0,
-        2.0 * std::f64::consts::PI,
-    )?;
-    context.fill();
-    context.stroke();
+    let width = canvas.width().into();
+    let height = canvas.height().into();
+    context.clear_rect(0.0, 0.0, width, height);
+
+    let mut rng = rand::thread_rng();
+    let mut sites: Vec<Point<f64>> = Vec::new();
+    for _i in 0..size {
+        sites.push(Point::new(
+            rng.gen_range(0., width),
+            rng.gen_range(0., height),
+        ));
+    }
+
+    let mp = MultiPoint(sites);
+
+    for p in mp {
+        context.begin_path();
+        context.arc(
+            p.x(),
+            p.y(),
+            5.0, // radius
+            0.0,
+            TWO_PI,
+        )?;
+        context.fill();
+        context.stroke();
+    }
 
     Ok(())
 }
