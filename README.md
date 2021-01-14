@@ -16,24 +16,28 @@ API finialization. There maybe optimisation in the area of generics. So the API 
 
 Modules, passing test ready for phase 2 evaluation :-
 
-# Instructions:
+## Instructions
 
-* Run the test suite.
+* To Run the test suite :-
 
-        `cargo test`
+        cargo test
 
+This module contains a benchmark library crate. That crate is used in a wasm-pack web application. A web site which can be deployed.
 
-* Build the libray with javascript bindings for use in a web browser.  ( See ./pkg/ )
+* To build and start the web server:-
 
+        cd benchmark
         wasm-pack build
+        cd www
+        npm install
+        npm run start
 
-
 <br/>
 <br/>
 <br/>
 <br/>
 
-# Module Dependencies
+## Module Dependencies
 
 * [`delaunator`]("https://github.com/mourner/delaunator-rs.git") for generation of the delaunay mesh.
 
@@ -48,3 +52,5 @@ Modules, passing test ready for phase 2 evaluation :-
 * [`wasm-bindgen`](https://github.com/rustwasm/wasm-bindgen) for communicating between WebAssembly and JavaScript. For logging panic messages to the developer console.
 * [`wee_alloc`](https://github.com/rustwasm/wee_alloc), an allocator optimized
   for small code size.
+
+* [`wasm-pack`](https://github.com/rustwasm/wasm-pack), A generator used to created all the glue code to create the rust benchamrk web-app.
