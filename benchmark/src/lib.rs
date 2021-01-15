@@ -1,9 +1,14 @@
 extern crate web_sys;
+
 use geo::Coordinate;
+use geo::Geometry;
 use geo::MultiPoint;
+use geo::Point;
 use rand::prelude::*;
+use rust_d3_geo::data_object::feature_collection::FeatureCollection;
 use rust_d3_geo::projection::orthographic::OrthographicRaw;
 use rust_d3_geo::Transform;
+use rust_d3_geo_voronoi::voronoi::Voronoi;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::Document;
@@ -11,7 +16,6 @@ use web_sys::HtmlElement;
 
 mod dom_macros;
 
-const STARTING_SIZE: u32 = 5;
 const TWO_PI: f64 = 2.0 * std::f64::consts::PI;
 
 type Result<T> = std::result::Result<T, JsValue>;
@@ -80,35 +84,83 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
         .unwrap()
         .dyn_into::<web_sys::CanvasRenderingContext2d>()?;
 
+    // TODO can this be defined statically
+    let scheme_category10 = vec![
+        JsValue::from_str("#1f77b4"),
+        JsValue::from_str("#ff7f0e"),
+        JsValue::from_str("#2ca02c"),
+        JsValue::from_str("#d62728"),
+        JsValue::from_str("#9467bd"),
+        JsValue::from_str("#8c564b"),
+        JsValue::from_str("#e377c2"),
+        JsValue::from_str("#7f7f7f"),
+        JsValue::from_str("#bcbd22"),
+        JsValue::from_str("#17becf"),
+    ];
+
     let width = canvas.width().into();
     let height = canvas.height().into();
-    context.clear_rect(0.0, 0.0, width, height);
-    context.set_fill_style(&"white".into());
+    context.set_fill_style(&"black".into());
     context.set_stroke_style(&"black".into());
+    context.fill_rect(0.0, 0.0, width, height);
     let mut rng = rand::thread_rng();
     let ortho = OrthographicRaw::gen_projection_mutator::<f64>();
 
-    let mut sites: Vec<Coordinate<f64>> = Vec::new();
+    let mut sites: Vec<Point<f64>> = Vec::new();
     for _i in 0..size {
         let point = Coordinate {
             x: rng.gen_range(0., 360f64),
             y: rng.gen_range(-90f64, 90f64),
         };
-
         let t = ortho.transform(&point);
-        sites.push(t);
+        
+        sites.push(t.into());
     }
 
-    for p in sites {
-        context.begin_path();
-        context.arc(
-            p.x, p.y, 5.0, // radius
-            0.0, TWO_PI,
-        )?;
-        context.fill();
-        context.stroke();
-    }
+    let sites = MultiPoint(sites);
 
+    match Voronoi::new(Some(Geometry::MultiPoint(sites.clone()))).polygons(None) {
+        None => {
+            console_log!("failed to get polygons");
+        }
+        Some(FeatureCollection(features)) => {
+            context.set_stroke_style(&"black".into());
+            for (i, g) in features[0].geometry.iter().enumerate() {
+                context.set_fill_style(&scheme_category10[i % 10]);
+                match g {
+                    Geometry::Polygon(polygon) => {
+                        let ls = polygon.exterior();
+                        let l_iter = ls.lines();
+                        context.begin_path();
+                        for line in l_iter {
+                            context.line_to(line.start.x, line.start.y);
+                            context.line_to(line.end.x, line.end.x);
+                        }
+                        context.close_path();
+                        context.fill();
+                    }
+                    _ => {
+                        console_log!("expecting a polygon");
+                    }
+                }
+            }
+
+            context.set_fill_style(&"white".into());
+            for p in sites {
+                context.begin_path();
+                context.arc(
+                    p.x(),
+                    p.y(),
+                    5.0, // radius
+                    0.0,
+                    TWO_PI,
+                )?;
+                context.fill();
+                context.stroke();
+            }
+            // }
+        }
+    }
     Ok(())
 }
 
