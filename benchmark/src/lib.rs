@@ -1,10 +1,12 @@
+extern crate web_sys;
+use geo::Coordinate;
 use geo::MultiPoint;
-use geo::Point;
 use rand::prelude::*;
+use rust_d3_geo::projection::orthographic::OrthographicRaw;
+use rust_d3_geo::Transform;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::Document;
-use web_sys::Element;
 use web_sys::HtmlElement;
 
 mod dom_macros;
@@ -14,6 +16,35 @@ const TWO_PI: f64 = 2.0 * std::f64::consts::PI;
 
 type Result<T> = std::result::Result<T, JsValue>;
 
+#[wasm_bindgen]
+extern "C" {
+    // Use `js_namespace` here to bind `console.log(..)` instead of just
+    // `log(..)`
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+
+    // The `console.log` is quite polymorphic, so we can bind it with multiple
+    // signatures. Note that we need to use `js_name` to ensure we always call
+    // `log` in JS.
+    #[wasm_bindgen(js_namespace = console, js_name = log)]
+    fn log_u32(a: u32);
+
+    // Multiple arguments too!
+    #[wasm_bindgen(js_namespace = console, js_name = log)]
+    fn log_many(a: &str, b: &str);
+}
+
+// Next let's define a macro that's like `println!`, only it works for
+// `console.log`. Note that `println!` doesn't actually work on the wasm target
+// because the standard library currently just eats all output. To get
+// `println!`-like behavior in your app you'll likely want a macro like this.
+
+macro_rules! console_log {
+    // Note that this is using the `log` function imported above during
+    // `bare_bones`
+    ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
+}
+
 fn get_document() -> Result<Document> {
     let window = web_sys::window().unwrap();
     Ok(window.document().unwrap())
@@ -21,8 +52,7 @@ fn get_document() -> Result<Document> {
 
 #[wasm_bindgen]
 pub fn run() -> Result<()> {
-    // get window/document/body
-    // let window = web_sys::window().expect("Could not get window");
+    console_log!("Hello {}!", "world");
     let document = get_document()?;
     let body = document.body().expect("Could not get body");
 
@@ -32,53 +62,8 @@ pub fn run() -> Result<()> {
     Ok(())
 }
 
-fn mount_canvas(document: &Document, parent: &Element) -> Result<()> {
-    let p = create_element_attrs!(document, "p",);
-    append_element_attrs!(
-        document,
-        p,
-        "canvas",
-        ("id", "dot-canvas"),
-        ("width", "200"),
-        ("height", "200")
-    );
-    parent.append_child(&p)?;
-    Ok(())
-}
-
-fn mount_controls(document: &Document, parent: &HtmlElement) -> Result<()> {
-    // containing div
-    let div = create_element_attrs!(document, "div", ("id", "rxcanvas"));
-    // span
-    append_text_element_attrs!(
-        document,
-        div,
-        "span",
-        &format!("{}", STARTING_SIZE),
-        ("id", "size-output")
-    );
-    // input
-    append_element_attrs!(
-        document,
-        div,
-        "input",
-        ("id", "size"),
-        ("type", "range"),
-        ("min", "5"),
-        ("max", "100"),
-        ("step", "5")
-    );
-    // label
-    append_text_element_attrs!(document, div, "label", "- Size", ("for", "size"));
-    // canvas
-    mount_canvas(&document, &div)?;
-    parent.append_child(&div)?;
-    Ok(())
-}
-
-fn mount_app(document: &Document, body: &HtmlElement) -> Result<()> {
-    append_text_element_attrs!(document, body, "h1", "DOT",);
-    mount_controls(&document, &body)?;
+fn mount_app(_document: &Document, _body: &HtmlElement) -> Result<()> {
+    // mount_controls(&document, &body)?;
     Ok(())
 }
 
@@ -86,7 +71,7 @@ fn mount_app(document: &Document, body: &HtmlElement) -> Result<()> {
 fn update_canvas(document: &Document, size: u32) -> Result<()> {
     // grab canvas
     let canvas = document
-        .get_element_by_id("dot-canvas")
+        .get_element_by_id("c")
         .unwrap()
         .dyn_into::<web_sys::HtmlCanvasElement>()?;
 
@@ -95,31 +80,30 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
         .unwrap()
         .dyn_into::<web_sys::CanvasRenderingContext2d>()?;
 
-    // draw
-
     let width = canvas.width().into();
     let height = canvas.height().into();
     context.clear_rect(0.0, 0.0, width, height);
-
+    context.set_fill_style(&"white".into());
+    context.set_stroke_style(&"black".into());
     let mut rng = rand::thread_rng();
-    let mut sites: Vec<Point<f64>> = Vec::new();
+    let ortho = OrthographicRaw::gen_projection_mutator::<f64>();
+
+    let mut sites: Vec<Coordinate<f64>> = Vec::new();
     for _i in 0..size {
-        sites.push(Point::new(
-            rng.gen_range(0., width),
-            rng.gen_range(0., height),
-        ));
+        let point = Coordinate {
+            x: rng.gen_range(0., 360f64),
+            y: rng.gen_range(-90f64, 90f64),
+        };
+
+        let t = ortho.transform(&point);
+        sites.push(t);
     }
 
-    let mp = MultiPoint(sites);
-
-    for p in mp {
+    for p in sites {
         context.begin_path();
         context.arc(
-            p.x(),
-            p.y(),
-            5.0, // radius
-            0.0,
-            TWO_PI,
+            p.x, p.y, 5.0, // radius
+            0.0, TWO_PI,
         )?;
         context.fill();
         context.stroke();
