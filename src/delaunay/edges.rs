@@ -1,4 +1,4 @@
-use geo::Coordinate;
+use geo::{CoordFloat, Coordinate};
 use num_traits::Float;
 
 use super::excess::excess;
@@ -6,7 +6,7 @@ use rust_d3_array::extent::extent;
 
 use std::collections::HashSet;
 
-pub fn edges<T: Float>(triangles: &[Vec<usize>], point: &[Coordinate<T>]) -> Vec<[usize; 2]> {
+pub fn edges<T: CoordFloat>(triangles: &[Vec<usize>], point: &[Coordinate<T>]) -> Vec<[usize; 2]> {
     if point.len() == 2usize {
         return vec![[0usize, 1usize]];
     }

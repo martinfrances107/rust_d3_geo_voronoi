@@ -1,5 +1,4 @@
-use geo::Coordinate;
-use num_traits::Float;
+use geo::{CoordFloat, Coordinate};
 use rust_d3_geo::cartesian::cartesian_add;
 use rust_d3_geo::cartesian::cartesian_cross;
 use rust_d3_geo::cartesian::cartesian_normalize;
@@ -7,7 +6,7 @@ use rust_d3_geo::cartesian::spherical;
 
 use super::cartesian::cartesian;
 
-pub fn circumcenters<T: Float>(
+pub fn circumcenters<T: CoordFloat>(
     triangles: &[Vec<usize>],
     points: &[Coordinate<T>],
 ) -> Vec<Coordinate<T>> {

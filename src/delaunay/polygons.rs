@@ -4,7 +4,7 @@ use std::rc::Rc;
 
 // use delaunator::Point;
 use delaunator::EMPTY;
-use geo::Coordinate;
+use geo::{CoordFloat, Coordinate};
 use num_traits::Float;
 use rust_d3_geo::cartesian::cartesian_add;
 use rust_d3_geo::cartesian::cartesian_cross;
@@ -16,7 +16,7 @@ use crate::math::{EPSILON, EPSILON2};
 use super::cartesian::cartesian;
 use super::o_midpoint::o_midpoint;
 
-pub fn polygons<'a, T: Float>(
+pub fn polygons<'a, T: CoordFloat>(
     circumcenter: Vec<Coordinate<T>>,
     triangles: &Vec<Vec<usize>>,
     points: &'a [Coordinate<T>],

@@ -20,7 +20,7 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
-use geo::{Coordinate, CoordinateType};
+use geo::{CoordFloat, Coordinate};
 use num_traits::AsPrimitive;
 use num_traits::FloatConst;
 use num_traits::{float::Float, FromPrimitive};
@@ -79,11 +79,10 @@ use urquhart::urquhart;
 
 //     pub projection: Option<ProjectionMutator>,
 // }
-
 // #[derive(Clone, Copy, Debug)]
 pub struct GeoDelaunay<'a, T>
 where
-    T: CoordinateType + AsPrimitive<T> + Float,
+    T: CoordFloat + FloatConst + AsPrimitive<T>,
 {
     pub delaunay: Delaunay<T>,
     // The edges and triangles properties need RC because the values are close over in the urquhart function.
@@ -101,7 +100,7 @@ where
 
 impl<'a, T> GeoDelaunay<'a, T>
 where
-    T: CoordinateType + AsPrimitive<T> + Float + FloatConst + FromPrimitive,
+    T: CoordFloat + AsPrimitive<T> + FloatConst + FromPrimitive,
 {
     pub fn delaunay(points: Rc<Vec<Coordinate<T>>>) -> Option<GeoDelaunay<'a, T>> {
         let p = points.clone();

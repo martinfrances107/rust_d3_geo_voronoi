@@ -3,8 +3,8 @@ use std::{borrow::Borrow, collections::HashMap};
 
 use geo::centroid::Centroid;
 use geo::prelude::*;
+use geo::CoordFloat;
 use geo::Coordinate;
-use geo::CoordinateType;
 use geo::Geometry;
 use geo::GeometryCollection;
 use geo::LineString;
@@ -28,7 +28,7 @@ use super::delaunay::GeoDelaunay;
 /// Return type used by .x() and .y()
 enum XYReturn<'a, T>
 where
-    T: Float + AsPrimitive<T>,
+    T: CoordFloat + AsPrimitive<T> + FloatConst,
 {
     Voronoi(Voronoi<'a, T>),
     Func(Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>),
@@ -37,7 +37,7 @@ where
 // #[derive(Debug)]
 struct TriStruct<T>
 where
-    T: CoordinateType,
+    T: CoordFloat,
 {
     tri_points: Vec<Coordinate<T>>,
     center: Coordinate<T>,
@@ -46,7 +46,7 @@ where
 // #[derive(Debug)]
 pub struct Voronoi<'a, T>
 where
-    T: AsPrimitive<T> + CoordinateType + Float,
+    T: AsPrimitive<T> + CoordFloat + FloatConst,
 {
     geo_delaunay: Option<GeoDelaunay<'a, T>>,
     data: Option<Geometry<T>>,
@@ -61,7 +61,7 @@ where
 
 impl<'a, T> Default for Voronoi<'a, T>
 where
-    T: AsPrimitive<T> + CoordinateType + Float,
+    T: AsPrimitive<T> + CoordFloat + FloatConst,
 {
     fn default() -> Voronoi<'a, T> {
         return Voronoi {
@@ -78,7 +78,7 @@ where
 
 impl<'a, T> Voronoi<'a, T>
 where
-    T: CoordinateType + AsPrimitive<T> + Float + FloatConst + FromPrimitive,
+    T: CoordFloat + AsPrimitive<T> + FloatConst + FromPrimitive,
 {
     /// If the input is a collection we act only on the first element in the collection.
     /// by copying over the data into a new single element before proceeding.

@@ -3,7 +3,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use geo::Coordinate;
+use geo::{CoordFloat, Coordinate};
 use num_traits::Float;
 
 use super::cartesian::cartesian;
@@ -15,7 +15,7 @@ fn distance2<T: Float>(a: [T; 3], b: [T; 3]) -> T {
     return x * x + y * y + z * z;
 }
 
-pub fn find<'a, T: Float + 'static>(
+pub fn find<'a, T: CoordFloat + 'static>(
     neighbors: Rc<RefCell<HashMap<usize, Vec<usize>>>>,
     points: Rc<Vec<Coordinate<T>>>,
 ) -> Box<dyn Fn(Coordinate<T>, Option<usize>) -> Option<usize> + 'a> {

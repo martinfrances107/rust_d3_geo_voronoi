@@ -3,7 +3,7 @@ use std::cmp;
 use std::rc::Rc;
 
 use geo::Point;
-use geo::{Coordinate, CoordinateType};
+use geo::{CoordFloat, Coordinate};
 use num_traits::{float::Float, float::FloatConst, AsPrimitive, FromPrimitive};
 
 use rust_d3_delaunay::delaunay::Delaunay;
@@ -19,7 +19,7 @@ use delaunator::EMPTY;
 // TODO find a way arround the F64 issue.
 pub fn delaunay_from<T>(points: Rc<Vec<Coordinate<T>>>) -> Option<Delaunay<T>>
 where
-    T: CoordinateType + Float + FloatConst + AsPrimitive<T> + FromPrimitive,
+    T: CoordFloat + FloatConst + AsPrimitive<T> + FromPrimitive,
 {
     if points.len() < 2 {
         return None;

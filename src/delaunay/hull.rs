@@ -2,12 +2,12 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 
 use delaunator::EMPTY;
-use geo::Coordinate;
+use geo::{CoordFloat, Coordinate};
 use num_traits::Float;
 
 use super::excess::excess;
 
-pub fn hull<T: Float>(triangles: &[Vec<usize>], points: &[Coordinate<T>]) -> Vec<usize> {
+pub fn hull<T: CoordFloat>(triangles: &[Vec<usize>], points: &[Coordinate<T>]) -> Vec<usize> {
     let mut h_hull: HashSet<String> = HashSet::new();
     let mut hull = Vec::new();
 
