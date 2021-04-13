@@ -1,3 +1,4 @@
+use std::ops::AddAssign;
 use std::rc::Rc;
 use std::{borrow::Borrow, collections::HashMap};
 
@@ -13,12 +14,12 @@ use geo::Point;
 use geo::Polygon;
 use geo::{line_string, MultiPoint};
 use num_traits::{AsPrimitive, Float, FloatConst, FromPrimitive};
-use rust_d3_geo::data_object::feature_collection::FeatureCollection;
-use rust_d3_geo::data_object::feature_geometry::FeatureGeometry;
-use rust_d3_geo::data_object::feature_property::FeatureProperty;
-use rust_d3_geo::data_object::feature_struct::FeatureStruct;
-use rust_d3_geo::data_object::features_struct::FeaturesStruct;
+use rust_d3_geo::data_object::FeatureCollection;
+// use rust_d3_geo::data_object::feature_geometry::FeatureGeometry;
 use rust_d3_geo::data_object::DataObject;
+use rust_d3_geo::data_object::FeatureProperty;
+use rust_d3_geo::data_object::FeatureStruct;
+use rust_d3_geo::data_object::FeaturesStruct;
 use rust_d3_geo::distance::distance;
 
 use crate::delaunay::excess::excess;
@@ -28,7 +29,7 @@ use super::delaunay::GeoDelaunay;
 /// Return type used by .x() and .y()
 enum XYReturn<'a, T>
 where
-    T: CoordFloat + AsPrimitive<T> + FloatConst,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst,
 {
     Voronoi(Voronoi<'a, T>),
     Func(Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>),
@@ -46,7 +47,7 @@ where
 // #[derive(Debug)]
 pub struct Voronoi<'a, T>
 where
-    T: AsPrimitive<T> + CoordFloat + FloatConst,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst,
 {
     geo_delaunay: Option<GeoDelaunay<'a, T>>,
     data: Option<Geometry<T>>,
@@ -61,7 +62,7 @@ where
 
 impl<'a, T> Default for Voronoi<'a, T>
 where
-    T: AsPrimitive<T> + CoordFloat + FloatConst,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst,
 {
     fn default() -> Voronoi<'a, T> {
         return Voronoi {
@@ -78,7 +79,7 @@ where
 
 impl<'a, T> Voronoi<'a, T>
 where
-    T: CoordFloat + AsPrimitive<T> + FloatConst + FromPrimitive,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst + FromPrimitive,
 {
     /// If the input is a collection we act only on the first element in the collection.
     /// by copying over the data into a new single element before proceeding.

@@ -1,5 +1,6 @@
 #![allow(clippy::many_single_char_names)]
 use std::cmp;
+use std::ops::AddAssign;
 use std::rc::Rc;
 
 use geo::Point;
@@ -19,7 +20,7 @@ use delaunator::EMPTY;
 // TODO find a way arround the F64 issue.
 pub fn delaunay_from<T>(points: Rc<Vec<Coordinate<T>>>) -> Option<Delaunay<T>>
 where
-    T: CoordFloat + FloatConst + AsPrimitive<T> + FromPrimitive,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst + FromPrimitive,
 {
     if points.len() < 2 {
         return None;
@@ -32,18 +33,19 @@ where
 
     let r = Rotation::new(points[pivot].x, points[pivot].y, T::zero());
 
-    let mut projection = StereographicRaw::gen_projection_mutator();
-    projection.translate(Some(&Coordinate {
-        x: T::zero(),
-        y: T::zero(),
-    }));
-    projection.scale(Some(&T::one()));
     let angles2 = r.invert(&Coordinate {
         x: T::from(180).unwrap(),
         y: T::zero(),
     });
     let angles: [T; 3] = [angles2.x, angles2.y, T::zero()];
-    projection.rotate(Some(angles));
+
+    let mut projection = StereographicRaw::gen_projection_mutator()
+        .translate(&Coordinate {
+            x: T::zero(),
+            y: T::zero(),
+        })
+        .scale(T::one())
+        .rotate(angles);
 
     let mut points: Vec<Coordinate<T>> = points.iter().map(|p| projection.transform(&p)).collect();
 

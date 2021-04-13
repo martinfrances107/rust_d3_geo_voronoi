@@ -2,8 +2,9 @@ use delaunator::Point;
 use geo::CoordFloat;
 use num_traits::{AsPrimitive, Float, FloatConst};
 use rust_d3_delaunay::delaunay::Delaunay;
+use std::ops::AddAssign;
 
-pub fn triangles<T: CoordFloat + FloatConst + AsPrimitive<T>>(
+pub fn triangles<T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst>(
     delaunay: &Delaunay<T>,
 ) -> Vec<Vec<usize>> {
     let Delaunay { triangles, .. } = delaunay;

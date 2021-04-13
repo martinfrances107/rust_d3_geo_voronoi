@@ -18,6 +18,7 @@ use std::cell::RefCell;
 /// Delaunay triangulation
 use std::collections::HashMap;
 use std::fmt;
+use std::ops::AddAssign;
 use std::rc::Rc;
 
 use geo::{CoordFloat, Coordinate};
@@ -82,7 +83,7 @@ use urquhart::urquhart;
 // #[derive(Clone, Copy, Debug)]
 pub struct GeoDelaunay<'a, T>
 where
-    T: CoordFloat + FloatConst + AsPrimitive<T>,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst,
 {
     pub delaunay: Delaunay<T>,
     // The edges and triangles properties need RC because the values are close over in the urquhart function.
@@ -100,7 +101,7 @@ where
 
 impl<'a, T> GeoDelaunay<'a, T>
 where
-    T: CoordFloat + AsPrimitive<T> + FloatConst + FromPrimitive,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst + FromPrimitive,
 {
     pub fn delaunay(points: Rc<Vec<Coordinate<T>>>) -> Option<GeoDelaunay<'a, T>> {
         let p = points.clone();

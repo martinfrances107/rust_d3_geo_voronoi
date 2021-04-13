@@ -8,7 +8,7 @@ mod voronoi_test {
     use geo::LineString;
     use geo::MultiPoint;
     use geo::Point;
-    use rust_d3_geo::data_object::feature_collection::FeatureCollection;
+    use rust_d3_geo::data_object::FeatureCollection;
     use rust_d3_geo_voronoi::voronoi::Voronoi;
 
     #[cfg(test)]
