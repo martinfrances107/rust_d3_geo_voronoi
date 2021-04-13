@@ -5,7 +5,7 @@ use geo::Geometry;
 use geo::MultiPoint;
 use geo::Point;
 use rand::prelude::*;
-use rust_d3_geo::data_object::feature_collection::FeatureCollection;
+use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::projection::orthographic::OrthographicRaw;
 use rust_d3_geo::Transform;
 use rust_d3_geo_voronoi::voronoi::Voronoi;
@@ -36,6 +36,8 @@ extern "C" {
     // Multiple arguments too!
     #[wasm_bindgen(js_namespace = console, js_name = log)]
     fn log_many(a: &str, b: &str);
+
+    fn alert(s: &str);
 }
 
 // Next let's define a macro that's like `println!`, only it works for
@@ -52,6 +54,11 @@ macro_rules! console_log {
 fn get_document() -> Result<Document> {
     let window = web_sys::window().unwrap();
     Ok(window.document().unwrap())
+}
+
+#[wasm_bindgen]
+pub fn greet(name: &str) {
+    alert(&format!("Hello, {}!", name));
 }
 
 #[wasm_bindgen]
@@ -104,7 +111,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
     context.set_stroke_style(&"black".into());
     context.fill_rect(0.0, 0.0, width, height);
     let mut rng = rand::thread_rng();
-    let ortho = OrthographicRaw::gen_projection_mutator::<f64>();
+    let ortho = OrthographicRaw::gen_projection_mutator();
 
     let mut sites: Vec<Point<f64>> = Vec::new();
     for _i in 0..size {
