@@ -39,7 +39,7 @@ where
     });
     let angles: [T; 3] = [angles2.x, angles2.y, T::zero()];
 
-    let mut projection = StereographicRaw::gen_projection_mutator()
+    let projection = StereographicRaw::gen_projection_mutator()
         .translate(&Coordinate {
             x: T::zero(),
             y: T::zero(),
