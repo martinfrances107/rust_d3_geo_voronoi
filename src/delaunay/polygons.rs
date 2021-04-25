@@ -25,58 +25,60 @@ pub fn polygons<'a, T: CoordFloat>(
     let mut polygons: Vec<Vec<usize>> = Vec::new();
     let mut centers = circumcenter;
 
-    let supplement = |point: &Coordinate<T>, c: &mut Vec<Coordinate<T>>| -> usize {
-        let mut f: i64 = -1;
-
-        if f < 0 {
-            f = c.len() as i64;
-            c.push(*point);
+    let supplement = |point: &Coordinate<T>, centers: &mut Vec<Coordinate<T>>| -> usize {
+        // let mut supplement = |point: &Coordinate<T>| -> usize {
+        let mut f = None;
+        centers[triangles.len()..]
+            .iter()
+            .enumerate()
+            .for_each(|(i, p)| {
+                if p == point {
+                    f = Some(triangles.len() + 1)
+                }
+            });
+        match f {
+            None => {
+                let f_out: usize = centers.len();
+                centers.push(*point);
+                f_out
+            }
+            Some(f) => f,
         }
-
-        return f as usize;
     };
 
     if triangles.is_empty() {
-        match points.len() {
-            0 | 1 => {
+        if points.len() == 0 {
+            return (polygons, centers);
+        }
+        if points.len() == 1 {
+            // // WARNING in the original javascript this block is never tested.
+            if points.len() == 2 {
+                // Two hemispheres.
+                let a = cartesian(&points[0]);
+                let b = cartesian(&points[0]);
+                let m = cartesian_normalize(&cartesian_add(a, b));
+
+                let d = cartesian_normalize(&cartesian_cross(&a, &b));
+                let c = cartesian_cross(&m, &d);
+
+                // let supplement_copy = supplement.clone();
+                let poly: Vec<usize> = [
+                    m,
+                    cartesian_cross(&m, &c),
+                    cartesian_cross(&cartesian_cross(&m, &c), &c),
+                    cartesian_cross(&cartesian_cross(&cartesian_cross(&m, &c), &c), &c),
+                ]
+                .iter()
+                .map(|p| spherical(p))
+                .map(|p| supplement(&p, &mut centers))
+                .collect();
+                polygons.push(poly);
+                // let rev: Vec<usize> = poly.iter().rev().map(|x| *x).collect();
+                // polygons.push(rev);
                 return (polygons, centers);
             }
-            2 => {
-                // // WARNING in the original javascript this block is never tested.
-                if points.len() == 2 {
-                    // Two hemispheres.
-                    let a = cartesian(&points[0]);
-                    let b = cartesian(&points[0]);
-                    let m = cartesian_normalize(&cartesian_add(a, b));
-
-                    let d = cartesian_normalize(&cartesian_cross(&a, &b));
-                    let c = cartesian_cross(&m, &d);
-
-                    // let supplement_copy = supplement.clone();
-                    let poly: Vec<usize> = [
-                        m,
-                        cartesian_cross(&m, &c),
-                        cartesian_cross(&cartesian_cross(&m, &c), &c),
-                        cartesian_cross(&cartesian_cross(&cartesian_cross(&m, &c), &c), &c),
-                    ]
-                    .iter()
-                    .map(|p| spherical(p))
-                    .map(|p| {
-                        // let out: usize = supplement_copy(&p);
-                        let out = 0; // TODO must resolve suppliment issues.
-                        return out;
-                    })
-                    .collect();
-                    polygons.push(poly);
-                    // let rev: Vec<usize> = poly.iter().rev().map(|x| *x).collect();
-                    // polygons.push(rev);
-                    return (polygons, centers);
-                }
-            }
-            _ => { // further processing needed.}
-            }
         }
-    };
+    }
 
     let mut polygons_map: HashMap<usize, Vec<(usize, usize, usize, (usize, usize, usize))>> =
         HashMap::new();
