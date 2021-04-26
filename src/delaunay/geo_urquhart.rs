@@ -58,30 +58,3 @@ pub fn geo_urquhart<T: Float>(
         return out;
     });
 }
-
-// function urquhart(edges, triangles) {
-//   return function(distances) {
-//     const _lengths = {},
-//       _urquhart = {};
-//     edges.forEach((edge, i) => {
-//       const u = edge.join("-");
-//       _lengths[u] = distances[i];
-//       _urquhart[u] = true;
-//     });
-
-//     triangles.forEach(tri => {
-//       let l = 0,
-//         remove = -1;
-//       for (var j = 0; j < 3; j++) {
-//         let u = extent([tri[j], tri[(j + 1) % 3]]).join("-");
-//         if (_lengths[u] > l) {
-//           l = _lengths[u];
-//           remove = u;
-//         }
-//       }
-//       _urquhart[remove] = false;
-//     });
-
-//     return edges.map(edge => _urquhart[edge.join("-")]);
-//   };
-// }
