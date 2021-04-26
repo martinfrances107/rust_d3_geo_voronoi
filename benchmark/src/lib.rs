@@ -8,7 +8,7 @@ use rand::prelude::*;
 use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::projection::orthographic::OrthographicRaw;
 use rust_d3_geo::Transform;
-use rust_d3_geo_voronoi::voronoi::Voronoi;
+use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::Document;
@@ -126,7 +126,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
 
     let sites = MultiPoint(sites);
 
-    match Voronoi::new(Some(Geometry::MultiPoint(sites.clone()))).polygons(None) {
+    match GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone()))).polygons(None) {
         None => {
             console_log!("failed to get polygons");
         }
