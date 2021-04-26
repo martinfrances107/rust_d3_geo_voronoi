@@ -119,37 +119,17 @@ where
                 // RC is needed here as it is both closed over in the find function an is part of the Delaunay return.
                 let n = Rc::new(RefCell::new(geo_neighbors(&tri, points.len())));
 
-                // Borrow and release polys.
-                let m;
-                {
-                    m = geo_mesh(&polys);
-                }
-
-                // Borrow and release tri.
-                let h;
-                {
-                    h = geo_hull(&tri, &points);
-                }
-
-                // Borrow and release e, tri.
-                let u;
-                {
-                    u = geo_urquhart(e.clone(), tri.clone());
-                }
-
-                let f = geo_find(n.clone(), points);
-
                 return Some(Self {
                     delaunay,
-                    edges: e,
-                    triangles: tri,
+                    edges: e.clone(),
                     centers,
+                    hull: geo_hull(&tri, &points),
+                    find: geo_find(n.clone(), points),
                     neighbors: n,
+                    mesh: geo_mesh(&polys),
                     polygons: polys,
-                    mesh: m,
-                    hull: h,
-                    urquhart: u,
-                    find: f,
+                    urquhart: geo_urquhart(e, tri.clone()),
+                    triangles: tri,
                 });
             }
             None => {
