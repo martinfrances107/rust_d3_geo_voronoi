@@ -113,7 +113,7 @@ where
         // Data sanitization:-
         // Transform points using vx() and vy().
         // Remove infinities, store list of untransformed - valid points.
-        let mut temp: Vec<(T, T, Point<T>)> = Vec::new();
+        let temp: Vec<(T, T, Point<T>)>;
         match v.data {
             // Some(FeatureCollection { features: f }) => {
             //     f.iter()
@@ -301,28 +301,25 @@ where
                         .map(|e| distance(&(points)[e[0]], &(points)[e[0]]))
                         .collect(),
                 );
-
-                {
-                    let urquhart = (delaunay_return.urquhart)(&distances);
-                    let features: Vec<FeaturesStruct<T>> = delaunay_return
-                        .edges
-                        .iter()
-                        .enumerate()
-                        .map(|(i, e)| {
-                            let ls: LineString<T> = vec![points[0], points[e[1]]].into();
-                            return FeaturesStruct {
-                                properties: vec![
-                                    FeatureProperty::Source(self.valid[e[0]]),
-                                    FeatureProperty::Target(self.valid[e[1]]),
-                                    FeatureProperty::Length(distances[i]),
-                                    FeatureProperty::Urquhart(urquhart[i]),
-                                ],
-                                geometry: vec![Geometry::LineString(ls)],
-                            };
-                        })
-                        .collect();
-                    return Some(FeatureCollection(features));
-                }
+                let urquhart = (delaunay_return.urquhart)(&distances);
+                let features: Vec<FeaturesStruct<T>> = delaunay_return
+                    .edges
+                    .iter()
+                    .enumerate()
+                    .map(|(i, e)| {
+                        let ls: LineString<T> = vec![points[0], points[e[1]]].into();
+                        return FeaturesStruct {
+                            properties: vec![
+                                FeatureProperty::Source(self.valid[e[0]]),
+                                FeatureProperty::Target(self.valid[e[1]]),
+                                FeatureProperty::Length(distances[i]),
+                                FeatureProperty::Urquhart(urquhart[i]),
+                            ],
+                            geometry: vec![Geometry::LineString(ls)],
+                        };
+                    })
+                    .collect();
+                return Some(FeatureCollection(features));
             }
         };
     }
@@ -373,12 +370,12 @@ where
             let n = p.len();
             let mut p0 = *p.last().unwrap();
             let mut p1 = p[0];
-            for i in 0..n {
+            for pi in p {
                 if p1 > p0 {
                     coordinates.push(line_string![centers[p0], centers[p1]]);
                 }
                 p0 = p1;
-                p1 = p[i];
+                p1 = pi;
             }
         }
 

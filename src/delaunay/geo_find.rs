@@ -36,22 +36,19 @@ pub fn geo_find<'a, T: CoordFloat + 'static>(
                 dist = distance2(xyz, cartesian(&points[cell]));
                 let n = neighbors.borrow();
                 let row = n.get(&cell);
-                match row {
-                    Some(row) => {
-                        for i in row {
-                            let ndist = distance2(xyz, cartesian(&points[*i]));
-                            if ndist < dist {
-                                dist = ndist;
-                                next_or_no = Some(*i);
-                                found = Some(*i);
-                            }
-                        }
-
-                        if next_or_no.is_some() {
-                            break 'outer;
+                if let Some(row) = row {
+                    for i in row {
+                        let ndist = distance2(xyz, cartesian(&points[*i]));
+                        if ndist < dist {
+                            dist = ndist;
+                            next_or_no = Some(*i);
+                            found = Some(*i);
                         }
                     }
-                    None => {}
+
+                    if next_or_no.is_some() {
+                        break 'outer;
+                    }
                 }
             }
             return found;

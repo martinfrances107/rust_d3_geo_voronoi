@@ -47,7 +47,7 @@ pub fn geo_polygons<'a, T: CoordFloat>(
     };
 
     if triangles.is_empty() {
-        if points.len() == 0 {
+        if points.is_empty() {
             return (polygons, centers);
         }
         if points.len() == 1 {

@@ -133,7 +133,7 @@ where
             delaunay.triangles[i] = pivot;
         }
 
-        i = i + 1;
+        i += 1;
         if i >= l {
             break 'he_loop;
         }
