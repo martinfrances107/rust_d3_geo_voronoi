@@ -81,9 +81,7 @@ where
     });
 
     let point_len = points.len();
-
     let mut delaunay = Delaunay::new(points);
-
     delaunay.projection = Some(projection);
 
     // clean up the triangulation
@@ -93,8 +91,12 @@ where
     // let mut inedges = delaunay.inedges;
 
     let mut degenerate: Vec<usize> = Vec::new();
-    for i in 0..delaunay.half_edges.len() {
-        if delaunay.half_edges[i] < 0 {
+    let mut i: usize = 0;
+    let l = delaunay.half_edges.len();
+
+    'he_loop: loop {
+        if delaunay.half_edges[i] == EMPTY {
+            println!("empty");
             let j = match i % 3 == 2 {
                 true => i - 2,
                 false => i + 1,
@@ -103,8 +105,8 @@ where
                 true => i + 2,
                 false => i - 1,
             };
-            let a = delaunay.half_edges[j] as usize;
-            let b = delaunay.half_edges[k] as usize;
+            let a = delaunay.half_edges[j];
+            let b = delaunay.half_edges[k];
             delaunay.half_edges[a] = b;
             delaunay.half_edges[b] = a;
             delaunay.half_edges[j] = EMPTY;
@@ -112,27 +114,30 @@ where
             delaunay.triangles[i] = pivot;
             delaunay.triangles[j] = pivot;
             delaunay.triangles[k] = pivot;
-            match a % 3 == 0 {
-                true => {
-                    delaunay.inedges[delaunay.triangles[a]] = a + 2;
-                    delaunay.inedges[delaunay.triangles[b]] = b + 2;
-                }
-                false => {
-                    delaunay.inedges[delaunay.triangles[a]] = a - 1;
-                    delaunay.inedges[delaunay.triangles[b]] = b - 1;
-                }
+            delaunay.inedges[delaunay.triangles[a]] = match a % 3 == 0 {
+                true => a + 2,
+                false => a - 1,
             };
-            let m = cmp::min(i, j);
-            let m = cmp::min(m, k);
+
+            delaunay.inedges[delaunay.triangles[b]] = match b % 3 == 0 {
+                true => b + 2,
+                false => b - 1,
+            };
+
+            let mut m = cmp::min(i, j);
+            m = cmp::min(m, k);
             degenerate.push(m);
 
-        // TODO must rework loop
-        // i += 2 - i % 3;
+            i += 2 - i % 3;
         } else if delaunay.triangles[i] > point_len - 3 - 1 {
             delaunay.triangles[i] = pivot;
         }
-    }
 
+        i = i + 1;
+        if i >= l {
+            break 'he_loop;
+        }
+    }
     // // there should always be 4 degenerate triangles
     // // console.warn(degenerate);
     return Some(delaunay);

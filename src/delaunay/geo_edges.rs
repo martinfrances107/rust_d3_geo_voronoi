@@ -10,7 +10,7 @@ pub fn geo_edges<T: CoordFloat>(
     triangles: &[Vec<usize>],
     point: &[Coordinate<T>],
 ) -> Vec<[usize; 2]> {
-    if point.len() == 2usize {
+    if point.len() == 1 {
         return vec![[0usize, 1usize]];
     }
     let zero = T::zero();
@@ -18,13 +18,13 @@ pub fn geo_edges<T: CoordFloat>(
 
     for tri in triangles {
         if tri[0] == tri[1] {
-            continue;
+            return vec![];
         }
 
         let ex_in: Vec<Coordinate<T>> = tri.iter().map(|i| point[*i]).collect();
 
         if excess(&ex_in) < zero {
-            continue;
+            return vec![];
         }
 
         for i in 0..3 {
