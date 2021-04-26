@@ -16,8 +16,6 @@ use rust_d3_geo::Transform;
 
 use delaunator::EMPTY;
 
-// Wanted delaunay_from<T> to be generic .. but .is_finite() assumes float type.
-// TODO find a way arround the F64 issue.
 pub fn delaunay_from<T>(points: Rc<Vec<Coordinate<T>>>) -> Option<Delaunay<T>>
 where
     T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst + FromPrimitive,

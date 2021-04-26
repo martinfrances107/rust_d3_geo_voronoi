@@ -9,7 +9,7 @@ mod voronoi_test {
     use geo::MultiPoint;
     use geo::Point;
     use rust_d3_geo::data_object::FeatureCollection;
-    use rust_d3_geo_voronoi::voronoi::Voronoi;
+    use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 
     #[cfg(test)]
     use pretty_assertions::assert_eq;
@@ -23,7 +23,7 @@ mod voronoi_test {
             Point::new(0f64, 10f64),
         ]);
 
-        match Voronoi::new(Some(Geometry::MultiPoint(sites))).polygons(None) {
+        match GeoVoronoi::new(Some(Geometry::MultiPoint(sites))).polygons(None) {
             None => {
                 assert!(false, "Must return a DataObject<T>.");
             }
@@ -59,7 +59,7 @@ mod voronoi_test {
         ]);
         // TODO the javascript version makes no assertions - if the test ends without expception then PASS!
         // This should be tightened up.
-        let _u = Voronoi::new(Some(Geometry::MultiPoint(sites))).polygons(None);
+        let _u = GeoVoronoi::new(Some(Geometry::MultiPoint(sites))).polygons(None);
     }
 
     #[test]
@@ -71,7 +71,7 @@ mod voronoi_test {
             Point::new(-2f64, 5f64),
             Point::new(0f64, 0f64),
         ]);
-        let hull = Voronoi::new(None).hull(Some(Geometry::MultiPoint(sites)));
+        let hull = GeoVoronoi::new(None).hull(Some(Geometry::MultiPoint(sites)));
         match hull {
             Some(polygon) => {
                 let actual_ls = polygon.exterior();
@@ -143,7 +143,7 @@ mod voronoi_test {
             Point::new(-2f64, 5f64),
             Point::new(0f64, 0f64),
         ]);
-        let mesh = Voronoi::new(Some(Geometry::MultiPoint(sites))).mesh(None);
+        let mesh = GeoVoronoi::new(Some(Geometry::MultiPoint(sites))).mesh(None);
 
         let golden: Vec<LineString<f64>> = vec![
             vec![[3., 5.], [-2., 5.]].into(),
@@ -211,7 +211,7 @@ mod voronoi_test {
             "1 15/8 5".into(),
             "5 0/8 5".into(),
         ];
-        let cell_mesh_maybe = Voronoi::new(None).cell_mesh(Some(Geometry::MultiPoint(sites)));
+        let cell_mesh_maybe = GeoVoronoi::new(None).cell_mesh(Some(Geometry::MultiPoint(sites)));
         match cell_mesh_maybe {
             Some(cell_mesh) => {
                 let c_string: Vec<Vec<String>> = cell_mesh

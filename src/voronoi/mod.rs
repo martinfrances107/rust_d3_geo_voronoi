@@ -31,7 +31,7 @@ enum XYReturn<'a, T>
 where
     T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst,
 {
-    Voronoi(Voronoi<'a, T>),
+    Voronoi(GeoVoronoi<'a, T>),
     Func(Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>),
 }
 
@@ -45,7 +45,7 @@ where
 }
 
 // #[derive(Debug)]
-pub struct Voronoi<'a, T>
+pub struct GeoVoronoi<'a, T>
 where
     T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst,
 {
@@ -60,12 +60,12 @@ where
     vy: Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>,
 }
 
-impl<'a, T> Default for Voronoi<'a, T>
+impl<'a, T> Default for GeoVoronoi<'a, T>
 where
     T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst,
 {
-    fn default() -> Voronoi<'a, T> {
-        return Voronoi {
+    fn default() -> GeoVoronoi<'a, T> {
+        return GeoVoronoi {
             data: None,
             geo_delaunay: None,
             found: None,
@@ -77,14 +77,14 @@ where
     }
 }
 
-impl<'a, T> Voronoi<'a, T>
+impl<'a, T> GeoVoronoi<'a, T>
 where
     T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst + FromPrimitive,
 {
     /// If the input is a collection we act only on the first element in the collection.
     /// by copying over the data into a new single element before proceeding.
-    pub fn new(data: Option<Geometry<T>>) -> Voronoi<'a, T> {
-        let mut v: Voronoi<'a, T>;
+    pub fn new(data: Option<Geometry<T>>) -> GeoVoronoi<'a, T> {
+        let mut v: GeoVoronoi<'a, T>;
 
         // let delaunay_return: Option<GeoDelaunay> = None;
 
@@ -105,9 +105,9 @@ where
         //     }
         // };
 
-        v = Voronoi {
+        v = GeoVoronoi {
             data,
-            ..Voronoi::default()
+            ..GeoVoronoi::default()
         };
 
         // Data sanitization:-
