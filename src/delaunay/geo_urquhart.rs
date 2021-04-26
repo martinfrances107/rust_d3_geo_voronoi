@@ -4,7 +4,7 @@ use std::rc::Rc;
 use num_traits::Float;
 use rust_d3_array::extent::extent;
 
-pub fn urquhart<T: Float>(
+pub fn geo_urquhart<T: Float>(
     edges: Rc<Vec<[usize; 2]>>,
     triangles: Rc<Vec<Vec<usize>>>,
 ) -> Box<dyn Fn(&Vec<T>) -> Vec<bool>> {

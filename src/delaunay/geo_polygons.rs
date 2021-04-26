@@ -16,7 +16,7 @@ use crate::math::{EPSILON, EPSILON2};
 use super::cartesian::cartesian;
 use super::o_midpoint::o_midpoint;
 
-pub fn polygons<'a, T: CoordFloat>(
+pub fn geo_polygons<'a, T: CoordFloat>(
     circumcenter: Vec<Coordinate<T>>,
     triangles: &Vec<Vec<usize>>,
     points: &'a [Coordinate<T>],

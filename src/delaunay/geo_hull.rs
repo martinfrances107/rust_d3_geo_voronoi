@@ -7,7 +7,7 @@ use num_traits::Float;
 
 use super::excess::excess;
 
-pub fn hull<T: CoordFloat>(triangles: &[Vec<usize>], points: &[Coordinate<T>]) -> Vec<usize> {
+pub fn geo_hull<T: CoordFloat>(triangles: &[Vec<usize>], points: &[Coordinate<T>]) -> Vec<usize> {
     let mut h_hull: HashSet<String> = HashSet::new();
     let mut hull = Vec::new();
 

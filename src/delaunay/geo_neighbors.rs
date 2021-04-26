@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-pub fn neighbors(triangles: &[Vec<usize>], npoints: usize) -> HashMap<usize, Vec<usize>> {
+pub fn geo_neighbors(triangles: &[Vec<usize>], npoints: usize) -> HashMap<usize, Vec<usize>> {
     let mut h_neighbors: HashMap<usize, Vec<usize>> = HashMap::new();
     for tri in triangles {
         for j in 0..3 {

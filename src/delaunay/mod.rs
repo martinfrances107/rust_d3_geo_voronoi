@@ -1,17 +1,17 @@
 #![allow(clippy::many_single_char_names)]
 mod cartesian;
-mod circumcenters;
-pub mod delaunay_from;
-mod edges;
 pub mod excess;
-mod find;
-mod hull;
-mod mesh;
-mod neighbors;
+mod geo_circumcenters;
+pub mod geo_delaunay_from;
+mod geo_edges;
+mod geo_find;
+mod geo_hull;
+mod geo_mesh;
+mod geo_neighbors;
+mod geo_polygons;
+mod geo_triangles;
+mod geo_urquhart;
 mod o_midpoint;
-mod polygons;
-mod triangles;
-mod urquhart;
 
 // use core::future::poll_fn;
 use std::cell::RefCell;
@@ -29,16 +29,16 @@ use num_traits::{float::Float, FromPrimitive};
 use rust_d3_delaunay::delaunay::Delaunay;
 use rust_d3_geo::projection::projection_mutator::ProjectionMutator;
 
-use circumcenters::circumcenters;
-use delaunay_from::delaunay_from;
-use edges::edges;
-use find::find;
-use hull::hull;
-use mesh::mesh;
-use neighbors::neighbors;
-use polygons::polygons;
-use triangles::triangles;
-use urquhart::urquhart;
+use geo_circumcenters::geo_circumcenters;
+use geo_delaunay_from::geo_delaunay_from;
+use geo_edges::geo_edges;
+use geo_find::geo_find;
+use geo_hull::geo_hull;
+use geo_mesh::geo_mesh;
+use geo_neighbors::geo_neighbors;
+use geo_polygons::geo_polygons;
+use geo_triangles::geo_triangles;
+use geo_urquhart::geo_urquhart;
 
 // #[derive(Default, Debug)]
 // pub struct Delaunay {
@@ -105,42 +105,39 @@ where
 {
     pub fn delaunay(points: Rc<Vec<Coordinate<T>>>) -> Option<GeoDelaunay<'a, T>> {
         let p = points.clone();
-        match delaunay_from(p) {
+        match geo_delaunay_from(p) {
             Some(delaunay) => {
                 // RC is needed here as tri and e are both closed over in the urquhart function an is part of the Delaunay return.
-                let tri = Rc::new(triangles(&delaunay));
-                let e = Rc::new(edges(&tri, &points));
+                let tri = Rc::new(geo_triangles(&delaunay));
+                let e = Rc::new(geo_edges(&tri, &points));
 
-                let circumcenters = circumcenters(&tri, &points);
+                let circumcenters = geo_circumcenters(&tri, &points);
                 println!("returned circumcenters");
 
-                let (polys, centers) = polygons(circumcenters, &tri, &points);
+                let (polys, centers) = geo_polygons(circumcenters, &tri, &points);
 
                 // RC is needed here as it is both closed over in the find function an is part of the Delaunay return.
-                let n = Rc::new(RefCell::new(neighbors(&tri, points.len())));
+                let n = Rc::new(RefCell::new(geo_neighbors(&tri, points.len())));
 
                 // Borrow and release polys.
                 let m;
                 {
-                    m = mesh(&polys);
+                    m = geo_mesh(&polys);
                 }
 
                 // Borrow and release tri.
                 let h;
                 {
-                    h = hull(&tri, &points);
+                    h = geo_hull(&tri, &points);
                 }
 
                 // Borrow and release e, tri.
                 let u;
                 {
-                    u = urquhart(e.clone(), tri.clone());
+                    u = geo_urquhart(e.clone(), tri.clone());
                 }
 
-                let f;
-                {
-                    f = find(n.clone(), points);
-                }
+                let f = geo_find(n.clone(), points);
 
                 return Some(Self {
                     delaunay,

@@ -8,14 +8,15 @@ use num_traits::Float;
 
 use super::cartesian::cartesian;
 
+#[inline]
 fn distance2<T: Float>(a: [T; 3], b: [T; 3]) -> T {
     let x = a[0] - b[0];
     let y = a[1] - b[1];
     let z = a[2] - b[2];
-    return x * x + y * y + z * z;
+    x * x + y * y + z * z
 }
 
-pub fn find<'a, T: CoordFloat + 'static>(
+pub fn geo_find<'a, T: CoordFloat + 'static>(
     neighbors: Rc<RefCell<HashMap<usize, Vec<usize>>>>,
     points: Rc<Vec<Coordinate<T>>>,
 ) -> Box<dyn Fn(Coordinate<T>, Option<usize>) -> Option<usize> + 'a> {

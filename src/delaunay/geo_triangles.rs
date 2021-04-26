@@ -4,7 +4,7 @@ use num_traits::{AsPrimitive, Float, FloatConst};
 use rust_d3_delaunay::delaunay::Delaunay;
 use std::ops::AddAssign;
 
-pub fn triangles<T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst>(
+pub fn geo_triangles<T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst>(
     delaunay: &Delaunay<T>,
 ) -> Vec<Vec<usize>> {
     let Delaunay { triangles, .. } = delaunay;

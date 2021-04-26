@@ -16,7 +16,7 @@ use rust_d3_geo::Transform;
 
 use delaunator::EMPTY;
 
-pub fn delaunay_from<T>(points: Rc<Vec<Coordinate<T>>>) -> Option<Delaunay<T>>
+pub fn geo_delaunay_from<T>(points: Rc<Vec<Coordinate<T>>>) -> Option<Delaunay<T>>
 where
     T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst + FromPrimitive,
 {
