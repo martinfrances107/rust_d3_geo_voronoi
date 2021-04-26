@@ -18,7 +18,7 @@ use super::o_midpoint::o_midpoint;
 
 pub fn geo_polygons<'a, T: CoordFloat>(
     circumcenter: Vec<Coordinate<T>>,
-    triangles: &Vec<Vec<usize>>,
+    triangles: &[Vec<usize>],
     points: &'a [Coordinate<T>],
 ) -> (Vec<Vec<usize>>, Vec<Coordinate<T>>) {
     let epsilon_t = T::from(EPSILON).unwrap();
