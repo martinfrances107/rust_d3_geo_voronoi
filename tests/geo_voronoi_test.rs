@@ -4,6 +4,7 @@ mod voronoi_test {
     use approx::AbsDiffEq;
     use geo::algorithm::cyclic_match::CyclicMatch;
     use geo::coords_iter::CoordsIter;
+    use geo::Coordinate;
     use geo::Geometry;
     use geo::LineString;
     use geo::MultiPoint;
@@ -242,23 +243,47 @@ mod voronoi_test {
     //   test.end();
     // });
 
-    // fn geoVoronoi_finds_p() {
-    //     let sites = MultiPoint(vec![
-    //         Point::new(10f64, 0f64),
-    //         Point::new(10f64, 10f64),
-    //         Point::new(3f64, 5f64),
-    //         Point::new(-2f64, 5f64),
-    //         Point::new(0f64, 0f64),
-    //     ]);
-    //     let voro = Voronoi::new(Some(Geometry::MultiPoint(sites)));
-    //     assert!(voro.find(Coordinate{x:1,y:1}, Some(4)));
-
-    // }
+    #[test]
+    fn geo_voronoi_finds_p() {
+        let sites = MultiPoint(vec![
+            Point::new(10f64, 0f64),
+            Point::new(10f64, 10f64),
+            Point::new(3f64, 5f64),
+            Point::new(-2f64, 5f64),
+            Point::new(0f64, 0f64),
+        ]);
+        let mut voro = GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
+        // TODO this fails.
+        // assert_eq!(voro.find(Coordinate{x:1.0,y:1.0}, None), Some(4));
+        assert_eq!(voro.find(Coordinate { x: 1.0, y: 1.0 }, Some(4.0)), Some(4));
+    }
 
     // tape("geoVoronoi.links(sites) returns links.", function(test) {
     //   test.deepEqual(geoVoronoi.geoVoronoi().links(sites).features.map(function(d) { return d.properties.source[0]; }), [ 10, 0, 0 ]);
     //   test.end();
     // });
+    #[test]
+    fn geo_voronoi_link() {
+        let sites = Geometry::MultiPoint(MultiPoint(vec![
+            Point::new(0f64, 0f64),
+            Point::new(10f64, 0f64),
+            Point::new(0f64, 10f64),
+        ]));
+        match GeoVoronoi::new(None).link(Some(sites)) {
+            Some(FeatureCollection(features)) => {
+                let out: Vec<usize> = features
+                    .iter()
+                    .map(|d| {
+                        println!("d - {:?}", d);
+                        1usize
+                    })
+                    .collect();
+            }
+            None => {
+                panic!("was expecting a feature collection.")
+            }
+        }
+    }
 
     // tape("geoVoronoi.triangles(sites) returns geojson.", function(test) {
     //   const tri = geoVoronoi.geoVoronoi().triangles(sites);

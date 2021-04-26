@@ -27,11 +27,16 @@ pub fn geo_urquhart<T: Float>(
                 let e = extent(vec![tri[j], tri[(j + 1usize) % 3usize]], None);
 
                 let u = format!("{}-{}", e[0], e[1]);
-                if *h_lengths.get(&u).unwrap() > l {
-                    l = *h_lengths.get(&u).unwrap();
-                    remove = Some(u);
-                } else {
-                    remove = None;
+                match h_lengths.get(&u) {
+                    Some(l_found) => {
+                        if *l_found > l {
+                            l = *l_found;
+                            remove = Some(u);
+                        } else {
+                            remove = None;
+                        }
+                    }
+                    None => {}
                 }
             }
             match remove {

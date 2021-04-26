@@ -280,7 +280,7 @@ where
         }
     }
 
-    fn link(mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
+    pub fn link(mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
         match data {
             None => {
                 // No op
@@ -385,8 +385,8 @@ where
         return Some(MultiLineString(coordinates));
     }
 
-    fn find(mut self, p: Coordinate<T>, radius: Option<T>) -> Option<usize> {
-        return match self.geo_delaunay {
+    pub fn find(&mut self, p: Coordinate<T>, radius: Option<T>) -> Option<usize> {
+        return match &self.geo_delaunay {
             None => None,
             Some(delaunay_return) => {
                 self.found = (delaunay_return.find)(p, self.found);
@@ -394,7 +394,7 @@ where
                     Some(found) => {
                         return match radius {
                             Some(radius) => {
-                                // TODO confirm the eclidean_distance is the same as the rust_geo::distance....
+                                // TODO confirm the euclidean_distance is the same as the rust_geo::distance....
                                 if distance(&p, &self.points[found]) < radius {
                                     // if p.euclidean_distance(&self.points[found]) < radius {
                                     return Some(found);
