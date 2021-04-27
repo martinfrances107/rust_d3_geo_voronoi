@@ -26,7 +26,6 @@ pub fn geo_polygons<'a, T: CoordFloat>(
     let mut centers = circumcenter;
 
     let supplement = |point: &Coordinate<T>, centers: &mut Vec<Coordinate<T>>| -> usize {
-        // let mut supplement = |point: &Coordinate<T>| -> usize {
         let mut f = None;
         centers[triangles.len()..]
             .iter()
@@ -61,7 +60,6 @@ pub fn geo_polygons<'a, T: CoordFloat>(
                 let d = cartesian_normalize(&cartesian_cross(&a, &b));
                 let c = cartesian_cross(&m, &d);
 
-                // let supplement_copy = supplement.clone();
                 let poly: Vec<usize> = [
                     m,
                     cartesian_cross(&m, &c),
@@ -127,22 +125,21 @@ pub fn geo_polygons<'a, T: CoordFloat>(
                 2 => {
                     let i0;
                     let i1;
-                    // borrow and release centers.
-                    {
-                        let r0 = o_midpoint(
-                            &points[(poly[0].3).0],
-                            &points[(poly[0].3).1],
-                            &centers[p[0]],
-                        );
-                        let r1 = o_midpoint(
-                            &points[(poly[0].3).2],
-                            &points[(poly[0].3).0],
-                            &centers[p[0]],
-                        );
 
-                        i0 = supplement(&r0, &mut centers);
-                        i1 = supplement(&r1, &mut centers);
-                    }
+                    let r0 = o_midpoint(
+                        &points[(poly[0].3).0],
+                        &points[(poly[0].3).1],
+                        &centers[p[0]],
+                    );
+                    let r1 = o_midpoint(
+                        &points[(poly[0].3).2],
+                        &points[(poly[0].3).0],
+                        &centers[p[0]],
+                    );
+
+                    i0 = supplement(&r0, &mut centers);
+                    i1 = supplement(&r1, &mut centers);
+
                     return vec![p[0], i1, p[1], i0];
                 }
                 _ => {
