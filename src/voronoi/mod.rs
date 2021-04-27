@@ -280,7 +280,7 @@ where
         }
     }
 
-    pub fn link(&mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
+    pub fn links(&mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
         match data {
             None => {
                 // No op

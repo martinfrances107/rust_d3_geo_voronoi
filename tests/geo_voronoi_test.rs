@@ -260,7 +260,7 @@ mod voronoi_test {
             Point::new(10f64, 0f64),
             Point::new(0f64, 10f64),
         ]));
-        match GeoVoronoi::new(None).link(Some(sites)) {
+        match GeoVoronoi::new(None).links(Some(sites)) {
             Some(FeatureCollection(features)) => {
                 let mut out: Vec<f64> = features
                     .iter()
@@ -309,7 +309,7 @@ mod voronoi_test {
             Point::new(0f64, 10f64),
         ]));
 
-        match GeoVoronoi::new(None).link(Some(sites)) {
+        match GeoVoronoi::new(None).links(Some(sites)) {
             Some(FeatureCollection(features)) => {
                 let mut results: Vec<bool> = Vec::new();
                 for fs in features {
