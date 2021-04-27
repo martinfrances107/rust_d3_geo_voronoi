@@ -5,6 +5,7 @@
 extern crate geo;
 extern crate rust_d3_array;
 extern crate rust_d3_geo;
+extern crate derivative;
 
 pub mod delaunay;
 pub mod math;

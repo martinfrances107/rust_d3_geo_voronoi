@@ -21,6 +21,7 @@ use std::fmt;
 use std::ops::AddAssign;
 use std::rc::Rc;
 
+use derivative::Derivative;
 use geo::{CoordFloat, Coordinate};
 use num_traits::AsPrimitive;
 use num_traits::FloatConst;
@@ -80,7 +81,9 @@ use geo_urquhart::geo_urquhart;
 
 //     pub projection: Option<ProjectionMutator>,
 // }
-// #[derive(Clone, Copy, Debug)]
+
+#[derive(Derivative)]
+#[derivative(Debug)]
 pub struct GeoDelaunay<'a, T>
 where
     T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst,
@@ -95,7 +98,9 @@ where
     pub polygons: Vec<Vec<usize>>,
     pub mesh: Vec<[usize; 2]>,
     pub hull: Vec<usize>,
+    #[derivative(Debug = "ignore")]
     pub urquhart: Box<dyn Fn(&Vec<T>) -> Vec<bool> + 'a>,
+    #[derivative(Debug = "ignore")]
     pub find: Box<dyn Fn(Coordinate<T>, Option<usize>) -> Option<usize> + 'a>,
 }
 

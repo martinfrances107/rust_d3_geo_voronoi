@@ -15,6 +15,7 @@ default = ["console_error_panic_hook"]
 [dependencies]
 num-traits = "0.2.14"
 wasm-bindgen = "0.2.68" 
+derivative="2.2.0"
 geo={git = "https://github.com/martinfrances107/geo.git", branch="cyclic_match" }
 delaunator = { git = "https://github.com/mourner/delaunator-rs.git" }
 # d3_geo: At the moment just use for math carteasian functions.
