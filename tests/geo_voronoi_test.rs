@@ -284,13 +284,6 @@ mod voronoi_test {
         }
     }
 
-    // tape("geoVoronoi.triangles(sites) returns geojson.", function(test) {
-    //   const tri = geoVoronoi.geoVoronoi().triangles(sites);
-    //   test.equal(tri.type, "FeatureCollection");
-    //   test.equal(tri.features.length, 1);
-    //   test.end();
-    // });
-
     #[test]
     fn geo_voronoi_triangles_returns_geojson() {
         let sites = Geometry::MultiPoint(MultiPoint(vec![
@@ -308,10 +301,6 @@ mod voronoi_test {
         }
     }
 
-    // tape("geoVoronoi.links(sites) returns urquhart graph.", function(test) {
-    //   test.deepEqual(geoVoronoi.geoVoronoi().links(sites).features.map(function(d) { return d.properties.urquhart; }), [ false, true, true ]);
-    //   test.end();
-    // });
     #[test]
     fn geo_voronoi_links_returns_urquhart_graph() {
         let sites = Geometry::MultiPoint(MultiPoint(vec![
@@ -319,15 +308,9 @@ mod voronoi_test {
             Point::new(10f64, 0f64),
             Point::new(0f64, 10f64),
         ]));
-        let strings = vec!["tofu", "93", "18"];
-        let numbers: Vec<_> = strings
-            .into_iter()
-            .filter_map(|s| s.parse::<i32>().ok())
-            .collect();
-        println!("Results: {:?}", numbers);
+
         match GeoVoronoi::new(None).link(Some(sites)) {
             Some(FeatureCollection(features)) => {
-                println!("features {:#?}", features);
                 let mut results: Vec<bool> = Vec::new();
                 for fs in features {
                     // Extract the Urquhart property from the FeatureStruct.
@@ -363,6 +346,46 @@ mod voronoi_test {
     //   test.end();
     // });
 
+    #[test]
+    fn geo_voronoi_links_returns_circumcenters() {
+        let sites = Geometry::MultiPoint(MultiPoint(vec![
+            Point::new(0f64, 0f64),
+            Point::new(10f64, 0f64),
+            Point::new(0f64, 10f64),
+        ]));
+
+        match GeoVoronoi::new(None).triangles(Some(sites)) {
+            Some(FeatureCollection(features)) => {
+                println!("features {:?}", features);
+                match &features[0].properties[0] {
+                    FeatureProperty::Circumecenter(u) => {
+                        println!("c {:?}", u);
+                        let v = Coordinate {
+                            x: 5.0,
+                            y: 4.981069,
+                        };
+                        let w = Coordinate {
+                            x: -180.0 + v.x,
+                            y: -1.0 * v.y,
+                        };
+                        if ((u.x - v.x).abs() < 1e-6 && (u.y - v.y).abs() < 1e-6)
+                            || ((u.x - w.x).abs() < 1e-6 && (u.y - w.y).abs() < 1e-6)
+                        {
+                            assert!(true);
+                        } else {
+                            assert!(false);
+                        }
+                    }
+                    _ => {
+                        panic!("was expecting a circumcenter");
+                    }
+                }
+            }
+            None => {
+                panic!("Was expecting a feature collection.")
+            }
+        }
+    }
     // tape("geoVoronoi’s delaunay does not list fake points in its triangles", function(test) {
     //   const u = geoVoronoi.geoVoronoi()(sites);
     //   test.equal(Math.max(...u.delaunay.delaunay.triangles), sites.length - 1);
