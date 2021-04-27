@@ -280,13 +280,13 @@ where
         }
     }
 
-    pub fn link(mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
+    pub fn link(&mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
         match data {
             None => {
                 // No op
             }
             _ => {
-                self = Self::new(data);
+                *self = Self::new(data);
             }
         }
 
@@ -298,7 +298,7 @@ where
                     delaunay_return
                         .edges
                         .iter()
-                        .map(|e| distance(&(points)[e[0]], &(points)[e[0]]))
+                        .map(|e| distance(&points[e[0]], &points[e[1]]))
                         .collect(),
                 );
                 let urquhart = (delaunay_return.urquhart)(&distances);

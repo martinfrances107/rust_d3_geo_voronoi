@@ -115,9 +115,7 @@ where
                 // RC is needed here as tri and e are both closed over in the urquhart function an is part of the Delaunay return.
                 let tri = Rc::new(geo_triangles(&delaunay));
                 let e = Rc::new(geo_edges(&tri, &points));
-
                 let circumcenters = geo_circumcenters(&tri, &points);
-                println!("returned circumcenters");
 
                 let (polys, centers) = geo_polygons(circumcenters, &tri, &points);
 
@@ -139,7 +137,6 @@ where
             }
             None => {
                 panic!("return none");
-                // return None;
             }
         }
     }

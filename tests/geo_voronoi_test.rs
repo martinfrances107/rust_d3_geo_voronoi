@@ -1,3 +1,4 @@
+#[cfg(not(tarpaulin_include))]
 mod voronoi_test {
     extern crate pretty_assertions;
 
@@ -10,6 +11,7 @@ mod voronoi_test {
     use geo::MultiPoint;
     use geo::Point;
     use rust_d3_geo::data_object::FeatureCollection;
+    use rust_d3_geo::data_object::FeatureProperty;
     use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 
     #[cfg(test)]
@@ -235,13 +237,6 @@ mod voronoi_test {
             }
         }
     }
-    // tape("geoVoronoi.find() finds p", function(test) {
-    //   var sites = [[10,0],[10,10],[3,5],[-2,5],[0,0]],
-    //       voro = geoVoronoi.geoVoronoi(sites);
-    //   test.equal(voro.find(1,1),4);
-    //   test.equal(voro.find(1,1,4),4);
-    //   test.end();
-    // });
 
     #[test]
     fn geo_voronoi_finds_p() {
@@ -271,16 +266,24 @@ mod voronoi_test {
         ]));
         match GeoVoronoi::new(None).link(Some(sites)) {
             Some(FeatureCollection(features)) => {
-                let out: Vec<usize> = features
+                let mut out: Vec<f64> = features
                     .iter()
-                    .map(|d| {
-                        println!("d - {:?}", d);
-                        1usize
+                    .map(|d| match d.properties[0] {
+                        FeatureProperty::Source(p) => p.x,
+                        _ => {
+                            panic!("Did not find a source property.");
+                        }
                     })
                     .collect();
+                // The JS version does not sort here..
+                // BUT as we are using hashmaps in geo_edges
+                // the order of the FeatureStructs is unpredicatable.
+                out.sort_by(|a, b| a.partial_cmp(b).unwrap());
+
+                assert_eq!(out, vec![0.0, 0.0, 10.0])
             }
             None => {
-                panic!("was expecting a feature collection.")
+                panic!("Was expecting a feature collection.")
             }
         }
     }

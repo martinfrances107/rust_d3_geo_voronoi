@@ -18,13 +18,13 @@ pub fn geo_edges<T: CoordFloat>(
 
     for tri in triangles {
         if tri[0] == tri[1] {
-            return vec![];
+            continue;
         }
 
         let ex_in: Vec<Coordinate<T>> = tri.iter().map(|i| point[*i]).collect();
 
         if excess(&ex_in) < zero {
-            return vec![];
+            continue;
         }
 
         for i in 0..3 {
@@ -34,7 +34,5 @@ pub fn geo_edges<T: CoordFloat>(
         }
     }
 
-    let out = h_index.into_iter().collect::<Vec<_>>();
-
-    return out;
+    h_index.into_iter().collect::<Vec<_>>()
 }
