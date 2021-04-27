@@ -312,6 +312,49 @@ mod voronoi_test {
     //   test.deepEqual(geoVoronoi.geoVoronoi().links(sites).features.map(function(d) { return d.properties.urquhart; }), [ false, true, true ]);
     //   test.end();
     // });
+    #[test]
+    fn geo_voronoi_links_returns_urquhart_graph() {
+        let sites = Geometry::MultiPoint(MultiPoint(vec![
+            Point::new(0f64, 0f64),
+            Point::new(10f64, 0f64),
+            Point::new(0f64, 10f64),
+        ]));
+        let strings = vec!["tofu", "93", "18"];
+        let numbers: Vec<_> = strings
+            .into_iter()
+            .filter_map(|s| s.parse::<i32>().ok())
+            .collect();
+        println!("Results: {:?}", numbers);
+        match GeoVoronoi::new(None).link(Some(sites)) {
+            Some(FeatureCollection(features)) => {
+                println!("features {:#?}", features);
+                let mut results: Vec<bool> = Vec::new();
+                for fs in features {
+                    // Extract the Urquhart property from the FeatureStruct.
+                    let fs_u: Vec<bool> = fs
+                        .properties
+                        .iter()
+                        .filter_map(|fs| match fs {
+                            FeatureProperty::Urquhart(u) => Some(*u),
+                            _ => None,
+                        })
+                        .collect();
+                    assert_eq!(fs_u.len(), 1);
+                    results.push(fs_u[0]);
+                }
+                // The JS version does not sort here..
+                // BUT as we are using hashmaps in geo_edges
+                // the order of the FeatureStructs is unpredicatable.
+                // TODO: future work would be to link the boolean result to
+                // the point?
+                results.sort_by(|a, b| a.partial_cmp(b).unwrap());
+                assert_eq!(results, [false, true, true]);
+            }
+            None => {
+                panic!("Was expecting a feature collection.")
+            }
+        }
+    }
 
     // tape("geoVoronoi.triangles(sites) returns circumcenters.", function(test) {
     //     var u = geoVoronoi.geoVoronoi().triangles(sites).features[0].properties.circumcenter, v = [ 5, 4.981069 ], w = [ -180 + v[0], -v[1] ];

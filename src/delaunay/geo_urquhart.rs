@@ -13,10 +13,9 @@ pub fn geo_urquhart<T: Float>(
         let mut h_urquhart: HashMap<String, bool> = HashMap::new();
 
         for (i, edge) in edges.iter().enumerate() {
-            let u_lengths = format!("{}-{}", edge[0], edge[1]);
-            let u_urquhart = format!("{}-{}", edge[0], edge[1]);
-            h_lengths.insert(u_lengths, distances[i]);
-            h_urquhart.insert(u_urquhart, true);
+            let u = format!("{}-{}", edge[0], edge[1]);
+            h_lengths.insert(u.clone(), distances[i]);
+            h_urquhart.insert(u, true);
         }
 
         triangles.iter().for_each(|tri| {
@@ -31,8 +30,6 @@ pub fn geo_urquhart<T: Float>(
                     if *l_found > l {
                         l = *l_found;
                         remove = Some(u);
-                    } else {
-                        remove = None;
                     }
                 }
             }
@@ -40,7 +37,6 @@ pub fn geo_urquhart<T: Float>(
                 h_urquhart.insert(r, false);
             }
         });
-
         let out: Vec<bool> = edges
             .iter()
             .map(|edge| {
