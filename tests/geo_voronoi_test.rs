@@ -253,10 +253,6 @@ mod voronoi_test {
         assert_eq!(voro.find(Coordinate { x: 1.0, y: 1.0 }, Some(4.0)), Some(4));
     }
 
-    // tape("geoVoronoi.links(sites) returns links.", function(test) {
-    //   test.deepEqual(geoVoronoi.geoVoronoi().links(sites).features.map(function(d) { return d.properties.source[0]; }), [ 10, 0, 0 ]);
-    //   test.end();
-    // });
     #[test]
     fn geo_voronoi_link() {
         let sites = Geometry::MultiPoint(MultiPoint(vec![
@@ -294,6 +290,23 @@ mod voronoi_test {
     //   test.equal(tri.features.length, 1);
     //   test.end();
     // });
+
+    #[test]
+    fn geo_voronoi_triangles_returns_geojson() {
+        let sites = Geometry::MultiPoint(MultiPoint(vec![
+            Point::new(0f64, 0f64),
+            Point::new(10f64, 0f64),
+            Point::new(0f64, 10f64),
+        ]));
+        match GeoVoronoi::new(None).triangles(Some(sites)) {
+            Some(FeatureCollection(features)) => {
+                assert_eq!(features.len(), 1);
+            }
+            None => {
+                panic!("Was expecting a feature collection.")
+            }
+        }
+    }
 
     // tape("geoVoronoi.links(sites) returns urquhart graph.", function(test) {
     //   test.deepEqual(geoVoronoi.geoVoronoi().links(sites).features.map(function(d) { return d.properties.urquhart; }), [ false, true, true ]);
