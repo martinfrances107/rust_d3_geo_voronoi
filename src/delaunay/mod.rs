@@ -88,6 +88,7 @@ pub struct GeoDelaunay<'a, T>
 where
     T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst,
 {
+    #[derivative(Debug = "ignore")]
     pub delaunay: Delaunay<T>,
     // The edges and triangles properties need RC because the values are close over in the urquhart function.
     pub edges: Rc<Vec<[usize; 2]>>,
