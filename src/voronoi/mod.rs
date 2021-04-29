@@ -1,4 +1,5 @@
 use std::ops::AddAssign;
+use std::fmt::Display;
 use std::rc::Rc;
 use std::{borrow::Borrow, collections::HashMap};
 
@@ -29,7 +30,7 @@ use super::delaunay::GeoDelaunay;
 /// Return type used by .x() and .y()
 enum XYReturn<'a, T>
 where
-    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst,
 {
     Voronoi(GeoVoronoi<'a, T>),
     Func(Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>),
@@ -47,7 +48,7 @@ where
 // #[derive(Debug)]
 pub struct GeoVoronoi<'a, T>
 where
-    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display +  FloatConst,
 {
     geo_delaunay: Option<GeoDelaunay<'a, T>>,
     data: Option<Geometry<T>>,
@@ -62,7 +63,7 @@ where
 
 impl<'a, T> Default for GeoVoronoi<'a, T>
 where
-    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst,
 {
     fn default() -> GeoVoronoi<'a, T> {
         return GeoVoronoi {
@@ -79,7 +80,7 @@ where
 
 impl<'a, T> GeoVoronoi<'a, T>
 where
-    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst + FromPrimitive,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display +  FloatConst + FromPrimitive,
 {
     /// If the input is a collection we act only on the first element in the collection.
     /// by copying over the data into a new single element before proceeding.

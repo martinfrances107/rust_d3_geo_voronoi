@@ -13,11 +13,11 @@ mod geo_triangles;
 mod geo_urquhart;
 mod o_midpoint;
 
-// use core::future::poll_fn;
+
 use std::cell::RefCell;
-/// Delaunay triangulation
+
 use std::collections::HashMap;
-use std::fmt;
+use std::fmt::Display;
 use std::ops::AddAssign;
 use std::rc::Rc;
 
@@ -86,7 +86,7 @@ use geo_urquhart::geo_urquhart;
 #[derivative(Debug)]
 pub struct GeoDelaunay<'a, T>
 where
-    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst,
 {
     #[derivative(Debug = "ignore")]
     pub delaunay: Delaunay<T>,
@@ -107,7 +107,7 @@ where
 
 impl<'a, T> GeoDelaunay<'a, T>
 where
-    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst + FromPrimitive,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst + FromPrimitive,
 {
     pub fn delaunay(points: Rc<Vec<Coordinate<T>>>) -> Option<GeoDelaunay<'a, T>> {
         let p = points.clone();

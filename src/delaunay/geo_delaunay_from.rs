@@ -1,5 +1,6 @@
 #![allow(clippy::many_single_char_names)]
 use std::cmp;
+use std::fmt::Display;
 use std::ops::AddAssign;
 use std::rc::Rc;
 
@@ -18,7 +19,7 @@ use delaunator::EMPTY;
 
 pub fn geo_delaunay_from<T>(points: Rc<Vec<Coordinate<T>>>) -> Option<Delaunay<T>>
 where
-    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst + FromPrimitive,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst + FromPrimitive,
 {
     if points.len() < 2 {
         return None;

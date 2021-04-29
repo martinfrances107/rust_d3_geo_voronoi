@@ -1,10 +1,12 @@
+use std::fmt::Display;
+use std::ops::AddAssign;
+
 use delaunator::Point;
 use geo::CoordFloat;
 use num_traits::{AsPrimitive, Float, FloatConst};
 use rust_d3_delaunay::delaunay::Delaunay;
-use std::ops::AddAssign;
 
-pub fn geo_triangles<T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst>(
+pub fn geo_triangles<T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst>(
     delaunay: &Delaunay<T>,
 ) -> Vec<Vec<usize>> {
     let Delaunay { triangles, .. } = delaunay;
