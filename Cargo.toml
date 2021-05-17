@@ -19,7 +19,7 @@ derivative="2.2.0"
 geo={git = "https://github.com/martinfrances107/geo.git", branch="cyclic_match" }
 delaunator = { git = "https://github.com/mourner/delaunator-rs.git" }
 # d3_geo: At the moment just use for math carteasian functions.
-rust_d3_geo = { git="https://github.com/martinfrances107/rust_d3_geo.git"}
+rust_d3_geo = { git="https://github.com/martinfrances107/rust_d3_geo.git", branch="main"}
 rust_d3_array = { git = "https://github.com/martinfrances107/rust_d3_array.git" }
 rust_d3_delaunay = {git = "https://github.com/martinfrances107/rust_d3_delaunay.git", branch="main"}
 # rust_d3_geo = { path = "../rust_d3_geo" }

@@ -11,7 +11,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 rust_d3_geo_voronoi = {path="../"}
-rust_d3_geo = { git="https://github.com/martinfrances107/rust_d3_geo.git"}
+rust_d3_geo = { git="https://github.com/martinfrances107/rust_d3_geo.git", branch="main"}
 geo={git = "https://github.com/martinfrances107/geo.git", branch="cyclic_match" }
 wasm-bindgen = "0.2.73"
 rand = { version = "0.8.3"}
