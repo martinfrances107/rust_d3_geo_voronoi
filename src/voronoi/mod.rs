@@ -368,9 +368,9 @@ where
             }
         }
 
-        if self.geo_delaunay.is_none() {
-            return None;
-        }
+        // Return early maybe?
+        self.geo_delaunay.as_ref()?;
+
         let delaunay = self.geo_delaunay.unwrap();
         let polygons = delaunay.polygons;
         let centers = delaunay.centers;

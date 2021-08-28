@@ -16,10 +16,10 @@ use crate::math::{EPSILON, EPSILON2};
 use super::cartesian::cartesian;
 use super::o_midpoint::o_midpoint;
 
-pub fn geo_polygons<'a, T: CoordFloat>(
+pub fn geo_polygons<T: CoordFloat>(
     circumcenter: Vec<Coordinate<T>>,
     triangles: &[Vec<usize>],
-    points: &'a [Coordinate<T>],
+    points: &[Coordinate<T>],
 ) -> (Vec<Vec<usize>>, Vec<Coordinate<T>>) {
     let epsilon_t = T::from(EPSILON).unwrap();
     let mut polygons: Vec<Vec<usize>> = Vec::new();

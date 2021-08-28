@@ -9,6 +9,8 @@ No API stability guarentees.
 
 delaunay first then  voronoi.
 
+Currently we have 78% test coverage ( as reported by cargo tarpaulin -o Html )
+
 ## Phase 2
 
 API finialization. There maybe optimisation in the area of generics. So the API only gets locked down in phase 2.

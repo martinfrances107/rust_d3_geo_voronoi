@@ -63,7 +63,7 @@ where
         .rotate(angles)
         .build();
 
-    let mut points: Vec<Coordinate<T>> = points.iter().map(|p| projection.transform(&p)).collect();
+    let mut points: Vec<Coordinate<T>> = points.iter().map(|p| projection.transform(p)).collect();
 
     let mut zeros = Vec::new();
     let mut max2 = T::one();
