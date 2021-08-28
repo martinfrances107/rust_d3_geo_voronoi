@@ -22,6 +22,7 @@ use rust_d3_geo::Transform;
 
 use delaunator::EMPTY;
 
+/// Creates a delaunay object from a set of points.
 pub fn geo_delaunay_from<DRAIN, T>(
     points: Rc<Vec<Coordinate<T>>>,
 ) -> Option<Delaunay<DRAIN, Line<T>, Stereographic<DRAIN, T>, PV<T>, T>>

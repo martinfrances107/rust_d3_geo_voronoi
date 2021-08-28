@@ -5,11 +5,10 @@ use std::rc::Rc;
 
 use derivative::Derivative;
 use geo::centroid::Centroid;
+use geo::line_string;
 use geo::CoordFloat;
 use geo::Coordinate;
 use geo::Geometry;
-
-use geo::line_string;
 use geo::LineString;
 use geo::MultiLineString;
 use geo::Point;
@@ -27,12 +26,15 @@ use crate::delaunay::excess::excess;
 use super::delaunay::GeoDelaunay;
 
 /// Return type used by .x() and .y()
-enum XYReturn<'a, DRAIN, T>
+pub enum XYReturn<'a, DRAIN, T>
 where
     DRAIN: Stream<T = T>,
     T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst,
 {
+    /// Voronoi
     Voronoi(GeoVoronoi<'a, DRAIN, T>),
+    /// Function.
+    // #[derivative(Debug = "ignore")]
     Func(Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>),
 }
 
@@ -47,6 +49,7 @@ where
 
 #[derive(Derivative)]
 #[derivative(Debug)]
+/// Holds data centered on a GeoDelauany instance.
 pub struct GeoVoronoi<'a, DRAIN, T>
 where
     DRAIN: Stream<T = T>,
@@ -166,7 +169,8 @@ where
         v
     }
 
-    fn x(
+    /// Sets the y() override function.
+    pub fn x(
         mut self,
         f: Option<Box<impl Fn(&dyn Centroid<Output = Point<T>>) -> T + 'static>>,
     ) -> XYReturn<'a, DRAIN, T> {
@@ -179,7 +183,8 @@ where
         };
     }
 
-    fn y(
+    /// Sets the y() override function.
+    pub fn y(
         mut self,
         f: Option<Box<impl Fn(&dyn Centroid<Output = Point<T>>) -> T + 'static>>,
     ) -> XYReturn<'a, DRAIN, T> {
@@ -226,7 +231,7 @@ where
                     ];
                     let fs = Features {
                         geometry: vec![geometry],
-                        properties: Vec::new(),
+                        properties: properties,
                     };
                     features.push(fs);
                 }
@@ -235,6 +240,7 @@ where
         }
     }
 
+    /// Returns a freature collection representing the triangularization of the input object.
     pub fn triangles(mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
         match data {
             None => {
@@ -349,6 +355,7 @@ where
         }
     }
 
+    /// Returns a Multiline string assoicated witn the input geometry.
     pub fn cell_mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
         match data {
             None => {
@@ -381,15 +388,17 @@ where
         Some(MultiLineString(coordinates))
     }
 
+    /// Returns the index associated with the given point.
     pub fn find(&mut self, p: Coordinate<T>, radius: Option<T>) -> Option<usize> {
         match &self.geo_delaunay {
             None => None,
             Some(delaunay_return) => {
                 self.found = (delaunay_return.find)(p, self.found);
-                match self.found {
-                    Some(found) => {
-                        match radius {
-                            Some(radius) => {
+                match radius {
+                    Some(radius) => {
+                        match self.found {
+                            Some(found) => {
+                                println!("find have radius have found");
                                 // TODO confirm the euclidean_distance is the same as the rust_geo::distance....
                                 if distance(&p, &self.points[found]) < radius {
                                     // if p.euclidean_distance(&self.points[found]) < radius {
@@ -401,7 +410,7 @@ where
                             None => None,
                         }
                     }
-                    None => None,
+                    None => self.found,
                 }
             }
         }

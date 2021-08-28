@@ -70,6 +70,31 @@ mod voronoi_test {
         let _u = gv.polygons(None);
     }
 
+    // it("geoVoronoi.polygons([no valid site]) returns an empty collection.", () => {
+    //     const sites = [[NaN, -1], [4, NaN], [Infinity,10]];
+    //     const u = geoVoronoi.geoVoronoi(sites).polygons();
+    //     assert.deepStrictEqual(u.features, []);
+    //   });
+
+    //   it("geoVoronoi.polygons([1 site]) returns a Sphere.", () => {
+    //     const sites = [[NaN, -1], [4, NaN], [5,10]];
+    //     const u = geoVoronoi.geoVoronoi(sites).polygons();
+    //     assert.strictEqual(u.features[0].type, "Feature");
+    //     assert.strictEqual(u.features[0].geometry.type, "Sphere");
+    //   });
+
+    //   it("geoVoronoi.links() returns urquhart.", () => {
+    //     assert.deepStrictEqual(geoVoronoi.geoVoronoi().links(sites).features.map(function(d) { return d.properties.urquhart; }), [ false, true, true ]);
+    //   });
+
+    // it("geoVoronoi.x() changes accessor.", () => {
+    //     const sites = [{lon:10,lat:0}, {lon:3, lat:5}, {lon:-2, lat:5}];
+    //     assert.deepStrictEqual(
+    //       geoVoronoi.geoVoronoi().x(d => +d.lon).y(d => +d.lat) (sites).points,
+    //       [ [ 10, 0 ], [ 3, 5 ], [ -2, 5 ] ]
+    //     );
+    //   });
+
     #[test]
     fn test_computes_the_hull() {
         let sites = MultiPoint(vec![
@@ -98,50 +123,6 @@ mod voronoi_test {
             }
         }
     }
-
-    // #[test]
-    // pub fn voronoi_polygons_returns_polygons_tollerates_nan() {
-    //   println!("geoVoronoi.polygons(sites) tolerates NaN.");
-    //   let sites: Vec<[f64; 2]> = vec![[0f64, 0f64], [10f64, 0f64]];
-    //   let mut u = Voronoi::<f64>::new(DataType::Blank);
-    //   let up = u.polygons(DataType::<f64>::Vec(sites)).unwrap()[0][0];
-
-    //   let sites_bad = vec![[0f64, 0f64], [2f64, 1f64], [f64::NAN, -1f64], [4f64, f64::NAN], [5f64,10f64]];
-    //   let u = Voronoi::new(sites).polygons();
-    //   assert!(u.is_some());
-    // }
-
-    // tape("geoVoronoi.polygons([no valid site]) returns an empty collection.", function(test) {
-    //   const sites = [[NaN, -1], [4, NaN], [Infinity,10]];
-    //   var u = geoVoronoi.geoVoronoi(sites).polygons();
-    //   test.deepEqual(u.features, []);
-    //   test.end();
-    // });
-
-    // tape("geoVoronoi.polygons([1 site]) returns a Sphere.", function(test) {
-    //   const sites = [[NaN, -1], [4, NaN], [5,10]];
-    //   var u = geoVoronoi.geoVoronoi(sites).polygons();
-    //   test.equal(u.features[0].type, "Feature");
-    //   test.equal(u.features[0].geometry.type, "Sphere");
-    //   test.end();
-    // });
-
-    // var sites = [[0,0], [10,0], [0,10]];
-
-    // tape("geoVoronoi.links() returns urquhart.", function(test) {
-    //   test.deepEqual(geoVoronoi.geoVoronoi().links(sites).features.map(function(d) { return d.properties.urquhart; }), [ false, true, true ]);
-    //   test.end();
-    // });
-
-    // tape("geoVoronoi.x() changes accessor.", function(test) {
-    //   var sites = [{lon:10,lat:0}, {lon:3, lat:5}, {lon:-2, lat:5}];
-    //   test.deepEqual(
-    //   	geoVoronoi.geoVoronoi().x(d => +d.lon).y(d => +d.lat)
-    //   		(sites).points,
-    //   	[ [ 10, 0 ], [ 3, 5 ], [ -2, 5 ] ]
-    //   );
-    //   test.end();
-    // });
 
     #[test]
     fn computes_the_delaunay_mesh() {
@@ -190,17 +171,6 @@ mod voronoi_test {
         }
     }
 
-    // tape("geoVoronoi.cellMesh() computes the Polygons mesh.", function(test) {
-    //   var sites = [[10,0],[10,10],[3,5],[-2,5],[0,0]];
-    //   var cellMesh = geoVoronoi.geoVoronoi().cellMesh(sites),
-    //     coords = cellMesh.coordinates
-    //       .map(d => d.map(e => e.map(Math.round).join(" ")).sort().join("/")).sort();
-    //   test.deepEqual(
-    //   	coords,
-    //   	[ '-175 -5/-175 -5', '-175 -5/0 3', '-175 -5/1 15', '-175 -5/5 0', '-175 -5/8 5', '0 3/1 15', '0 3/5 0', '1 15/8 5', '5 0/8 5' ]
-    //   );
-    //   test.end();
-    // });
     #[test]
     fn computes_the_polygons_mesh() {
         let sites = MultiPoint(vec![
@@ -257,10 +227,16 @@ mod voronoi_test {
             Point::new(0f64, 0f64),
         ]);
         let mut voro: GeoVoronoi<StreamDrainStub<f64>, f64> =
+            GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
+
+        assert_eq!(voro.find(Coordinate { x: 1.0, y: 1.0 }, None), Some(4));
+        // TODO bug ... strange bug/hang ... unless I define voro twice.
+        let mut voro2: GeoVoronoi<StreamDrainStub<f64>, f64> =
             GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
-        // TODO this fails.
-        // assert_eq!(voro.find(Coordinate{x:1.0,y:1.0}, None), Some(4));
-        assert_eq!(voro.find(Coordinate { x: 1.0, y: 1.0 }, Some(4.0)), Some(4));
+        assert_eq!(
+            voro2.find(Coordinate { x: 1.0, y: 1.0 }, Some(4.0)),
+            Some(4)
+        );
     }
 
     #[test]

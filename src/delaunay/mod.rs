@@ -1,7 +1,10 @@
 #![allow(clippy::many_single_char_names)]
 mod cartesian;
+
+/// A helper function.
 pub mod excess;
 mod geo_circumcenters;
+/// Helper function.
 pub mod geo_delaunay_from;
 mod geo_edges;
 mod geo_find;
@@ -84,6 +87,7 @@ use rust_d3_delaunay::delaunay::Delaunay;
 //     pub projection: Option<ProjectionMutator>,
 // }
 
+/// Wraps data associated with a delaunay object.
 #[derive(Derivative)]
 #[derivative(Debug)]
 pub struct GeoDelaunay<'a, DRAIN, T>
@@ -91,19 +95,26 @@ where
     DRAIN: Stream<T = T>,
     T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst,
 {
+    /// The wrapped delaunay object.
     #[derivative(Debug = "ignore")]
     pub delaunay: Delaunay<DRAIN, Line<T>, Stereographic<DRAIN, T>, PV<T>, T>,
-    // The edges and triangles properties need RC because the values are close over in the urquhart function.
+    /// The edges and triangles properties need RC because the values are close over in the urquhart function.
     pub edges: Rc<Vec<[usize; 2]>>,
+    /// A set of triangles as defined by set of indicies.
     pub triangles: Rc<Vec<Vec<usize>>>,
+    /// A list of centers associated with the cells.
     pub centers: Vec<Coordinate<T>>,
-    // neighbours:  passes to Voronoi::polygon() where it is consumed.
+    /// Passes to Voronoi::polygon() where it is consumed.
     pub neighbors: Rc<RefCell<HashMap<usize, Vec<usize>>>>,
+    /// A set pf polygons as defined by a set of indicies.
     pub polygons: Vec<Vec<usize>>,
     pub mesh: Vec<[usize; 2]>,
+    /// The hull.
     pub hull: Vec<usize>,
+    /// Urquhart graph .. by index the set the of points in the plane.
     #[derivative(Debug = "ignore")]
     pub urquhart: Box<dyn Fn(&Vec<T>) -> Vec<bool> + 'a>,
+    /// Return the indexes of the points.
     #[derivative(Debug = "ignore")]
     pub find: Box<dyn Fn(Coordinate<T>, Option<usize>) -> Option<usize> + 'a>,
 }
@@ -113,6 +124,7 @@ where
     DRAIN: Stream<T = T> + Default,
     T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst + FromPrimitive,
 {
+    /// Create a GeoDelaunay object from a set of points.
     pub fn delaunay(points: Rc<Vec<Coordinate<T>>>) -> Option<GeoDelaunay<'a, DRAIN, T>> {
         let p = points.clone();
         match geo_delaunay_from(p) {
