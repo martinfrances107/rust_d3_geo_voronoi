@@ -1,4 +1,4 @@
-# Project: rust_d3_geo_voronoi
+# Project: rust d3 geo voronoi
 
 This is a port of the [d3-geo-voronoi](https://github.com/Fil/d3-geo-voronoi) library into a RUST library crate/package. It is in a very early development phase.
 
