@@ -1,4 +1,12 @@
 #![allow(clippy::many_single_char_names)]
+
+use rust_d3_geo::clip::circle::line::Line;
+use rust_d3_geo::clip::circle::pv::PV;
+use rust_d3_geo::clip::Line as LineTrait;
+
+use rust_d3_geo::clip::PointVisible;
+use rust_d3_geo::projection::builder::Builder;
+use rust_d3_geo::stream::Stream;
 use std::cmp;
 use std::fmt::Display;
 use std::ops::AddAssign;
@@ -11,14 +19,20 @@ use num_traits::{float::Float, float::FloatConst, AsPrimitive, FromPrimitive};
 use rust_d3_delaunay::delaunay::Delaunay;
 
 use rust_d3_geo::projection::projection::Projection;
-use rust_d3_geo::projection::stereographic::StereographicRaw;
+use rust_d3_geo::projection::scale::Scale;
+use rust_d3_geo::projection::stereographic::Stereographic;
+use rust_d3_geo::projection::translate::Translate;
+use rust_d3_geo::projection::Raw;
 use rust_d3_geo::rotation::rotation::Rotation;
 use rust_d3_geo::Transform;
 
 use delaunator::EMPTY;
 
-pub fn geo_delaunay_from<T>(points: Rc<Vec<Coordinate<T>>>) -> Option<Delaunay<T>>
+pub fn geo_delaunay_from<DRAIN, T>(
+    points: Rc<Vec<Coordinate<T>>>,
+) -> Option<Delaunay<DRAIN, Line<T>, Stereographic<DRAIN, T>, PV<T>, T>>
 where
+    DRAIN: Stream<T = T> + Default,
     T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst + FromPrimitive,
 {
     if points.len() < 2 {
@@ -38,13 +52,16 @@ where
     });
     let angles: [T; 3] = [angles2.x, angles2.y, T::zero()];
 
-    let projection = StereographicRaw::gen_projection_mutator()
+    let builder: Builder<DRAIN, Line<T>, Stereographic<DRAIN, T>, PV<T>, T> =
+        Stereographic::builder();
+    let projection = builder
         .translate(&Coordinate {
             x: T::zero(),
             y: T::zero(),
         })
         .scale(T::one())
-        .rotate(angles);
+        .rotate(angles)
+        .build();
 
     let mut points: Vec<Coordinate<T>> = points.iter().map(|p| projection.transform(&p)).collect();
 

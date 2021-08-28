@@ -6,9 +6,9 @@ use std::rc::Rc;
 use delaunator::EMPTY;
 use geo::{CoordFloat, Coordinate};
 use num_traits::Float;
-use rust_d3_geo::cartesian::cartesian_add;
-use rust_d3_geo::cartesian::cartesian_cross;
-use rust_d3_geo::cartesian::cartesian_normalize;
+use rust_d3_geo::cartesian::add;
+use rust_d3_geo::cartesian::cross;
+use rust_d3_geo::cartesian::normalize;
 use rust_d3_geo::cartesian::spherical;
 
 use crate::math::{EPSILON, EPSILON2};
@@ -55,16 +55,16 @@ pub fn geo_polygons<'a, T: CoordFloat>(
                 // Two hemispheres.
                 let a = cartesian(&points[0]);
                 let b = cartesian(&points[0]);
-                let m = cartesian_normalize(&cartesian_add(a, b));
+                let m = normalize(&add(a, b));
 
-                let d = cartesian_normalize(&cartesian_cross(&a, &b));
-                let c = cartesian_cross(&m, &d);
+                let d = normalize(&cross(&a, &b));
+                let c = cross(&m, &d);
 
                 let poly: Vec<usize> = [
                     m,
-                    cartesian_cross(&m, &c),
-                    cartesian_cross(&cartesian_cross(&m, &c), &c),
-                    cartesian_cross(&cartesian_cross(&cartesian_cross(&m, &c), &c), &c),
+                    cross(&m, &c),
+                    cross(&cross(&m, &c), &c),
+                    cross(&cross(&cross(&m, &c), &c), &c),
                 ]
                 .iter()
                 .map(|p| spherical(p))

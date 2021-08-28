@@ -13,7 +13,13 @@ mod geo_triangles;
 mod geo_urquhart;
 mod o_midpoint;
 
-
+use rust_d3_geo::clip::circle::line::Line;
+use rust_d3_geo::clip::circle::pv::PV;
+use rust_d3_geo::clip::Line as LineTrait;
+use rust_d3_geo::clip::PointVisible;
+use rust_d3_geo::projection::stereographic::Stereographic;
+use rust_d3_geo::projection::Raw;
+use rust_d3_geo::stream::Stream;
 use std::cell::RefCell;
 
 use std::collections::HashMap;
@@ -27,9 +33,6 @@ use num_traits::AsPrimitive;
 use num_traits::FloatConst;
 use num_traits::{float::Float, FromPrimitive};
 
-use rust_d3_delaunay::delaunay::Delaunay;
-use rust_d3_geo::projection::projection_mutator::ProjectionMutator;
-
 use geo_circumcenters::geo_circumcenters;
 use geo_delaunay_from::geo_delaunay_from;
 use geo_edges::geo_edges;
@@ -40,6 +43,8 @@ use geo_neighbors::geo_neighbors;
 use geo_polygons::geo_polygons;
 use geo_triangles::geo_triangles;
 use geo_urquhart::geo_urquhart;
+
+use rust_d3_delaunay::delaunay::Delaunay;
 
 // #[derive(Default, Debug)]
 // pub struct Delaunay {
@@ -84,12 +89,13 @@ use geo_urquhart::geo_urquhart;
 
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct GeoDelaunay<'a, T>
+pub struct GeoDelaunay<'a, DRAIN, T>
 where
+    DRAIN: Stream<T = T>,
     T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst,
 {
     #[derivative(Debug = "ignore")]
-    pub delaunay: Delaunay<T>,
+    pub delaunay: Delaunay<DRAIN, Line<T>, Stereographic<DRAIN, T>, PV<T>, T>,
     // The edges and triangles properties need RC because the values are close over in the urquhart function.
     pub edges: Rc<Vec<[usize; 2]>>,
     pub triangles: Rc<Vec<Vec<usize>>>,
@@ -105,11 +111,12 @@ where
     pub find: Box<dyn Fn(Coordinate<T>, Option<usize>) -> Option<usize> + 'a>,
 }
 
-impl<'a, T> GeoDelaunay<'a, T>
+impl<'a, DRAIN, T> GeoDelaunay<'a, DRAIN, T>
 where
+    DRAIN: Stream<T = T> + Default,
     T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst + FromPrimitive,
 {
-    pub fn delaunay(points: Rc<Vec<Coordinate<T>>>) -> Option<GeoDelaunay<'a, T>> {
+    pub fn delaunay(points: Rc<Vec<Coordinate<T>>>) -> Option<GeoDelaunay<'a, DRAIN, T>> {
         let p = points.clone();
         match geo_delaunay_from(p) {
             Some(delaunay) => {

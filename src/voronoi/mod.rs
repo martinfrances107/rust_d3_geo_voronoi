@@ -1,5 +1,9 @@
-use std::ops::AddAssign;
+use rust_d3_geo::clip::Line;
+use rust_d3_geo::clip::PointVisible;
+use rust_d3_geo::projection::Raw;
+use rust_d3_geo::stream::Stream;
 use std::fmt::Display;
+use std::ops::AddAssign;
 use std::rc::Rc;
 use std::{borrow::Borrow, collections::HashMap};
 
@@ -18,9 +22,9 @@ use num_traits::{AsPrimitive, Float, FloatConst, FromPrimitive};
 use rust_d3_geo::data_object::FeatureCollection;
 // use rust_d3_geo::data_object::feature_geometry::FeatureGeometry;
 use rust_d3_geo::data_object::DataObject;
+use rust_d3_geo::data_object::Feature;
 use rust_d3_geo::data_object::FeatureProperty;
-use rust_d3_geo::data_object::FeatureStruct;
-use rust_d3_geo::data_object::FeaturesStruct;
+use rust_d3_geo::data_object::Features;
 use rust_d3_geo::distance::distance;
 
 use crate::delaunay::excess::excess;
@@ -28,11 +32,12 @@ use crate::delaunay::excess::excess;
 use super::delaunay::GeoDelaunay;
 
 /// Return type used by .x() and .y()
-enum XYReturn<'a, T>
+enum XYReturn<'a, DRAIN, T>
 where
+    DRAIN: Stream<T = T>,
     T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst,
 {
-    Voronoi(GeoVoronoi<'a, T>),
+    Voronoi(GeoVoronoi<'a, DRAIN, T>),
     Func(Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>),
 }
 
@@ -46,11 +51,12 @@ where
 }
 
 // #[derive(Debug)]
-pub struct GeoVoronoi<'a, T>
+pub struct GeoVoronoi<'a, DRAIN, T>
 where
-    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display +  FloatConst,
+    DRAIN: Stream<T = T>,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst,
 {
-    geo_delaunay: Option<GeoDelaunay<'a, T>>,
+    geo_delaunay: Option<GeoDelaunay<'a, DRAIN, T>>,
     data: Option<Geometry<T>>,
     found: Option<usize>,
     //Points: Rc needed here as the egdes, triangles, neigbours etc all index into thts vec.
@@ -61,11 +67,12 @@ where
     vy: Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>,
 }
 
-impl<'a, T> Default for GeoVoronoi<'a, T>
+impl<'a, DRAIN, T> Default for GeoVoronoi<'a, DRAIN, T>
 where
+    DRAIN: Stream<T = T> + Default,
     T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst,
 {
-    fn default() -> GeoVoronoi<'a, T> {
+    fn default() -> GeoVoronoi<'a, DRAIN, T> {
         return GeoVoronoi {
             data: None,
             geo_delaunay: None,
@@ -78,14 +85,15 @@ where
     }
 }
 
-impl<'a, T> GeoVoronoi<'a, T>
+impl<'a, DRAIN, T> GeoVoronoi<'a, DRAIN, T>
 where
-    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display +  FloatConst + FromPrimitive,
+    DRAIN: Stream<T = T> + Default,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst + FromPrimitive,
 {
     /// If the input is a collection we act only on the first element in the collection.
     /// by copying over the data into a new single element before proceeding.
-    pub fn new(data: Option<Geometry<T>>) -> GeoVoronoi<'a, T> {
-        let mut v: GeoVoronoi<'a, T>;
+    pub fn new(data: Option<Geometry<T>>) -> GeoVoronoi<'a, DRAIN, T> {
+        let mut v: GeoVoronoi<'a, DRAIN, T>;
 
         // let delaunay_return: Option<GeoDelaunay> = None;
 
@@ -163,7 +171,7 @@ where
     fn x(
         mut self,
         f: Option<Box<impl Fn(&dyn Centroid<Output = Point<T>>) -> T + 'static>>,
-    ) -> XYReturn<'a, T> {
+    ) -> XYReturn<'a, DRAIN, T> {
         return match f {
             None => XYReturn::Func(self.vx),
             Some(f) => {
@@ -176,7 +184,7 @@ where
     fn y(
         mut self,
         f: Option<Box<impl Fn(&dyn Centroid<Output = Point<T>>) -> T + 'static>>,
-    ) -> XYReturn<'a, T> {
+    ) -> XYReturn<'a, DRAIN, T> {
         return match f {
             None => XYReturn::Func(self.vy),
             Some(f) => {
@@ -203,7 +211,7 @@ where
                     return Some(FeatureCollection(Vec::new()));
                 }
 
-                let mut features: Vec<FeaturesStruct<T>> = Vec::new();
+                let mut features: Vec<Features<T>> = Vec::new();
                 println!("dr.polygons.len: {:?}", dr.polygons.len());
                 for (i, poly) in dr.polygons.iter().enumerate() {
                     let mut poly_closed: Vec<usize> = poly.to_vec();
@@ -220,7 +228,7 @@ where
                         FeatureProperty::Sitecoordinates(self.points[i]),
                         FeatureProperty::Neighbors(n),
                     ];
-                    let fs = FeaturesStruct {
+                    let fs = Features {
                         geometry: vec![geometry],
                         properties: Vec::new(),
                     };
@@ -248,7 +256,7 @@ where
 
             Some(delaunay_return) => {
                 let points = self.points.clone();
-                let features: Vec<FeaturesStruct<T>> = delaunay_return
+                let features: Vec<Features<T>> = delaunay_return
                     .triangles
                     .iter()
                     .enumerate()
@@ -266,7 +274,7 @@ where
                         let first = tri_struct.tri_points[0];
                         let mut coordinates: Vec<Coordinate<T>> = tri_struct.tri_points;
                         coordinates.push(first);
-                        FeaturesStruct {
+                        Features {
                             properties: vec![FeatureProperty::Circumecenter(tri_struct.center)],
                             geometry: vec![Geometry::Polygon(Polygon::new(
                                 coordinates.into(),
@@ -303,13 +311,13 @@ where
                         .collect(),
                 );
                 let urquhart = (delaunay_return.urquhart)(&distances);
-                let features: Vec<FeaturesStruct<T>> = delaunay_return
+                let features: Vec<Features<T>> = delaunay_return
                     .edges
                     .iter()
                     .enumerate()
                     .map(|(i, e)| {
                         let ls: LineString<T> = vec![points[0], points[e[1]]].into();
-                        return FeaturesStruct {
+                        return Features {
                             properties: vec![
                                 FeatureProperty::Source(self.valid[e[0]]),
                                 FeatureProperty::Target(self.valid[e[1]]),

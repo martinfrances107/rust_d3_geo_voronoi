@@ -111,16 +111,16 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
     context.set_stroke_style(&"black".into());
     context.fill_rect(0.0, 0.0, width, height);
     let mut rng = rand::thread_rng();
-    let ortho = OrthographicRaw::gen_projection_mutator();
+    let ortho = OrthographicRaw::builer();
 
     let mut sites: Vec<Point<f64>> = Vec::new();
     for _i in 0..size {
         let point = Coordinate {
-            x: rng.gen_range(0.0.. 360f64),
+            x: rng.gen_range(0.0..360f64),
             y: rng.gen_range(-90f64..90f64),
         };
         let t = ortho.transform(&point);
-        
+
         sites.push(t.into());
     }
 

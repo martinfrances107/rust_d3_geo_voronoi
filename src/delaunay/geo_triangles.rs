@@ -1,3 +1,7 @@
+use rust_d3_geo::clip::Line;
+use rust_d3_geo::clip::PointVisible;
+use rust_d3_geo::projection::Raw;
+use rust_d3_geo::stream::Stream;
 use std::fmt::Display;
 use std::ops::AddAssign;
 
@@ -6,8 +10,14 @@ use geo::CoordFloat;
 use num_traits::{AsPrimitive, Float, FloatConst};
 use rust_d3_delaunay::delaunay::Delaunay;
 
-pub fn geo_triangles<T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst>(
-    delaunay: &Delaunay<T>,
+pub fn geo_triangles<
+    DRAIN: Stream<T = T>,
+    L: Line,
+    PR: Raw<T>,
+    PV: PointVisible<T = T>,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst,
+>(
+    delaunay: &Delaunay<DRAIN, L, PR, PV, T>,
 ) -> Vec<Vec<usize>> {
     let Delaunay { triangles, .. } = delaunay;
     if triangles.is_empty() {
