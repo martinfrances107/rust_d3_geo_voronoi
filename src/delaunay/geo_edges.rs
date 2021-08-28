@@ -1,5 +1,4 @@
 use geo::{CoordFloat, Coordinate};
-use num_traits::Float;
 
 use super::excess::excess;
 use rust_d3_array::extent::extent;

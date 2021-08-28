@@ -5,8 +5,13 @@ use geo::Geometry;
 use geo::MultiPoint;
 use geo::Point;
 use rand::prelude::*;
+use rust_d3_geo::clip::circle::line::Line;
+use rust_d3_geo::clip::circle::pv::PV;
 use rust_d3_geo::data_object::FeatureCollection;
-use rust_d3_geo::projection::orthographic::OrthographicRaw;
+use rust_d3_geo::projection::orthographic::Orthographic;
+use rust_d3_geo::projection::projection::Projection;
+use rust_d3_geo::projection::Raw;
+use rust_d3_geo::stream::StreamDrainStub;
 use rust_d3_geo::Transform;
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 use wasm_bindgen::prelude::*;
@@ -111,7 +116,13 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
     context.set_stroke_style(&"black".into());
     context.fill_rect(0.0, 0.0, width, height);
     let mut rng = rand::thread_rng();
-    let ortho = OrthographicRaw::builer();
+    let ortho: Projection<
+        StreamDrainStub<f64>,
+        Line<f64>,
+        Orthographic<StreamDrainStub<f64>, f64>,
+        PV<f64>,
+        f64,
+    > = Orthographic::builder().build();
 
     let mut sites: Vec<Point<f64>> = Vec::new();
     for _i in 0..size {
@@ -126,7 +137,9 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
 
     let sites = MultiPoint(sites);
 
-    match GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone()))).polygons(None) {
+    let mut gv: GeoVoronoi<StreamDrainStub<f64>, f64> =
+        GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
+    match gv.polygons(None) {
         None => {
             console_log!("failed to get polygons");
         }
