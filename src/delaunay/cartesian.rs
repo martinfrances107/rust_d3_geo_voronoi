@@ -7,5 +7,5 @@ pub fn cartesian<T: CoordFloat>(spherical: &Coordinate<T>) -> [T; 3] {
     let lambda = spherical.x.to_radians();
     let phi = spherical.y.to_radians();
     let cos_phi = phi.cos();
-    return [cos_phi * lambda.cos(), cos_phi * lambda.sin(), phi.sin()];
+    [cos_phi * lambda.cos(), cos_phi * lambda.sin(), phi.sin()]
 }

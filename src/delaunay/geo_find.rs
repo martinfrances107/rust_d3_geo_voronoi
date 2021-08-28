@@ -21,7 +21,7 @@ pub fn geo_find<'a, T: CoordFloat + 'static>(
     points: Rc<Vec<Coordinate<T>>>,
 ) -> Box<dyn Fn(Coordinate<T>, Option<usize>) -> Option<usize> + 'a> {
     let points = points;
-    return Box::new(
+    Box::new(
         move |p: Coordinate<T>, next_p: Option<usize>| -> Option<usize> {
             let next_or_none = match next_p {
                 Some(n) => Some(n),
@@ -51,7 +51,7 @@ pub fn geo_find<'a, T: CoordFloat + 'static>(
                     }
                 }
             }
-            return found;
+            found
         },
-    );
+    )
 }

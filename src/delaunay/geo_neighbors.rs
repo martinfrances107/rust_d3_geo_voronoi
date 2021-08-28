@@ -20,5 +20,5 @@ pub fn geo_neighbors(triangles: &[Vec<usize>], npoints: usize) -> HashMap<usize,
         h_neighbors.insert(0usize, vec![]);
     }
 
-    return h_neighbors;
+    h_neighbors
 }

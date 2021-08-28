@@ -8,7 +8,7 @@ pub fn geo_urquhart<T: Float>(
     edges: Rc<Vec<[usize; 2]>>,
     triangles: Rc<Vec<Vec<usize>>>,
 ) -> Box<dyn Fn(&Vec<T>) -> Vec<bool>> {
-    return Box::new(move |distances: &Vec<T>| {
+    Box::new(move |distances: &Vec<T>| {
         let mut h_lengths: HashMap<String, T> = HashMap::new();
         let mut h_urquhart: HashMap<String, bool> = HashMap::new();
 
@@ -45,6 +45,6 @@ pub fn geo_urquhart<T: Float>(
             })
             .collect();
 
-        return out;
-    });
+        out
+    })
 }

@@ -5,9 +5,8 @@ use rust_d3_geo::stream::Stream;
 use std::fmt::Display;
 use std::ops::AddAssign;
 
-use delaunator::Point;
 use geo::CoordFloat;
-use num_traits::{AsPrimitive, Float, FloatConst};
+use num_traits::{AsPrimitive, FloatConst};
 use rust_d3_delaunay::delaunay::Delaunay;
 
 pub fn geo_triangles<
@@ -35,5 +34,5 @@ pub fn geo_triangles<
             geo_triangles.push(vec![a, c, b]);
         }
     }
-    return geo_triangles;
+    geo_triangles
 }

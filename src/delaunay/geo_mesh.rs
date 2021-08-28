@@ -13,5 +13,5 @@ pub fn geo_mesh(polygons: &[Vec<usize>]) -> Vec<[usize; 2]> {
         }
     }
 
-    return mesh;
+    mesh
 }

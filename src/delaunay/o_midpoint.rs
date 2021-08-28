@@ -1,6 +1,5 @@
 // use delaunator::Point;
 use geo::{CoordFloat, Coordinate};
-use num_traits::float::Float;
 
 use rust_d3_geo::cartesian::add;
 use rust_d3_geo::cartesian::cross;
@@ -23,5 +22,5 @@ pub fn o_midpoint<T: CoordFloat>(
 
     let norm = normalize(&add(*a, *b));
     let signed_norm = scale(&norm, s);
-    return spherical(&signed_norm);
+    spherical(&signed_norm)
 }

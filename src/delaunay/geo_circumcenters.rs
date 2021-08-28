@@ -23,7 +23,7 @@ pub fn geo_circumcenters<T: CoordFloat>(
                 add(cross(&c[1], &c[0]), cross(&c[2], &c[1])),
                 cross(&c[0], &c[2]),
             );
-            return spherical(&normalize(&v));
+            spherical(&normalize(&v))
         })
         .collect();
 }

@@ -1,17 +1,12 @@
 #![allow(clippy::many_single_char_names)]
 use std::collections::HashMap;
-use std::rc::Rc;
 
-// use delaunator::Point;
-use delaunator::EMPTY;
 use geo::{CoordFloat, Coordinate};
-use num_traits::Float;
+
 use rust_d3_geo::cartesian::add;
 use rust_d3_geo::cartesian::cross;
 use rust_d3_geo::cartesian::normalize;
 use rust_d3_geo::cartesian::spherical;
-
-use crate::math::{EPSILON, EPSILON2};
 
 use super::cartesian::cartesian;
 use super::o_midpoint::o_midpoint;
@@ -21,20 +16,16 @@ pub fn geo_polygons<T: CoordFloat>(
     triangles: &[Vec<usize>],
     points: &[Coordinate<T>],
 ) -> (Vec<Vec<usize>>, Vec<Coordinate<T>>) {
-    let epsilon_t = T::from(EPSILON).unwrap();
     let mut polygons: Vec<Vec<usize>> = Vec::new();
     let mut centers = circumcenter;
 
     let supplement = |point: &Coordinate<T>, centers: &mut Vec<Coordinate<T>>| -> usize {
         let mut f = None;
-        centers[triangles.len()..]
-            .iter()
-            .enumerate()
-            .for_each(|(i, p)| {
-                if p == point {
-                    f = Some(triangles.len() + 1)
-                }
-            });
+        centers[triangles.len()..].iter().for_each(|p| {
+            if p == point {
+                f = Some(triangles.len() + 1)
+            }
+        });
         match f {
             None => {
                 let f_out: usize = centers.len();
@@ -119,9 +110,7 @@ pub fn geo_polygons<T: CoordFloat>(
             }
 
             match p.len() {
-                0 | 1 => {
-                    return Vec::new();
-                }
+                0 | 1 => Vec::new(),
                 2 => {
                     let i0;
                     let i1;
@@ -142,12 +131,10 @@ pub fn geo_polygons<T: CoordFloat>(
 
                     return vec![p[0], i1, p[1], i0];
                 }
-                _ => {
-                    return p;
-                }
+                _ => p,
             }
         })
         .collect();
 
-    return ((*reordered).to_vec(), centers);
+    ((*reordered).to_vec(), centers)
 }

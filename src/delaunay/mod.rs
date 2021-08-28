@@ -15,10 +15,7 @@ mod o_midpoint;
 
 use rust_d3_geo::clip::circle::line::Line;
 use rust_d3_geo::clip::circle::pv::PV;
-use rust_d3_geo::clip::Line as LineTrait;
-use rust_d3_geo::clip::PointVisible;
 use rust_d3_geo::projection::stereographic::Stereographic;
-use rust_d3_geo::projection::Raw;
 use rust_d3_geo::stream::Stream;
 use std::cell::RefCell;
 
@@ -31,7 +28,7 @@ use derivative::Derivative;
 use geo::{CoordFloat, Coordinate};
 use num_traits::AsPrimitive;
 use num_traits::FloatConst;
-use num_traits::{float::Float, FromPrimitive};
+use num_traits::FromPrimitive;
 
 use geo_circumcenters::geo_circumcenters;
 use geo_delaunay_from::geo_delaunay_from;

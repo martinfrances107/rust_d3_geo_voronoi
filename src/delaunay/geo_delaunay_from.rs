@@ -1,29 +1,23 @@
 #![allow(clippy::many_single_char_names)]
 
-use rust_d3_geo::clip::circle::line::Line;
-use rust_d3_geo::clip::circle::pv::PV;
-use rust_d3_geo::clip::Line as LineTrait;
-
-use rust_d3_geo::clip::PointVisible;
-use rust_d3_geo::projection::builder::Builder;
-use rust_d3_geo::stream::Stream;
 use std::cmp;
 use std::fmt::Display;
 use std::ops::AddAssign;
 use std::rc::Rc;
 
-use geo::Point;
 use geo::{CoordFloat, Coordinate};
-use num_traits::{float::Float, float::FloatConst, AsPrimitive, FromPrimitive};
+use num_traits::{float::FloatConst, AsPrimitive, FromPrimitive};
 
 use rust_d3_delaunay::delaunay::Delaunay;
-
-use rust_d3_geo::projection::projection::Projection;
+use rust_d3_geo::clip::circle::line::Line;
+use rust_d3_geo::clip::circle::pv::PV;
+use rust_d3_geo::projection::builder::Builder;
 use rust_d3_geo::projection::scale::Scale;
 use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::projection::translate::Translate;
 use rust_d3_geo::projection::Raw;
 use rust_d3_geo::rotation::rotation::Rotation;
+use rust_d3_geo::stream::Stream;
 use rust_d3_geo::Transform;
 
 use delaunator::EMPTY;
@@ -158,5 +152,5 @@ where
     }
     // // there should always be 4 degenerate triangles
     // // console.warn(degenerate);
-    return Some(delaunay);
+    Some(delaunay)
 }

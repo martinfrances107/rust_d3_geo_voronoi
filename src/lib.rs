@@ -1,7 +1,5 @@
-#![allow(unused_variables)]
-#![allow(dead_code)]
-#![allow(unused_imports)]
-#![allow(clippy::needless_return)]
+#![allow(clippy::pedantic)]
+#![warn(missing_debug_implementations)]
 extern crate derivative;
 extern crate geo;
 extern crate rust_d3_array;
