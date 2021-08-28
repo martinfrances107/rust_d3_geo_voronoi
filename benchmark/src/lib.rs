@@ -97,7 +97,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
         .dyn_into::<web_sys::CanvasRenderingContext2d>()?;
 
     // TODO can this be defined statically
-    let scheme_category10 = vec![
+    let scheme_category10: [JsValue; 10] = [
         JsValue::from_str("#1f77b4"),
         JsValue::from_str("#ff7f0e"),
         JsValue::from_str("#2ca02c"),
