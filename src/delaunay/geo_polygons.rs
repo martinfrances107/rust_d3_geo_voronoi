@@ -11,6 +11,9 @@ use rust_d3_geo::cartesian::spherical;
 use super::cartesian::cartesian;
 use super::o_midpoint::o_midpoint;
 
+// let mut tuple_vec: Vec<(usize, usize, usize, (usize, usize, usize))>;
+type TupleVec = Vec<(usize, usize, usize, (usize, usize, usize))>;
+
 pub fn geo_polygons<T: CoordFloat>(
     circumcenter: Vec<Coordinate<T>>,
     triangles: &[Vec<usize>],
@@ -69,14 +72,13 @@ pub fn geo_polygons<T: CoordFloat>(
         }
     }
 
-    let mut polygons_map: HashMap<usize, Vec<(usize, usize, usize, (usize, usize, usize))>> =
-        HashMap::new();
+    let mut polygons_map: HashMap<usize, TupleVec> = HashMap::new();
     for (t, tri) in triangles.iter().enumerate() {
         for j in 0..3 {
             let a = tri[j];
             let b = tri[(j + 1) % 3];
             let c = tri[(j + 2) % 3];
-            let mut tuple_vec: Vec<(usize, usize, usize, (usize, usize, usize))>;
+            let mut tuple_vec: TupleVec;
             match polygons_map.get(&a) {
                 Some(t) => {
                     tuple_vec = (*t).clone();

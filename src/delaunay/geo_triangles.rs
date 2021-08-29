@@ -14,7 +14,7 @@ pub fn geo_triangles<
     L: Line,
     PR: Raw<T>,
     PV: PointVisible<T = T>,
-    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
 >(
     delaunay: &Delaunay<DRAIN, L, PR, PV, T>,
 ) -> Vec<Vec<usize>> {

@@ -93,7 +93,7 @@ use rust_d3_delaunay::delaunay::Delaunay;
 pub struct GeoDelaunay<'a, DRAIN, T>
 where
     DRAIN: Stream<T = T>,
-    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
 {
     /// The wrapped delaunay object.
     #[derivative(Debug = "ignore")]
@@ -123,7 +123,7 @@ where
 impl<'a, DRAIN, T> GeoDelaunay<'a, DRAIN, T>
 where
     DRAIN: Stream<T = T> + Default,
-    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst + FromPrimitive,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + FloatConst + FromPrimitive,
 {
     /// Create a GeoDelaunay object from a set of points.
     pub fn delaunay(points: Rc<Vec<Coordinate<T>>>) -> Option<GeoDelaunay<'a, DRAIN, T>> {

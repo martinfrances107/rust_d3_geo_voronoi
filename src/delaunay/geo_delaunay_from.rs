@@ -28,7 +28,7 @@ pub fn geo_delaunay_from<DRAIN, T>(
 ) -> Option<Delaunay<DRAIN, Line<T>, Stereographic<DRAIN, T>, PV<T>, T>>
 where
     DRAIN: Stream<T = T> + Default,
-    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst + FromPrimitive,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + FloatConst + FromPrimitive,
 {
     if points.len() < 2 {
         return None;
