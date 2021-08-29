@@ -7,6 +7,7 @@
 extern crate web_sys;
 extern crate rand;
 
+use geo::Geometry::Polygon;
 use geo::Coordinate;
 use geo::Geometry;
 use geo::MultiPoint;
@@ -147,30 +148,34 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
         None => {
             console_log!("failed to get polygons");
         }
-        Some(FeatureCollection(features)) => {
+        Some(FeatureCollection(fc)) => {
             context.set_stroke_style(&"black".into());
-            for (i, g) in features[0].geometry.iter().enumerate() {
+            // console_log!("{:?}",fc);
+            for (i, features) in fc.iter().enumerate() {
+                // console_log!("i {}",i%10);
                 context.set_fill_style(&scheme_category10[i % 10]);
-                match g {
-                    Geometry::Polygon(polygon) => {
+                // console_log!("{:?}",features.geometry[0]);
+                match &features.geometry[0] {
+                    Polygon(polygon) => {
+                        // console_log!("line string {:?}", polygon.exterior());
                         let ls = polygon.exterior();
-                        let l_iter = ls.lines();
-                        context.begin_path();
-                        for line in l_iter {
-                            context.line_to(line.start.x, line.start.y);
-                            context.line_to(line.end.x, line.end.x);
-                        }
-                        context.close_path();
-                        context.fill();
-                    }
-                    _ => {
-                        console_log!("expecting a polygon");
-                    }
+                                    let l_iter = ls.lines();
+                                    context.begin_path();
+                                    for line in l_iter {
+                                        context.line_to(line.start.x, line.start.y);
+                                        context.line_to(line.end.x, line.end.x);
+                                    }
+                                    context.close_path();
+                                    context.fill();
+                    },
+                    _ => {console_log!("polygon not found");}
                 }
             }
 
             context.set_fill_style(&"white".into());
             for p in sites {
+
+                // console_log!("{:?}", p);
                 context.begin_path();
                 context.arc(
                     p.x(),
