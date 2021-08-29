@@ -157,14 +157,17 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
                 // console_log!("{:?}",features.geometry[0]);
                 match &features.geometry[0] {
                     Polygon(polygon) => {
-                        // console_log!("line string {:?}", polygon.exterior());
+                        console_log!("line string {:?}", polygon.exterior());
                         let ls = polygon.exterior();
-                                    let l_iter = ls.lines();
+                                    let mut p_iter = ls.points_iter();
                                     context.begin_path();
-                                    for line in l_iter {
-                                        context.line_to(line.start.x, line.start.y);
-                                        context.line_to(line.end.x, line.end.x);
-                                    }
+                                    // TODO early return if length is zero
+                                    let first = p_iter.next().unwrap();
+                                    context.move_to(first.x(), first.y());
+                                    p_iter.for_each(|p|
+                                    {
+                                        context.line_to(p.x(), p.y());
+                                    });
                                     context.close_path();
                                     context.fill();
                     },
