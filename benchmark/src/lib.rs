@@ -1,3 +1,9 @@
+#![allow(clippy::pedantic)]
+#![warn(missing_debug_implementations)]
+#![warn(missing_docs)]
+//! # rust d3 geo voronoi
+//!
+//! See the README.md.
 extern crate web_sys;
 
 use geo::Coordinate;

@@ -26,6 +26,9 @@ use crate::delaunay::excess::excess;
 use super::delaunay::GeoDelaunay;
 
 /// Return type used by .x() and .y()
+// #[derive(Derivative)]
+// #[derivative(Debug)]
+// #[derive(Debug)]
 pub enum XYReturn<'a, DRAIN, T>
 where
     DRAIN: Stream<T = T>,
@@ -38,7 +41,7 @@ where
     Func(Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>),
 }
 
-// #[derive(Debug)]
+#[derive(Debug)]
 struct TriStruct<T>
 where
     T: CoordFloat,
@@ -231,7 +234,7 @@ where
                     ];
                     let fs = Features {
                         geometry: vec![geometry],
-                        properties: properties,
+                        properties,
                     };
                     features.push(fs);
                 }
@@ -332,6 +335,7 @@ where
         };
     }
 
+    /// Returns the mesh in the form a mutliline string.
     pub fn mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
         match data {
             None => {
@@ -416,6 +420,7 @@ where
         }
     }
 
+    /// Returns the hull for a given geometry.
     pub fn hull(mut self, data: Option<Geometry<T>>) -> Option<Polygon<T>> {
         match data {
             None => {

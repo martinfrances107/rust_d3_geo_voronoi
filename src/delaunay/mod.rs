@@ -108,6 +108,7 @@ where
     pub neighbors: Rc<RefCell<HashMap<usize, Vec<usize>>>>,
     /// A set pf polygons as defined by a set of indicies.
     pub polygons: Vec<Vec<usize>>,
+    /// The mesh as identified by a pair of indicies.
     pub mesh: Vec<[usize; 2]>,
     /// The hull.
     pub hull: Vec<usize>,
