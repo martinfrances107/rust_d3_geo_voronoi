@@ -2,7 +2,6 @@ use rust_d3_geo::clip::Line;
 use rust_d3_geo::clip::PointVisible;
 use rust_d3_geo::projection::Raw;
 use rust_d3_geo::stream::Stream;
-use std::fmt::Display;
 use std::ops::AddAssign;
 
 use geo::CoordFloat;

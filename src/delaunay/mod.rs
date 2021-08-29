@@ -23,7 +23,6 @@ use rust_d3_geo::stream::Stream;
 use std::cell::RefCell;
 
 use std::collections::HashMap;
-use std::fmt::Display;
 use std::ops::AddAssign;
 use std::rc::Rc;
 

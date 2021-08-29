@@ -26,9 +26,7 @@ use crate::delaunay::excess::excess;
 use super::delaunay::GeoDelaunay;
 
 /// Return type used by .x() and .y()
-// #[derive(Derivative)]
-// #[derivative(Debug)]
-// #[derive(Debug)]
+#[allow(missing_debug_implementations)]
 pub enum XYReturn<'a, DRAIN, T>
 where
     DRAIN: Stream<T = T>,
@@ -37,7 +35,6 @@ where
     /// Voronoi
     Voronoi(GeoVoronoi<'a, DRAIN, T>),
     /// Function.
-    // #[derivative(Debug = "ignore")]
     Func(Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>),
 }
 
