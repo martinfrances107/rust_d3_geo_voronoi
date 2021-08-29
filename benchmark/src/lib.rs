@@ -67,11 +67,7 @@ fn get_document() -> Result<Document> {
     Ok(window.document().unwrap())
 }
 
-#[wasm_bindgen]
-pub fn greet(name: &str) {
-    alert(&format!("Hello, {}!", name));
-}
-
+/// Entry point.
 #[wasm_bindgen]
 pub fn run() -> Result<()> {
     console_log!("Hello {}!", "world");

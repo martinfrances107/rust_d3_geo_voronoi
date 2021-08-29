@@ -1,7 +1,6 @@
 #![allow(clippy::many_single_char_names)]
 
 use std::cmp;
-use std::fmt::Display;
 use std::ops::AddAssign;
 use std::rc::Rc;
 

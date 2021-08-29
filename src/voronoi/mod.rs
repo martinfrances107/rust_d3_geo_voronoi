@@ -32,7 +32,7 @@ use super::delaunay::GeoDelaunay;
 pub enum XYReturn<'a, DRAIN, T>
 where
     DRAIN: Stream<T = T>,
-    T: AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
+    T: AddAssign + AsPrimitive<T> + Display + CoordFloat + FloatConst,
 {
     /// Voronoi
     Voronoi(GeoVoronoi<'a, DRAIN, T>),
@@ -56,7 +56,7 @@ where
 pub struct GeoVoronoi<'a, DRAIN, T>
 where
     DRAIN: Stream<T = T>,
-    T: AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
     geo_delaunay: Option<GeoDelaunay<'a, DRAIN, T>>,
     data: Option<Geometry<T>>,
@@ -74,7 +74,7 @@ where
 impl<'a, DRAIN, T> Default for GeoVoronoi<'a, DRAIN, T>
 where
     DRAIN: Stream<T = T> + Default,
-    T: AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
     fn default() -> GeoVoronoi<'a, DRAIN, T> {
         GeoVoronoi {
@@ -92,7 +92,7 @@ where
 impl<'a, DRAIN, T> GeoVoronoi<'a, DRAIN, T>
 where
     DRAIN: Stream<T = T> + Default,
-    T: AddAssign + AsPrimitive<T> + CoordFloat + FloatConst + FromPrimitive,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst + FromPrimitive,
 {
     /// If the input is a collection we act only on the first element in the collection.
     /// by copying over the data into a new single element before proceeding.
