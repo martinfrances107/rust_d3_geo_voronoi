@@ -5,7 +5,7 @@ const rust = import('../pkg');
 
 rust
   .then(m => {
-    console.log("m is here");
+    console.log("wasm is imported");
     m.run()
   })
   .catch(console.error);

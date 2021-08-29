@@ -72,7 +72,7 @@ fn get_document() -> Result<Document> {
 /// Entry point.
 #[wasm_bindgen]
 pub fn run() -> Result<()> {
-    console_log!("Hello {}!", "world");
+    console_log!("run() - wasm entry point");
     let document = get_document()?;
     let body = document.body().expect("Could not get body");
 
