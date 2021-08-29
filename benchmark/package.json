@@ -7,8 +7,9 @@
     "create-wasm-app": ".bin/create-wasm-app.js"
   },
   "scripts": {
-    "build": "webpack --config webpack.config.js",
-    "start": "webpack-dev-server"
+    "build": "rimraf dist pkg && webpack",
+    "start": "rimraf dist pkg && webpack-dev-server --open -d",
+    "test": "cargo test && wasm-pack test --headless"
   },
   "repository": {
     "type": "git",
@@ -31,9 +32,10 @@
   },
   "devDependencies": {
     "@wasm-tool/wasm-pack-plugin": "1.0.1",
-    "copy-webpack-plugin": "^5.0.0",
-    "webpack": "^4.29.3",
-    "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.5"
+    "copy-webpack-plugin": "^5.0.3",
+    "webpack": "^4.42.0",
+    "webpack-dev-server": "^3.7.1",
+    "webpack-cli": "^3.3.3",
+    "rimraf": "^3.0.0"
   }
 }

@@ -5,6 +5,7 @@
 //!
 //! See the README.md.
 extern crate web_sys;
+extern crate rand;
 
 use geo::Coordinate;
 use geo::Geometry;
@@ -23,6 +24,7 @@ use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::Document;
+// use web_sys::console;
 use web_sys::HtmlElement;
 
 mod dom_macros;
