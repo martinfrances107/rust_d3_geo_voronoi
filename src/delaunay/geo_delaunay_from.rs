@@ -40,11 +40,10 @@ where
 
     let r = Rotation::new(points[pivot].x, points[pivot].y, T::zero());
 
-    let angles2 = r.invert(&Coordinate {
+    let r_invert = r.invert(&Coordinate {
         x: T::from(180).unwrap(),
         y: T::zero(),
     });
-    let angles: [T; 3] = [angles2.x, angles2.y, T::zero()];
 
     let builder: Builder<DRAIN, Line<T>, Stereographic<DRAIN, T>, PV<T>, T> =
         Stereographic::builder();
@@ -54,7 +53,7 @@ where
             y: T::zero(),
         })
         .scale(T::one())
-        .rotate(angles)
+        .rotate([r_invert.x, r_invert.y, T::zero()])
         .build();
 
     let mut points: Vec<Coordinate<T>> = points.iter().map(|p| projection.transform(p)).collect();
