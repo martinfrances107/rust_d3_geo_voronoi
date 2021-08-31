@@ -7,12 +7,14 @@
 extern crate web_sys;
 extern crate rand;
 
+use std::iter::repeat_with;
+
+use rand::prelude::*;
 use geo::Geometry::Polygon;
 use geo::Coordinate;
 use geo::Geometry;
 use geo::MultiPoint;
 use geo::Point;
-use rand::prelude::*;
 use rust_d3_geo::clip::circle::line::Line;
 use rust_d3_geo::clip::circle::pv::PV;
 use rust_d3_geo::data_object::FeatureCollection;
@@ -129,18 +131,13 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
         f64,
     > = Orthographic::builder().build();
 
-    let mut sites: Vec<Point<f64>> = Vec::new();
-    for _i in 0..size {
-        let point = Coordinate {
-            x: rng.gen_range(0.0..360f64),
-            y: rng.gen_range(-90f64..90f64),
-        };
-        let t = ortho.transform(&point);
-
-        sites.push(t.into());
-    }
-
-    let sites = MultiPoint(sites);
+    let sites: Vec<Coordinate<f64>> = repeat_with(rand::random)
+    .map(|(x, y): (f64, f64)| {
+        let p = Coordinate { x: 360_f64 * x, y: 180_f64 * y - 90_f64 };
+        ortho.transform(&p).into()
+    })
+    .take(size as usize)
+    .collect();
 
     let mut gv: GeoVoronoi<StreamDrainStub<f64>, f64> =
         GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
@@ -157,7 +154,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
                 // console_log!("{:?}",features.geometry[0]);
                 match &features.geometry[0] {
                     Polygon(polygon) => {
-                        console_log!("line string {:?}", polygon.exterior());
+                        // console_log!("line string {:?}", polygon.exterior());
                         let ls = polygon.exterior();
                                     let mut p_iter = ls.points_iter();
                                     context.begin_path();
