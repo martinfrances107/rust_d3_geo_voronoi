@@ -57,12 +57,12 @@ where
         .build();
 
     let mut points: Vec<Coordinate<T>> = points.iter().map(|p| projection.transform(p)).collect();
-
     let mut zeros = Vec::new();
     let mut max2 = T::one();
+    let m_threshold = T::from(1e32f64).unwrap();
     for (i, point) in points.iter().enumerate() {
         let m = point.x * point.x + point.y * point.y;
-        if !m.is_finite() || m > T::from(1e32f64).unwrap() {
+        if !m.is_finite() || m > m_threshold {
             zeros.push(i);
         } else if m > max2 {
             max2 = m;
@@ -92,21 +92,24 @@ where
     });
 
     let point_len = points.len();
+    dbg!("points before");
+    dbg!(points.clone());
     let mut delaunay = Delaunay::new(points);
     delaunay.projection = Some(projection);
-
+    dbg!("delaunay before cleanup ");
+    dbg!(delaunay);
+    panic!("good panic");
     // clean up the triangulation
-    // let  {triangles, half_edges, inedges} = delaunay;
-    // let triangles: &mut Vec<usize> = &mut delaunay.triangles;
-    // let half_edges: &mut Vec<i32> = &mut delaunay.half_edges;
-    // let mut inedges = delaunay.inedges;
+    let mut triangles = delaunay.triangles.clone();
+    let mut half_edges = delaunay.half_edges.clone();
+    let mut inedges = delaunay.inedges.clone();
 
     let mut degenerate: Vec<usize> = Vec::new();
     let mut i: usize = 0;
-    let l = delaunay.half_edges.len();
+    let l = half_edges.len();
 
     'he_loop: loop {
-        if delaunay.half_edges[i] == EMPTY {
+        if half_edges[i] == EMPTY {
             println!("empty");
             let j = match i % 3 == 2 {
                 true => i - 2,
@@ -116,21 +119,27 @@ where
                 true => i + 2,
                 false => i - 1,
             };
-            let a = delaunay.half_edges[j];
-            let b = delaunay.half_edges[k];
-            delaunay.half_edges[a] = b;
-            delaunay.half_edges[b] = a;
-            delaunay.half_edges[j] = EMPTY;
-            delaunay.half_edges[k] = EMPTY;
-            delaunay.triangles[i] = pivot;
-            delaunay.triangles[j] = pivot;
-            delaunay.triangles[k] = pivot;
-            delaunay.inedges[delaunay.triangles[a]] = match a % 3 == 0 {
+            let a = half_edges[j];
+            let b = half_edges[k];
+            dbg!("a");
+            dbg!(a);
+            dbg!("b");
+            dbg!(b);
+            half_edges[a] = b;
+            half_edges[b] = a;
+            half_edges[j] = EMPTY;
+            half_edges[k] = EMPTY;
+            triangles[i] = pivot;
+            triangles[j] = pivot;
+            triangles[k] = pivot;
+            dbg!("triangle pivot");
+            dbg!(pivot);
+            inedges[triangles[a]] = match a % 3 == 0 {
                 true => a + 2,
                 false => a - 1,
             };
 
-            delaunay.inedges[delaunay.triangles[b]] = match b % 3 == 0 {
+            inedges[triangles[b]] = match b % 3 == 0 {
                 true => b + 2,
                 false => b - 1,
             };
@@ -140,8 +149,8 @@ where
             degenerate.push(m);
 
             i += 2 - i % 3;
-        } else if delaunay.triangles[i] > point_len - 3 - 1 {
-            delaunay.triangles[i] = pivot;
+        } else if triangles[i] > point_len - 3 - 1 {
+            triangles[i] = pivot;
         }
 
         i += 1;
