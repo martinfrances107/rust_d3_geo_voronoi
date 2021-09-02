@@ -4,17 +4,17 @@
 //! # rust d3 geo voronoi
 //!
 //! See the README.md.
-extern crate web_sys;
 extern crate rand;
+extern crate web_sys;
 
 use std::iter::repeat_with;
 
-use rand::prelude::*;
-use geo::Geometry::Polygon;
 use geo::Coordinate;
 use geo::Geometry;
+use geo::Geometry::Polygon;
 use geo::MultiPoint;
 use geo::Point;
+
 use rust_d3_geo::clip::circle::line::Line;
 use rust_d3_geo::clip::circle::pv::PV;
 use rust_d3_geo::data_object::FeatureCollection;
@@ -122,7 +122,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
     context.set_fill_style(&"black".into());
     context.set_stroke_style(&"black".into());
     context.fill_rect(0.0, 0.0, width, height);
-    let mut rng = rand::thread_rng();
+    let rng = rand::thread_rng();
     let ortho: Projection<
         StreamDrainStub<f64>,
         Line<f64>,
@@ -131,13 +131,18 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
         f64,
     > = Orthographic::builder().build();
 
-    let sites: Vec<Coordinate<f64>> = repeat_with(rand::random)
-    .map(|(x, y): (f64, f64)| {
-        let p = Coordinate { x: 360_f64 * x, y: 180_f64 * y - 90_f64 };
-        ortho.transform(&p).into()
-    })
-    .take(size as usize)
-    .collect();
+    let sites = MultiPoint(
+        repeat_with(rand::random)
+            .map(|(x, y): (f64, f64)| {
+                let p = Coordinate {
+                    x: 360_f64 * x,
+                    y: 180_f64 * y - 90_f64,
+                };
+                ortho.transform(&p).into()
+            })
+            .take(size as usize)
+            .collect(),
+    );
 
     let mut gv: GeoVoronoi<StreamDrainStub<f64>, f64> =
         GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
@@ -156,30 +161,30 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
                     Polygon(polygon) => {
                         // console_log!("line string {:?}", polygon.exterior());
                         let ls = polygon.exterior();
-                                    let mut p_iter = ls.points_iter();
-                                    context.begin_path();
-                                    // TODO early return if length is zero
-                                    let first = p_iter.next().unwrap();
-                                    context.move_to(first.x(), first.y());
-                                    p_iter.for_each(|p|
-                                    {
-                                        context.line_to(p.x(), p.y());
-                                    });
-                                    context.close_path();
-                                    context.fill();
-                    },
-                    _ => {console_log!("polygon not found");}
+                        let mut p_iter = ls.points_iter();
+                        context.begin_path();
+                        // TODO early return if length is zero
+                        let first = p_iter.next().unwrap();
+                        context.move_to(first.x(), first.y());
+                        p_iter.for_each(|p| {
+                            context.line_to(p.x(), p.y());
+                        });
+                        context.close_path();
+                        context.fill();
+                    }
+                    _ => {
+                        console_log!("polygon not found");
+                    }
                 }
             }
 
             context.set_fill_style(&"white".into());
             for p in sites {
-
                 // console_log!("{:?}", p);
                 context.begin_path();
                 context.arc(
-                    p.x,
-                    p.y,
+                    p.x(),
+                    p.y(),
                     5.0, // radius
                     0.0,
                     TWO_PI,
