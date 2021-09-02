@@ -1,5 +1,6 @@
 #[cfg(not(tarpaulin_include))]
-mod voronoi_test {
+#[cfg(test)]
+mod geo_voronoi_test {
     extern crate pretty_assertions;
 
     use approx::AbsDiffEq;
@@ -15,7 +16,6 @@ mod voronoi_test {
     use rust_d3_geo::stream::StreamDrainStub;
     use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 
-    #[cfg(test)]
     use pretty_assertions::assert_eq;
 
     #[test]

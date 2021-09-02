@@ -178,8 +178,8 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
                 // console_log!("{:?}", p);
                 context.begin_path();
                 context.arc(
-                    p.x(),
-                    p.y(),
+                    p.x,
+                    p.y,
                     5.0, // radius
                     0.0,
                     TWO_PI,

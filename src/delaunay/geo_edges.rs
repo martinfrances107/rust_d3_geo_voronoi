@@ -14,7 +14,6 @@ pub fn geo_edges<T: CoordFloat>(
     }
     let zero = T::zero();
     let mut h_index = HashSet::new();
-
     for tri in triangles {
         if tri[0] == tri[1] {
             continue;

@@ -124,7 +124,7 @@ where
     DRAIN: Stream<T = T> + Default,
     T: AddAssign + AsPrimitive<T> + CoordFloat + FloatConst + FromPrimitive,
 {
-    /// Create a GeoDelaunay object from a set of points.
+    /// Creates a GeoDelaunay object from a set of points.
     pub fn delaunay(points: Rc<Vec<Coordinate<T>>>) -> Option<GeoDelaunay<'a, DRAIN, T>> {
         let p = points.clone();
         match geo_delaunay_from(p) {
