@@ -11,6 +11,7 @@ mod geo_voronoi_test {
     use geo::LineString;
     use geo::MultiPoint;
     use geo::Point;
+
     use rust_d3_geo::data_object::FeatureCollection;
     use rust_d3_geo::data_object::FeatureProperty;
     use rust_d3_geo::stream::StreamDrainStub;
@@ -327,13 +328,6 @@ mod geo_voronoi_test {
             }
         }
     }
-
-    // tape("geoVoronoi.triangles(sites) returns circumcenters.", function(test) {
-    //     var u = geoVoronoi.geoVoronoi().triangles(sites).features[0].properties.circumcenter, v = [ 5, 4.981069 ], w = [ -180 + v[0], -v[1] ];
-    //   test.ok( (Math.abs(u[0]-v[0]) < 1e-6 && Math.abs(u[1]-v[1]) < 1e-6)
-    //    || (Math.abs(u[0]-w[0]) < 1e-6 && Math.abs(u[1]-w[1]) < 1e-6) );
-    //   test.end();
-    // });
 
     #[test]
     fn geo_voronoi_links_returns_circumcenters() {

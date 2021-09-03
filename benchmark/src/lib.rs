@@ -13,7 +13,6 @@ use geo::Coordinate;
 use geo::Geometry;
 use geo::Geometry::Polygon;
 use geo::MultiPoint;
-use geo::Point;
 
 use rust_d3_geo::clip::circle::line::Line;
 use rust_d3_geo::clip::circle::pv::PV;
@@ -24,6 +23,7 @@ use rust_d3_geo::projection::Raw;
 use rust_d3_geo::stream::StreamDrainStub;
 use rust_d3_geo::Transform;
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
+
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::Document;
@@ -133,15 +133,14 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
 
     let sites = MultiPoint(
         repeat_with(rand::random)
-            .map(|(x, y): (f64, f64)| {
-                let p = Coordinate {
-                    x: 360_f64 * x,
-                    y: 180_f64 * y - 90_f64,
-                };
-                ortho.transform(&p).into()
-            })
-            .take(size as usize)
-            .collect(),
+          .map(|(x, y): (f64, f64)| {
+            Coordinate {
+              x: 360_f64 * x,
+              y: 180_f64 * y - 90_f64,
+            }.into()
+          })
+          .take(size as usize)
+          .collect(),
     );
 
     let mut gv: GeoVoronoi<StreamDrainStub<f64>, f64> =
@@ -165,9 +164,11 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
                         context.begin_path();
                         // TODO early return if length is zero
                         let first = p_iter.next().unwrap();
-                        context.move_to(first.x(), first.y());
+                        let first_t = ortho.transform(&first.into());
+                        context.move_to(first_t.x, first_t.y);
                         p_iter.for_each(|p| {
-                            context.line_to(p.x(), p.y());
+                            let pt =  ortho.transform(&p.into());
+                            context.line_to(pt.x, pt.y);
                         });
                         context.close_path();
                         context.fill();
@@ -178,13 +179,15 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
                 }
             }
 
+            // Render points.
             context.set_fill_style(&"white".into());
             for p in sites {
                 // console_log!("{:?}", p);
+                let pt = ortho.transform(&p.into());
                 context.begin_path();
                 context.arc(
-                    p.x(),
-                    p.y(),
+                    pt.x,
+                    pt.y,
                     5.0, // radius
                     0.0,
                     TWO_PI,

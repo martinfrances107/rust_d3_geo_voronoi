@@ -196,7 +196,7 @@ where
             }
         };
     }
-
+    /// Returns polygons in the form of a feature collection.
     pub fn polygons(&mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
         match data {
             None => {}
@@ -288,6 +288,7 @@ where
         }
     }
 
+    /// Return an annotated Feature collection labelled with distance urquhart etc.
     pub fn links(&mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
         match data {
             None => {

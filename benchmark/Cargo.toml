@@ -20,6 +20,7 @@ lto = true
 [dependencies]
 rust_d3_geo_voronoi = {path="../"}
 rust_d3_geo = { git="https://github.com/martinfrances107/rust_d3_geo.git", branch="main"}
+rust_d3_delaunay = { git="https://github.com/martinfrances107/rust_d3_delaunay.git", branch="main"}
 geo={git = "https://github.com/martinfrances107/geo.git", branch="cyclic_match" }
 # The `wasm-bindgen` crate provides the bare minimum functionality needed
 # to interact with JavaScript.
