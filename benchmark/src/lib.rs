@@ -172,6 +172,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
                         });
                         context.close_path();
                         context.fill();
+                        context.stroke();
                     }
                     _ => {
                         console_log!("polygon not found");
