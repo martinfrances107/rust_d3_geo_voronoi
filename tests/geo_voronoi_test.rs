@@ -19,6 +19,24 @@ mod geo_voronoi_test {
 
     use pretty_assertions::assert_eq;
 
+    // #[test]
+    // fn simple_test() {
+    //     println!("geoVoronoi.polygons(sites) returns polygons.");
+    //     let sites = MultiPoint(vec![Point::new(-20f64, 20f64), Point::new(20f64, 20f64)]);
+
+    //     let mut gv: GeoVoronoi<StreamDrainStub<f64>, f64> =
+    //         GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
+    //     match gv.polygons(None) {
+    //         None => {
+    //             assert!(false, "Must return a DataObject<T>.");
+    //         }
+    //         Some(FeatureCollection(features)) => {
+    //             dbg!(features);
+    //         }
+    //     }
+    //     panic!("---");
+    // }
+
     #[test]
     pub fn voronoi_polygons_returns_polygons() {
         println!("geoVoronoi.polygons(sites) returns polygons.");
@@ -375,4 +393,21 @@ mod geo_voronoi_test {
     //   test.equal(Math.max(...u.delaunay.delaunay.triangles), sites.length - 1);
     //   test.end();
     // });
+
+    #[test]
+    fn test_does_not_list_fake_points() {
+        println!("geoVoronoi’s delaunay does not list fake points in its triangles");
+        let sites = vec![
+            Point::new(0f64, 0f64),
+            Point::new(10f64, 0f64),
+            Point::new(0f64, 10f64),
+        ];
+
+        let u: GeoVoronoi<StreamDrainStub<f64>, f64> =
+            GeoVoronoi::new(Some(Geometry::MultiPoint(MultiPoint(sites.clone()))));
+        assert_eq!(
+            u.geo_delaunay.unwrap().delaunay.triangles.iter().max(),
+            Some(&(sites.len() - 1usize))
+        );
+    }
 }

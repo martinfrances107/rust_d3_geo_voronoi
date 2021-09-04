@@ -56,7 +56,7 @@ where
     DRAIN: Stream<T = T>,
     T: AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
-    geo_delaunay: Option<GeoDelaunay<'a, DRAIN, T>>,
+    pub geo_delaunay: Option<GeoDelaunay<'a, DRAIN, T>>,
     data: Option<Geometry<T>>,
     found: Option<usize>,
     //Points: Rc needed here as the egdes, triangles, neigbours etc all index into thts vec.
