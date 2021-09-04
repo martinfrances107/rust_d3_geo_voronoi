@@ -6,7 +6,7 @@ use rust_d3_array::extent::extent;
 use std::collections::HashSet;
 
 pub fn geo_edges<T: CoordFloat>(
-    triangles: &[Vec<usize>],
+    triangles: &[[usize; 3]],
     point: &[Coordinate<T>],
 ) -> Vec<[usize; 2]> {
     if point.len() == 1 {

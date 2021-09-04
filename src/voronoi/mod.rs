@@ -1,3 +1,4 @@
+use geo::kernels::HasKernel;
 use std::borrow::Borrow;
 use std::fmt::Display;
 use std::ops::AddAssign;
@@ -89,7 +90,7 @@ where
 impl<'a, DRAIN, T> GeoVoronoi<'a, DRAIN, T>
 where
     DRAIN: Stream<T = T> + Default,
-    T: AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst + FromPrimitive,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst + FromPrimitive + HasKernel,
 {
     /// If the input is a collection we act only on the first element in the collection.
     /// by copying over the data into a new single element before proceeding.
@@ -142,7 +143,6 @@ where
                     })
                     .filter(|(d0, d1, _)| (*d0 + *d1).is_finite())
                     .collect();
-
                 let points: Vec<Coordinate<T>> = temp
                     .iter()
                     .map(|(d0, d1, _)| Coordinate { x: *d0, y: *d1 })
@@ -205,6 +205,7 @@ where
             }
         }
 
+        dbg!("voronoi polygons valid", &self.valid);
         match &self.geo_delaunay {
             None => None,
             Some(dr) => {

@@ -6,7 +6,10 @@ use geo::{CoordFloat, Coordinate};
 
 use super::excess::excess;
 
-pub fn geo_hull<T: CoordFloat>(triangles: &[Vec<usize>], points: &[Coordinate<T>]) -> Vec<usize> {
+pub fn geo_hull<T>(triangles: &[[usize; 3]], points: &[Coordinate<T>]) -> Vec<usize>
+where
+    T: CoordFloat,
+{
     let mut h_hull: HashSet<String> = HashSet::new();
     let mut hull = Vec::new();
 

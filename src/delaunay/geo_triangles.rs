@@ -16,13 +16,14 @@ pub fn geo_triangles<
     T: AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
 >(
     delaunay: &Delaunay<DRAIN, L, PR, PV, T>,
-) -> Vec<Vec<usize>> {
+) -> Vec<[usize; 3]> {
     let Delaunay { triangles, .. } = delaunay;
     if triangles.is_empty() {
+        // panic!("empty triangles");
         return Vec::new();
     }
 
-    let mut geo_triangles: Vec<Vec<usize>> = Vec::new();
+    let mut geo_triangles: Vec<[usize; 3]> = Vec::new();
     let n: usize = triangles.len() / 3usize;
 
     for i in 0..n {
@@ -30,7 +31,7 @@ pub fn geo_triangles<
         let b = triangles[3 * i + 1];
         let c = triangles[3 * i + 2];
         if a != b && b != c {
-            geo_triangles.push(vec![a, c, b]);
+            geo_triangles.push([a, c, b]);
         }
     }
     geo_triangles

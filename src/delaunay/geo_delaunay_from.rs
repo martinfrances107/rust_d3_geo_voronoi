@@ -33,12 +33,12 @@ where
         return None;
     };
 
-    // Find a valid PIvot point.
+    // Find a valid Pivot point to send to infinity.
     // The index of the first acceptable point in
     // which the x or y component is not inifinty.
     let pivot: usize = points.iter().position(|p| (p.x + p.y).is_finite()).unwrap();
-    let r = Rotation::new(points[pivot].x, points[pivot].y, T::zero());
 
+    let r = Rotation::new(points[pivot].x, points[pivot].y, T::zero());
     let r_invert = r.invert(&Coordinate {
         x: T::from(180).unwrap(),
         y: T::zero(),
@@ -56,6 +56,7 @@ where
         .build();
 
     let mut points: Vec<Coordinate<T>> = points.iter().map(|p| projection.transform(p)).collect();
+
     let mut zeros = Vec::new();
     let mut max2 = T::one();
     let m_threshold = T::from(1e32f64).unwrap();
@@ -91,6 +92,7 @@ where
     });
 
     let point_len = points.len();
+    dbg!("points before delaunay", &points);
     let mut delaunay = Delaunay::new(points);
     delaunay.projection = Some(projection);
 

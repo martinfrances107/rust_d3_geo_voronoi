@@ -100,7 +100,7 @@ where
     /// The edges and triangles properties need RC because the values are close over in the urquhart function.
     pub edges: Rc<Vec<[usize; 2]>>,
     /// A set of triangles as defined by set of indicies.
-    pub triangles: Rc<Vec<Vec<usize>>>,
+    pub triangles: Rc<Vec<[usize; 3]>>,
     /// A list of centers associated with the cells.
     pub centers: Vec<Coordinate<T>>,
     /// Passes to Voronoi::polygon() where it is consumed.
@@ -133,7 +133,6 @@ where
                 let tri = Rc::new(geo_triangles(&delaunay));
                 let e = Rc::new(geo_edges(&tri, &points));
                 let circumcenters = geo_circumcenters(&tri, &points);
-
                 let (polys, centers) = geo_polygons(circumcenters, &tri, &points);
 
                 // RC is needed here as it is both closed over in the find function an is part of the Delaunay return.

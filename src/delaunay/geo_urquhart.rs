@@ -6,7 +6,7 @@ use rust_d3_array::extent::extent;
 
 pub fn geo_urquhart<T: Float>(
     edges: Rc<Vec<[usize; 2]>>,
-    triangles: Rc<Vec<Vec<usize>>>,
+    triangles: Rc<Vec<[usize; 3]>>,
 ) -> Box<dyn Fn(&Vec<T>) -> Vec<bool>> {
     Box::new(move |distances: &Vec<T>| {
         let mut h_lengths: HashMap<String, T> = HashMap::new();

@@ -16,7 +16,7 @@ type TupleVec = Vec<(usize, usize, usize, (usize, usize, usize))>;
 
 pub fn geo_polygons<T: CoordFloat>(
     circumcenter: Vec<Coordinate<T>>,
-    triangles: &[Vec<usize>],
+    triangles: &[[usize; 3]],
     points: &[Coordinate<T>],
 ) -> (Vec<Vec<usize>>, Vec<Coordinate<T>>) {
     let mut polygons: Vec<Vec<usize>> = Vec::new();

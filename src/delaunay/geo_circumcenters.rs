@@ -7,7 +7,7 @@ use rust_d3_geo::cartesian::spherical;
 use super::cartesian::cartesian;
 
 pub fn geo_circumcenters<T: CoordFloat>(
-    triangles: &[Vec<usize>],
+    triangles: &[[usize; 3]],
     points: &[Coordinate<T>],
 ) -> Vec<Coordinate<T>> {
     return triangles
