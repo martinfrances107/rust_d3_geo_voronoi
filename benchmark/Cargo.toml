@@ -27,6 +27,7 @@ geo={git = "https://github.com/martinfrances107/geo.git", branch="cyclic_match" 
 wasm-bindgen = "0.2.45"
 getrandom = { version = "0.2", features = ["js"] }
 rand = { version = "0.8.4"}
+js-sys = "0.3.22"
 
 # `wee_alloc` is a tiny allocator for wasm that is only ~1K in code size
 # compared to the default allocator's ~10K. However, it is slower than the default
@@ -45,7 +46,6 @@ console_error_panic_hook = "0.1.5"
 [dev-dependencies]
 futures = "0.3.16"
 wasm-bindgen-test = "0.3.26"
-js-sys = "0.3.22"
 wasm-bindgen-futures = "0.4.26"
 
 # The `web-sys` crate allows you to interact with the various browser APIs,
@@ -64,6 +64,9 @@ features = [
     "HtmlElement",
     "HtmlInputElement",
     "Node",
+    "Performance",
+    "PerformanceTiming",
+    "PerformanceMeasure",
     "Text",
     "Window"
 ]

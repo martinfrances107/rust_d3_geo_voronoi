@@ -4,6 +4,7 @@
 //! # rust d3 geo voronoi
 //!
 //! See the README.md.
+extern crate js_sys;
 extern crate rand;
 extern crate web_sys;
 
@@ -13,6 +14,9 @@ use geo::Coordinate;
 use geo::Geometry;
 use geo::Geometry::Polygon;
 use geo::MultiPoint;
+use js_sys::try_iter;
+use wasm_bindgen::prelude::*;
+use web_sys::PerformanceMeasure;
 
 use rust_d3_geo::clip::circle::line::Line;
 use rust_d3_geo::clip::circle::pv::PV;
@@ -24,7 +28,6 @@ use rust_d3_geo::stream::StreamDrainStub;
 use rust_d3_geo::Transform;
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 
-use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::Document;
 // use web_sys::console;
@@ -117,12 +120,17 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
         JsValue::from_str("#17becf"),
     ];
 
+    let window = web_sys::window().expect("should have a window in this context");
+    let performance = window
+        .performance()
+        .expect("performance should be available");
+
     let width = canvas.width().into();
     let height = canvas.height().into();
     context.set_fill_style(&"black".into());
     context.set_stroke_style(&"black".into());
     context.fill_rect(0.0, 0.0, width, height);
-    let rng = rand::thread_rng();
+
     let ortho: Projection<
         StreamDrainStub<f64>,
         Line<f64>,
@@ -133,14 +141,15 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
 
     let sites = MultiPoint(
         repeat_with(rand::random)
-          .map(|(x, y): (f64, f64)| {
-            Coordinate {
-              x: 360_f64 * x,
-              y: 180_f64 * y - 90_f64,
-            }.into()
-          })
-          .take(size as usize)
-          .collect(),
+            .map(|(x, y): (f64, f64)| {
+                Coordinate {
+                    x: 360_f64 * x,
+                    y: 180_f64 * y - 90_f64,
+                }
+                .into()
+            })
+            .take(size as usize)
+            .collect(),
     );
 
     let mut gv: GeoVoronoi<StreamDrainStub<f64>, f64> =
@@ -152,6 +161,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
         Some(FeatureCollection(fc)) => {
             context.set_stroke_style(&"black".into());
             // console_log!("{:?}",fc);
+            performance.mark("render_start")?;
             for (i, features) in fc.iter().enumerate() {
                 // console_log!("i {}",i%10);
                 context.set_fill_style(&scheme_category10[i % 10]);
@@ -167,7 +177,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
                         let first_t = ortho.transform(&first.into());
                         context.move_to(first_t.x, first_t.y);
                         p_iter.for_each(|p| {
-                            let pt =  ortho.transform(&p.into());
+                            let pt = ortho.transform(&p.into());
                             context.line_to(pt.x, pt.y);
                         });
                         context.close_path();
@@ -187,16 +197,25 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
                 let pt = ortho.transform(&p.into());
                 context.begin_path();
                 context.arc(
-                    pt.x,
-                    pt.y,
-                    5.0, // radius
-                    0.0,
-                    TWO_PI,
+                    pt.x, pt.y, 5.0, // radius
+                    0.0, TWO_PI,
                 )?;
                 context.fill();
                 context.stroke();
             }
-            // }
+            performance.mark("render_stop")?;
+            performance.measure_with_start_mark_and_end_mark(
+                "sample",
+                "render_start",
+                "render_stop",
+            )?;
+            let entries = performance.get_entries_by_name("sample");
+            let iter = try_iter(&entries)?;
+            for e in iter.unwrap() {
+                let eu = e.unwrap();
+                let pm = eu.dyn_into::<PerformanceMeasure>()?;
+                console_log!("sample {:.3} ms", pm.duration());
+            }
         }
     }
     Ok(())
