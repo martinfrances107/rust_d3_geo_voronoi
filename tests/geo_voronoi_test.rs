@@ -3,14 +3,18 @@
 mod geo_voronoi_test {
     extern crate pretty_assertions;
 
+    use std::convert::TryInto;
+
     use approx::AbsDiffEq;
     use geo::algorithm::cyclic_match::CyclicMatch;
     use geo::coords_iter::CoordsIter;
+    use geo::line_string;
     use geo::Coordinate;
     use geo::Geometry;
     use geo::LineString;
     use geo::MultiPoint;
     use geo::Point;
+    use rust_d3_delaunay::polygon::Polygon;
 
     use rust_d3_geo::data_object::FeatureCollection;
     use rust_d3_geo::data_object::FeatureProperty;
@@ -19,23 +23,79 @@ mod geo_voronoi_test {
 
     use pretty_assertions::assert_eq;
 
-    // #[test]
-    // fn simple_test() {
-    //     println!("geoVoronoi.polygons(sites) returns polygons.");
-    //     let sites = MultiPoint(vec![Point::new(-20f64, 20f64), Point::new(20f64, 20f64)]);
+    #[test]
+    fn test_two_hemispheres() {
+        println!("two points leads to two hemispheres.");
+        let sites = MultiPoint(vec![Point::new(-20f64, -20f64), Point::new(20f64, 20f64)]);
 
-    //     let mut gv: GeoVoronoi<StreamDrainStub<f64>, f64> =
-    //         GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
-    //     match gv.polygons(None) {
-    //         None => {
-    //             assert!(false, "Must return a DataObject<T>.");
-    //         }
-    //         Some(FeatureCollection(features)) => {
-    //             dbg!(features);
-    //         }
-    //     }
-    //     panic!("---");
-    // }
+        let mut gv: GeoVoronoi<StreamDrainStub<f64>, f64> =
+            GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
+        match gv.polygons(None) {
+            None => {
+                assert!(false, "Must return a DataObject<T>.");
+            }
+            Some(FeatureCollection(mut features)) => {
+                dbg!(&features);
+                let last_cell = line_string![
+                    Coordinate {
+                        x: -90.0,
+                        y: 43.21917889371418
+                    },
+                    Coordinate { x: 180.0, y: -0. },
+                    Coordinate {
+                        x: 90.0,
+                        y: -43.21917889371418
+                    },
+                    Coordinate { x: 0., y: 0. },
+                    Coordinate {
+                        x: -90.,
+                        y: 43.21917889371418
+                    }
+                ];
+                let g: Geometry<f64> = features.pop().unwrap().geometry.pop().unwrap();
+                match g {
+                    Geometry::Polygon(p) => {
+                        let ls = p.exterior();
+                        assert_eq!(last_cell, *ls);
+                    }
+                    _ => {
+                        assert!(false, "expecting a polygon");
+                    }
+                };
+
+                dbg!(&features);
+                let first_cell = line_string![
+                    Coordinate {
+                        x: 0.0_f64,
+                        y: 0.0_f64
+                    },
+                    Coordinate {
+                        x: 90.0_f64,
+                        y: -43.21917889371418_f64
+                    },
+                    Coordinate {
+                        x: 180.0_f64,
+                        y: -0.0_f64
+                    },
+                    Coordinate {
+                        x: -90_f64,
+                        y: 43.21917889371418_f64
+                    },
+                    Coordinate { x: 0_f64, y: 0_f64 },
+                ];
+                let g: Geometry<f64> = features.pop().unwrap().geometry.pop().unwrap();
+                match g {
+                    Geometry::Polygon(p) => {
+                        let ls = p.exterior();
+                        assert_eq!(first_cell, *ls);
+                    }
+                    _ => {
+                        assert!(false, "expecting a polygon");
+                    }
+                };
+            }
+        }
+    }
 
     #[test]
     pub fn voronoi_polygons_returns_polygons() {

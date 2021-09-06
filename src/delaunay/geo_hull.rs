@@ -1,19 +1,22 @@
+use std::borrow::Borrow;
 use std::collections::HashMap;
 use std::collections::HashSet;
+use std::rc::Rc;
 
 use delaunator::EMPTY;
 use geo::{CoordFloat, Coordinate};
 
 use super::excess::excess;
 
-pub fn geo_hull<T>(triangles: &[[usize; 3]], points: &[Coordinate<T>]) -> Vec<usize>
+pub fn geo_hull<T>(triangles: Rc<Vec<[usize; 3]>>, points: &[Coordinate<T>]) -> Vec<usize>
 where
     T: CoordFloat,
 {
     let mut h_hull: HashSet<String> = HashSet::new();
     let mut hull = Vec::new();
 
-    for tri in triangles {
+    let triangles_borrowed: &Vec<[usize; 3]> = triangles.borrow();
+    for tri in triangles_borrowed {
         let ex_in: Vec<Coordinate<T>> = tri
             .iter()
             .map(|i: &usize| {

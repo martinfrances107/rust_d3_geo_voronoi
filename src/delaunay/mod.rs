@@ -39,7 +39,7 @@ use geo_find::geo_find;
 use geo_hull::geo_hull;
 use geo_mesh::geo_mesh;
 use geo_neighbors::geo_neighbors;
-use geo_polygons::geo_polygons;
+use geo_polygons::GeoPolygons;
 use geo_triangles::geo_triangles;
 use geo_urquhart::geo_urquhart;
 
@@ -133,16 +133,17 @@ where
                 let tri = Rc::new(geo_triangles(&delaunay));
                 let e = Rc::new(geo_edges(&tri, &points));
                 let circumcenters = geo_circumcenters(&tri, &points);
-                let (polys, centers) = geo_polygons(circumcenters, &tri, &points);
+                let (polys, centers) =
+                    GeoPolygons::default().gen(circumcenters, tri.clone(), &points);
 
                 // RC is needed here as it is both closed over in the find function an is part of the Delaunay return.
-                let n = Rc::new(RefCell::new(geo_neighbors(&tri, points.len())));
+                let n = Rc::new(RefCell::new(geo_neighbors(tri.clone(), points.len())));
 
                 return Some(Self {
                     delaunay,
                     edges: e.clone(),
                     centers,
-                    hull: geo_hull(&tri, &points),
+                    hull: geo_hull(tri.clone(), &points),
                     find: geo_find(n.clone(), points),
                     neighbors: n,
                     mesh: geo_mesh(&polys),
