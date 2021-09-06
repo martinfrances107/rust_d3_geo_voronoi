@@ -19,6 +19,7 @@ pub fn geo_polygons<T: CoordFloat>(
     triangles: &[[usize; 3]],
     points: &[Coordinate<T>],
 ) -> (Vec<Vec<usize>>, Vec<Coordinate<T>>) {
+    dbg!("geo polygon", points);
     let mut polygons: Vec<Vec<usize>> = Vec::new();
     let mut centers = circumcenter;
 
@@ -38,37 +39,33 @@ pub fn geo_polygons<T: CoordFloat>(
             Some(f) => f,
         }
     };
-
     if triangles.is_empty() {
-        if points.is_empty() {
+        if points.len() < 2 {
             return (polygons, centers);
         }
-        if points.len() == 1 {
-            // // WARNING in the original javascript this block is never tested.
-            if points.len() == 2 {
-                // Two hemispheres.
-                let a = cartesian(&points[0]);
-                let b = cartesian(&points[0]);
-                let m = normalize(&add(a, b));
+        // // WARNING in the original javascript this block is never tested.
+        if points.len() == 2 {
+            // Two hemispheres.
+            let a = cartesian(&points[0]);
+            let b = cartesian(&points[0]);
+            let m = normalize(&add(a, b));
 
-                let d = normalize(&cross(&a, &b));
-                let c = cross(&m, &d);
-
-                let poly: Vec<usize> = [
-                    m,
-                    cross(&m, &c),
-                    cross(&cross(&m, &c), &c),
-                    cross(&cross(&cross(&m, &c), &c), &c),
-                ]
-                .iter()
-                .map(|p| spherical(p))
-                .map(|p| supplement(&p, &mut centers))
-                .collect();
-                polygons.push(poly);
-                // let rev: Vec<usize> = poly.iter().rev().map(|x| *x).collect();
-                // polygons.push(rev);
-                return (polygons, centers);
-            }
+            let d = normalize(&cross(&a, &b));
+            let c = cross(&m, &d);
+            let poly: Vec<usize> = [
+                m,
+                cross(&m, &c),
+                cross(&cross(&m, &c), &c),
+                cross(&cross(&cross(&m, &c), &c), &c),
+            ]
+            .iter()
+            .map(|p| spherical(p))
+            .map(|p| supplement(&p, &mut centers))
+            .collect();
+            polygons.push(poly.clone());
+            let rev: Vec<usize> = poly.iter().rev().map(|x| *x).collect();
+            polygons.push(rev);
+            return (polygons, centers);
         }
     }
 
@@ -78,6 +75,7 @@ pub fn geo_polygons<T: CoordFloat>(
             let a = tri[j];
             let b = tri[(j + 1) % 3];
             let c = tri[(j + 2) % 3];
+            dbg!("c mid", c);
             let mut tuple_vec: TupleVec;
             match polygons_map.get(&a) {
                 Some(t) => {
@@ -91,11 +89,12 @@ pub fn geo_polygons<T: CoordFloat>(
             polygons_map.insert(a, tuple_vec);
         }
     }
-
+    dbg!("reorder");
     // Reorder each polygon.
     let reordered: Vec<Vec<usize>> = polygons_map
         .iter()
         .map(|poly_ind| {
+            dbg!("reorder");
             let poly = poly_ind.1;
             let mut p = vec![poly[0].2]; // t
             let mut k = poly[0].1; // k = c
