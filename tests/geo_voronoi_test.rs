@@ -35,7 +35,6 @@ mod geo_voronoi_test {
                 assert!(false, "Must return a DataObject<T>.");
             }
             Some(FeatureCollection(mut features)) => {
-                dbg!(&features);
                 let last_cell = line_string![
                     Coordinate {
                         x: -90.0,
@@ -63,7 +62,6 @@ mod geo_voronoi_test {
                     }
                 };
 
-                dbg!(&features);
                 let first_cell = line_string![
                     Coordinate {
                         x: 0.0_f64,

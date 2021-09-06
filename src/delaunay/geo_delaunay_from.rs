@@ -92,7 +92,6 @@ where
     });
 
     let point_len = points.len();
-    dbg!("points before delaunay", &points);
     let mut delaunay = Delaunay::new(points);
     delaunay.projection = Some(projection);
 

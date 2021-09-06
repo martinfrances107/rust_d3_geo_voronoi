@@ -205,7 +205,6 @@ where
             }
         }
 
-        dbg!("voronoi polygons valid", &self.valid);
         match &self.geo_delaunay {
             None => None,
             Some(dr) => {
