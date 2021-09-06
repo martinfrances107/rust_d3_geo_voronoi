@@ -76,15 +76,10 @@ pub fn geo_polygons<T: CoordFloat>(
             let b = tri[(j + 1) % 3];
             let c = tri[(j + 2) % 3];
             dbg!("c mid", c);
-            let mut tuple_vec: TupleVec;
-            match polygons_map.get(&a) {
-                Some(t) => {
-                    tuple_vec = (*t).clone();
-                }
-                None => {
-                    tuple_vec = Vec::new();
-                }
-            }
+            let mut tuple_vec: TupleVec = match polygons_map.get(&a) {
+                Some(t) => (*t).clone(),
+                None => Vec::new(),
+            };
             tuple_vec.push((b, c, t, (a, b, c)));
             polygons_map.insert(a, tuple_vec);
         }
