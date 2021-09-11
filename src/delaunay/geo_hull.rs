@@ -12,7 +12,7 @@ pub fn geo_hull<T>(triangles: Rc<Vec<[usize; 3]>>, points: &[Coordinate<T>]) -> 
 where
     T: CoordFloat,
 {
-    let mut h_hull: HashSet<String> = HashSet::new();
+    let mut h_hull: HashSet<(usize, usize)> = HashSet::new();
     let mut hull = Vec::new();
 
     let triangles_borrowed: &Vec<[usize; 3]> = triangles.borrow();
@@ -36,13 +36,14 @@ where
 
         for i in 0usize..3usize {
             let e = [tri[i], tri[(i + 1) % 3]];
-            let code = format!("{}-{}", e[1], e[0]);
+            let code = (e[1], e[0]);
             match h_hull.get(&code) {
                 Some(_) => {
                     h_hull.remove(&code);
                 }
                 None => {
-                    let code = format!("{}-{}", e[0], e[1]);
+                    // let code = format!("{}-{}", e[0], e[1]);
+                    let code = (e[0], e[1]);
                     h_hull.insert(code);
                 }
             }
@@ -55,10 +56,12 @@ where
     // TODO Unresolved. The javascript implementation enumerates the keys differently.
     // does this make a difference?
     for key in h_hull.drain() {
-        let e_split: Vec<&str> = key.split('-').collect();
-        let e: [usize; 2] = [e_split[0].parse().unwrap(), e_split[1].parse().unwrap()];
-        h_index.insert(e[0], e[1]);
-        start = Some(e[0]);
+        // let e_split: Vec<&str> = key.split('-').collect();
+        // let e: [usize; 2] = [e_split[0].parse().unwrap(), e_split[1].parse().unwrap()];
+        // h_index.insert(e[0], e[1]);
+        // start = Some(e[0]);
+        h_index.insert(key.0, key.1);
+        start = Some(key.0);
     }
 
     match start {
@@ -76,7 +79,7 @@ where
                     break 'l;
                 }
             }
-            println!("hull {:?}", hull);
+            // println!("hull {:?}", hull);
             hull
         }
     }
