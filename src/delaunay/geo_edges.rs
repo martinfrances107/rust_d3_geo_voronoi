@@ -8,12 +8,13 @@ use std::collections::HashSet;
 pub fn geo_edges<T: CoordFloat>(
     triangles: &[[usize; 3]],
     point: &[Coordinate<T>],
-) -> Vec<[usize; 2]> {
+) -> HashSet<[usize; 2]> {
+    let mut h_index = HashSet::new();
     if point.len() == 1 {
-        return vec![[0usize, 1usize]];
+        h_index.insert([0usize, 1usize]);
+        return h_index;
     }
     let zero = T::zero();
-    let mut h_index = HashSet::new();
     for tri in triangles {
         if tri[0] == tri[1] {
             continue;
@@ -32,5 +33,5 @@ pub fn geo_edges<T: CoordFloat>(
         }
     }
 
-    h_index.into_iter().collect::<Vec<_>>()
+    h_index
 }

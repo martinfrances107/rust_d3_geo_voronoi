@@ -16,13 +16,9 @@ mod geo_triangles;
 mod geo_urquhart;
 mod o_midpoint;
 
-use rust_d3_geo::clip::circle::line::Line;
-use rust_d3_geo::clip::circle::pv::PV;
-use rust_d3_geo::projection::stereographic::Stereographic;
-use rust_d3_geo::stream::Stream;
 use std::cell::RefCell;
-
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::ops::AddAssign;
 use std::rc::Rc;
 
@@ -44,6 +40,10 @@ use geo_triangles::geo_triangles;
 use geo_urquhart::geo_urquhart;
 
 use rust_d3_delaunay::delaunay::Delaunay;
+use rust_d3_geo::clip::circle::line::Line;
+use rust_d3_geo::clip::circle::pv::PV;
+use rust_d3_geo::projection::stereographic::Stereographic;
+use rust_d3_geo::stream::Stream;
 
 // #[derive(Default, Debug)]
 // pub struct Delaunay {
@@ -98,7 +98,7 @@ where
     #[derivative(Debug = "ignore")]
     pub delaunay: Delaunay<DRAIN, Line<T>, Stereographic<DRAIN, T>, PV<T>, T>,
     /// The edges and triangles properties need RC because the values are close over in the urquhart function.
-    pub edges: Rc<Vec<[usize; 2]>>,
+    pub edges: Rc<HashSet<[usize; 2]>>,
     /// A set of triangles as defined by set of indicies.
     pub triangles: Rc<Vec<[usize; 3]>>,
     /// A list of centers associated with the cells.
