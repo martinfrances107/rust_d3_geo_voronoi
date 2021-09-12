@@ -213,7 +213,6 @@ where
                 }
 
                 let mut features: Vec<Features<T>> = Vec::new();
-                println!("dr.polygons.len: {:?}", dr.polygons.len());
                 for (i, poly) in dr.polygons.iter().enumerate() {
                     let mut poly_closed: Vec<usize> = poly.to_vec();
                     poly_closed.push(poly[0]);
@@ -400,7 +399,6 @@ where
                     Some(radius) => {
                         match self.found {
                             Some(found) => {
-                                println!("find have radius have found");
                                 // TODO confirm the euclidean_distance is the same as the rust_geo::distance....
                                 if distance(&p, &self.points[found]) < radius {
                                     // if p.euclidean_distance(&self.points[found]) < radius {

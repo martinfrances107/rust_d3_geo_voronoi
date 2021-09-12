@@ -102,7 +102,6 @@ where
 
     'he_loop: loop {
         if delaunay.half_edges[i] == EMPTY {
-            println!("empty {:?}", i);
             let j = match i % 3 == 2 {
                 true => i - 2,
                 false => i + 1,

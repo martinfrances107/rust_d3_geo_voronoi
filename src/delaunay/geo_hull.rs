@@ -79,7 +79,6 @@ where
                     break 'l;
                 }
             }
-            // println!("hull {:?}", hull);
             hull
         }
     }
