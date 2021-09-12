@@ -13,7 +13,11 @@ pub fn geo_circumcenters<T: CoordFloat>(
     return triangles
         .iter()
         .map(|tri| {
-            let c: Vec<[T; 3]> = tri.iter().map(|i| cartesian(&points[*i])).collect();
+            let c = [
+                cartesian(&points[tri[0]]),
+                cartesian(&points[tri[1]]),
+                cartesian(&points[tri[2]]),
+            ];
 
             let v: [T; 3] = add(
                 add(cross(&c[1], &c[0]), cross(&c[2], &c[1])),

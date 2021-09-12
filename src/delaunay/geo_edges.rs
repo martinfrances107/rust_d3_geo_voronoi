@@ -21,7 +21,6 @@ pub fn geo_edges<T: CoordFloat>(
         }
 
         let ex_in: Vec<Coordinate<T>> = tri.iter().map(|i| point[*i]).collect();
-
         if excess(&ex_in) < zero {
             continue;
         }
