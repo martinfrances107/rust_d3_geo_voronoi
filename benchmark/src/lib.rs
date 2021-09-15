@@ -21,6 +21,7 @@ use web_sys::PerformanceMeasure;
 use rust_d3_geo::clip::circle::line::Line;
 use rust_d3_geo::clip::circle::pv::PV;
 use rust_d3_geo::data_object::FeatureCollection;
+use rust_d3_geo::projection::builder::Builder as ProjectionBuilder;
 use rust_d3_geo::projection::orthographic::Orthographic;
 use rust_d3_geo::projection::projection::Projection;
 use rust_d3_geo::projection::Raw;
@@ -131,13 +132,13 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
     context.set_stroke_style(&"black".into());
     context.fill_rect(0.0, 0.0, width, height);
 
-    let ortho: Projection<
+    let ortho_builder: ProjectionBuilder<
         StreamDrainStub<f64>,
         Line<f64>,
         Orthographic<StreamDrainStub<f64>, f64>,
         PV<f64>,
         f64,
-    > = Orthographic::builder().build();
+    > = Orthographic::builder();
 
     let sites = MultiPoint(
         repeat_with(rand::random)
@@ -154,14 +155,19 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
 
     let mut gv: GeoVoronoi<StreamDrainStub<f64>, f64> =
         GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
+
+    performance.mark("render_start")?;
+    let ortho = ortho_builder.rotate([0_f64, 0_f64, 0_f64]).build();
+    // this is not quite proejction rebuilt.
+    performance.mark("projection_rebuilt")?;
     match gv.polygons(None) {
         None => {
             console_log!("failed to get polygons");
         }
         Some(FeatureCollection(fc)) => {
+            performance.mark("computed_polygons")?;
             context.set_stroke_style(&"black".into());
             // console_log!("{:?}",fc);
-            performance.mark("render_start")?;
             for (i, features) in fc.iter().enumerate() {
                 // console_log!("i {}",i%10);
                 context.set_fill_style(&scheme_category10[i % 10]);
@@ -189,7 +195,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
                     }
                 }
             }
-
+            performance.mark("polygons_rendered")?;
             // Render points.
             context.set_fill_style(&"white".into());
             for p in sites {
@@ -203,18 +209,38 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
                 context.fill();
                 context.stroke();
             }
-            performance.mark("render_stop")?;
+            performance.mark("points_rendered")?;
             performance.measure_with_start_mark_and_end_mark(
-                "sample",
+                "rebuilding_projection",
                 "render_start",
-                "render_stop",
+                "projection_rebuilt",
             )?;
-            let entries = performance.get_entries_by_name("sample");
+            performance.measure_with_start_mark_and_end_mark(
+                "computing_polygons",
+                "projection_rebuilt",
+                "computed_polygons",
+            )?;
+            performance.measure_with_start_mark_and_end_mark(
+                "rendering_polygons",
+                "computed_polygons",
+                "polygons_rendered",
+            )?;
+            performance.measure_with_start_mark_and_end_mark(
+                "rendering_points",
+                "polygons_rendered",
+                "points_rendered",
+            )?;
+            performance.measure_with_start_mark_and_end_mark(
+                "total",
+                "render_start",
+                "points_rendered",
+            )?;
+            let entries = performance.get_entries_by_type("measure");
             let iter = try_iter(&entries)?;
             for e in iter.unwrap() {
                 let eu = e.unwrap();
                 let pm = eu.dyn_into::<PerformanceMeasure>()?;
-                console_log!("sample {:.3} ms", pm.duration());
+                console_log!(" {:?} {:.3} ms", pm.name(), pm.duration());
             }
         }
     }
