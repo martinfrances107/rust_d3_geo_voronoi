@@ -23,10 +23,10 @@ use rust_d3_geo::clip::circle::pv::PV;
 use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::projection::builder::Builder as ProjectionBuilder;
 use rust_d3_geo::projection::orthographic::Orthographic;
-use rust_d3_geo::projection::projection::Projection;
 use rust_d3_geo::projection::Raw;
 use rust_d3_geo::stream::StreamDrainStub;
 use rust_d3_geo::Transform;
+use rust_d3_geo::projection::Rotate;
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 
 use wasm_bindgen::JsCast;
