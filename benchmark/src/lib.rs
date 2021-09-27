@@ -8,7 +8,9 @@ extern crate js_sys;
 extern crate rand;
 extern crate web_sys;
 
+use std::cell::RefCell;
 use std::iter::repeat_with;
+use std::rc::Rc;
 
 use geo::Coordinate;
 use geo::Geometry;
@@ -20,13 +22,18 @@ use web_sys::PerformanceMeasure;
 
 use rust_d3_geo::clip::circle::line::Line;
 use rust_d3_geo::clip::circle::pv::PV;
+use rust_d3_geo::data_object::DataObject;
 use rust_d3_geo::data_object::FeatureCollection;
+use rust_d3_geo::path::builder::Builder as PathBuilder;
+use rust_d3_geo::path::context::Context;
+use rust_d3_geo::path::context_stream::ContextStream;
 use rust_d3_geo::projection::builder::Builder as ProjectionBuilder;
 use rust_d3_geo::projection::orthographic::Orthographic;
 use rust_d3_geo::projection::Raw;
+use rust_d3_geo::projection::Rotate;
 use rust_d3_geo::stream::StreamDrainStub;
 use rust_d3_geo::Transform;
-use rust_d3_geo::projection::Rotate;
+
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 
 use wasm_bindgen::JsCast;
@@ -102,10 +109,12 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
         .unwrap()
         .dyn_into::<web_sys::HtmlCanvasElement>()?;
 
-    let context = canvas
+    let context_raw = canvas
         .get_context("2d")?
         .unwrap()
         .dyn_into::<web_sys::CanvasRenderingContext2d>()?;
+
+    let context = Rc::new(context_raw);
 
     // TODO can this be defined statically
     let scheme_category10: [JsValue; 10] = [
@@ -132,10 +141,15 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
     context.set_stroke_style(&"black".into());
     context.fill_rect(0.0, 0.0, width, height);
 
+    // let rcC = Rc::new(context);
+    let cs: ContextStream<f64> = ContextStream::C(Context::new(context.clone()));
+    let pb: PathBuilder<Line<f64>, Orthographic<ContextStream<f64>, f64>, PV<f64>, f64> =
+        PathBuilder::new(Rc::new(RefCell::new(cs)));
+
     let ortho_builder: ProjectionBuilder<
-        StreamDrainStub<f64>,
+        ContextStream<f64>,
         Line<f64>,
-        Orthographic<StreamDrainStub<f64>, f64>,
+        Orthographic<ContextStream<f64>, f64>,
         PV<f64>,
         f64,
     > = Orthographic::builder();
@@ -157,7 +171,8 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
         GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
 
     performance.mark("render_start")?;
-    let ortho = ortho_builder.rotate([0_f64, 0_f64, 0_f64]).build();
+    let ortho = Rc::new(ortho_builder.rotate([0_f64, 0_f64, 0_f64]).build());
+    let mut path = pb.build(ortho.clone());
     // this is not quite proejction rebuilt.
     performance.mark("projection_rebuilt")?;
     match gv.polygons(None) {
@@ -174,19 +189,8 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
                 // console_log!("{:?}",features.geometry[0]);
                 match &features.geometry[0] {
                     Polygon(polygon) => {
-                        // console_log!("line string {:?}", polygon.exterior());
-                        let ls = polygon.exterior();
-                        let mut p_iter = ls.points_iter();
                         context.begin_path();
-                        // TODO early return if length is zero
-                        let first = p_iter.next().unwrap();
-                        let first_t = ortho.transform(&first.into());
-                        context.move_to(first_t.x, first_t.y);
-                        p_iter.for_each(|p| {
-                            let pt = ortho.transform(&p.into());
-                            context.line_to(pt.x, pt.y);
-                        });
-                        context.close_path();
+                        path.object(DataObject::Geometry(Geometry::Polygon(polygon.clone())));
                         context.fill();
                         context.stroke();
                     }
@@ -200,7 +204,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
             context.set_fill_style(&"white".into());
             for p in sites {
                 // console_log!("{:?}", p);
-                let pt = ortho.transform(&p.into());
+                let pt = ortho.clone().transform(&p.into());
                 context.begin_path();
                 context.arc(
                     pt.x, pt.y, 5.0, // radius
