@@ -96,7 +96,7 @@ where
                 .map(|p| self.supplement(&p))
                 .collect();
                 polygons.push(poly.clone());
-                let rev: Vec<usize> = poly.iter().rev().map(|x| *x).collect();
+                let rev: Vec<usize> = poly.iter().rev().copied().collect();
                 polygons.push(rev);
                 return (polygons, self.centers);
             }
