@@ -146,13 +146,14 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
     let pb: PathBuilder<Line<f64>, Orthographic<ContextStream<f64>, f64>, PV<f64>, f64> =
         PathBuilder::new(Rc::new(RefCell::new(cs)));
 
-    let ortho_builder: ProjectionBuilder<
-        ContextStream<f64>,
-        Line<f64>,
-        Orthographic<ContextStream<f64>, f64>,
-        PV<f64>,
-        f64,
-    > = Orthographic::builder();
+    // let ortho_builder: ProjectionBuilder<
+    //     ContextStream<f64>,
+    //     Line<f64>,
+    //     Orthographic<ContextStream<f64>, f64>,
+    //     PV<f64>,
+    //     f64,
+    // > = Orthographic::builder();
+    let ortho_builder = Orthographic::builder();
 
     let sites = MultiPoint(
         repeat_with(rand::random)

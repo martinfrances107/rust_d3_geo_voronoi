@@ -56,6 +56,7 @@ where
     DRAIN: Stream<T = T>,
     T: AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
+    /// The wrapped GeoDelaunay instance.
     pub geo_delaunay: Option<GeoDelaunay<'a, DRAIN, T>>,
     data: Option<Geometry<T>>,
     found: Option<usize>,
