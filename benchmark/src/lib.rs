@@ -172,7 +172,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
         GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
 
     performance.mark("render_start")?;
-    let ortho = Rc::new(ortho_builder.rotate([0_f64, 0_f64, 0_f64]).build());
+    let ortho = Rc::new(ortho_builder.rotate(&[0_f64, 0_f64, 0_f64]).build());
     let mut path = pb.build(ortho.clone());
     // this is not quite proejction rebuilt.
     performance.mark("projection_rebuilt")?;
@@ -191,7 +191,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
                 match &features.geometry[0] {
                     Polygon(polygon) => {
                         context.begin_path();
-                        path.object(DataObject::Geometry(Geometry::Polygon(polygon.clone())));
+                        path.object(&DataObject::Geometry(Geometry::Polygon(polygon.clone())));
                         context.fill();
                         context.stroke();
                     }
