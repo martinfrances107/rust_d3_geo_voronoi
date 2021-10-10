@@ -11,11 +11,11 @@ use rust_d3_delaunay::delaunay::Delaunay;
 use rust_d3_geo::clip::circle::line::Line;
 use rust_d3_geo::clip::circle::pv::PV;
 use rust_d3_geo::projection::builder::Builder;
-use rust_d3_geo::projection::Scale;
 use rust_d3_geo::projection::stereographic::Stereographic;
-use rust_d3_geo::projection::Translate;
-use rust_d3_geo::projection::Rotate;
 use rust_d3_geo::projection::Raw;
+use rust_d3_geo::projection::Rotate;
+use rust_d3_geo::projection::Scale;
+use rust_d3_geo::projection::Translate;
 use rust_d3_geo::rotation::rotation::Rotation;
 use rust_d3_geo::stream::Stream;
 use rust_d3_geo::Transform;
@@ -53,7 +53,7 @@ where
             y: T::zero(),
         })
         .scale(T::one())
-        .rotate([r_invert.x, r_invert.y, T::zero()])
+        .rotate(&[r_invert.x, r_invert.y, T::zero()])
         .build();
 
     let mut points: Vec<Coordinate<T>> = points.iter().map(|p| projection.transform(p)).collect();
