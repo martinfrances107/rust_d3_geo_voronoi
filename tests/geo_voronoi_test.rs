@@ -303,12 +303,12 @@ mod geo_voronoi_test {
         let mut voro: GeoVoronoi<StreamDrainStub<f64>, f64> =
             GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
 
-        assert_eq!(voro.find(Coordinate { x: 1.0, y: 1.0 }, None), Some(4));
+        assert_eq!(voro.find(&Coordinate { x: 1.0, y: 1.0 }, None), Some(4));
         // TODO bug ... strange bug/hang ... unless I define voro twice.
         let mut voro2: GeoVoronoi<StreamDrainStub<f64>, f64> =
             GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
         assert_eq!(
-            voro2.find(Coordinate { x: 1.0, y: 1.0 }, Some(4.0)),
+            voro2.find(&Coordinate { x: 1.0, y: 1.0 }, Some(4.0)),
             Some(4)
         );
     }

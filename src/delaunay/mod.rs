@@ -116,7 +116,7 @@ where
     pub urquhart: Box<dyn Fn(&Vec<T>) -> Vec<bool> + 'a>,
     /// Return the indexes of the points.
     #[derivative(Debug = "ignore")]
-    pub find: Box<dyn Fn(Coordinate<T>, Option<usize>) -> Option<usize> + 'a>,
+    pub find: Box<dyn Fn(&Coordinate<T>, Option<usize>) -> Option<usize> + 'a>,
 }
 
 impl<'a, DRAIN, T> GeoDelaunay<'a, DRAIN, T>
