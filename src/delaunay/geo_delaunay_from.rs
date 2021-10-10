@@ -93,7 +93,7 @@ where
     });
 
     let point_len = points.len();
-    let mut delaunay = Delaunay::new(points);
+    let mut delaunay = Delaunay::new(&points);
     delaunay.projection = Some(projection);
 
     // clean up the triangulation
