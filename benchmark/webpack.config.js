@@ -23,6 +23,8 @@ module.exports = {
 
     new WasmPackPlugin({
       crateDirectory: __dirname,
+      args: '--log-level warn --keep-debug',
+      extraArgs: '--profiling',
     }),
   ]
 };
