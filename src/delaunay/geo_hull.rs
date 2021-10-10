@@ -51,7 +51,7 @@ where
     }
 
     let mut start: Option<usize> = None;
-    let mut h_index: HashMap<usize, usize> = HashMap::new();
+    let mut h_index: HashMap<usize, usize> = HashMap::with_capacity(h_hull.len());
 
     // TODO Unresolved. The javascript implementation enumerates the keys differently.
     // does this make a difference?

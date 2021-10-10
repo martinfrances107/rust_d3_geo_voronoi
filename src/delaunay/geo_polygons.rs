@@ -102,7 +102,8 @@ where
             }
         }
 
-        let mut polygons_map: HashMap<usize, TupleVec> = HashMap::new();
+        let mut polygons_map: HashMap<usize, TupleVec> =
+            HashMap::with_capacity(self.triangles.len());
         for (t, tri) in self.triangles.iter().enumerate() {
             for j in 0..3 {
                 let a = tri[j];
