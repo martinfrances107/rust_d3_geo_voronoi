@@ -22,7 +22,8 @@ use std::collections::HashSet;
 use std::ops::AddAssign;
 use std::rc::Rc;
 
-use derivative::Derivative;
+use approx::AbsDiffEq;
+use derivative::*;
 use geo::{CoordFloat, Coordinate};
 use num_traits::AsPrimitive;
 use num_traits::FloatConst;
@@ -92,7 +93,7 @@ use rust_d3_geo::stream::Stream;
 pub struct GeoDelaunay<'a, DRAIN, T>
 where
     DRAIN: Stream<T = T>,
-    T: AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
+    T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
 {
     /// The wrapped delaunay object.
     #[derivative(Debug = "ignore")]
@@ -122,7 +123,12 @@ where
 impl<'a, DRAIN, T> GeoDelaunay<'a, DRAIN, T>
 where
     DRAIN: Stream<T = T> + Default,
-    T: AddAssign + AsPrimitive<T> + CoordFloat + FloatConst + FromPrimitive,
+    T: AbsDiffEq<Epsilon = T>
+        + AddAssign
+        + AsPrimitive<T>
+        + CoordFloat
+        + FloatConst
+        + FromPrimitive,
 {
     /// Creates a GeoDelaunay object from a set of points.
     pub fn delaunay(points: Rc<Vec<Coordinate<T>>>) -> Option<GeoDelaunay<'a, DRAIN, T>> {

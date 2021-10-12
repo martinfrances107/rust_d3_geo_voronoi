@@ -1,3 +1,4 @@
+use approx::AbsDiffEq;
 use geo::kernels::HasKernel;
 use std::borrow::Borrow;
 use std::fmt::Display;
@@ -31,7 +32,7 @@ use super::delaunay::GeoDelaunay;
 pub enum XYReturn<'a, DRAIN, T>
 where
     DRAIN: Stream<T = T>,
-    T: AddAssign + AsPrimitive<T> + Display + CoordFloat + FloatConst,
+    T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + Display + CoordFloat + FloatConst,
 {
     /// Voronoi
     Voronoi(GeoVoronoi<'a, DRAIN, T>),
@@ -54,7 +55,7 @@ where
 pub struct GeoVoronoi<'a, DRAIN, T>
 where
     DRAIN: Stream<T = T>,
-    T: AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
+    T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
     /// The wrapped GeoDelaunay instance.
     pub geo_delaunay: Option<GeoDelaunay<'a, DRAIN, T>>,
@@ -73,7 +74,7 @@ where
 impl<'a, DRAIN, T> Default for GeoVoronoi<'a, DRAIN, T>
 where
     DRAIN: Stream<T = T> + Default,
-    T: AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
+    T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
     fn default() -> GeoVoronoi<'a, DRAIN, T> {
         GeoVoronoi {
@@ -91,7 +92,14 @@ where
 impl<'a, DRAIN, T> GeoVoronoi<'a, DRAIN, T>
 where
     DRAIN: Stream<T = T> + Default,
-    T: AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst + FromPrimitive + HasKernel,
+    T: AbsDiffEq<Epsilon = T>
+        + AddAssign
+        + AsPrimitive<T>
+        + CoordFloat
+        + Display
+        + FloatConst
+        + FromPrimitive
+        + HasKernel,
 {
     /// If the input is a collection we act only on the first element in the collection.
     /// by copying over the data into a new single element before proceeding.

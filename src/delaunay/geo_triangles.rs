@@ -1,3 +1,4 @@
+use approx::AbsDiffEq;
 use rust_d3_geo::clip::Line;
 use rust_d3_geo::clip::PointVisible;
 use rust_d3_geo::projection::Raw;
@@ -13,7 +14,7 @@ pub fn geo_triangles<
     L: Line,
     PR: Raw<T>,
     PV: PointVisible<T = T>,
-    T: AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
+    T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
 >(
     delaunay: &Delaunay<DRAIN, L, PR, PV, T>,
 ) -> Vec<[usize; 3]> {

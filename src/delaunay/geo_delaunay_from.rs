@@ -4,6 +4,7 @@ use std::cmp;
 use std::ops::AddAssign;
 use std::rc::Rc;
 
+use approx::AbsDiffEq;
 use geo::{CoordFloat, Coordinate};
 use num_traits::{float::FloatConst, AsPrimitive, FromPrimitive};
 
@@ -28,7 +29,12 @@ pub fn geo_delaunay_from<DRAIN, T>(
 ) -> Option<Delaunay<DRAIN, Line<T>, Stereographic<DRAIN, T>, PV<T>, T>>
 where
     DRAIN: Stream<T = T> + Default,
-    T: AddAssign + AsPrimitive<T> + CoordFloat + FloatConst + FromPrimitive,
+    T: AbsDiffEq<Epsilon = T>
+        + AddAssign
+        + AsPrimitive<T>
+        + CoordFloat
+        + FloatConst
+        + FromPrimitive,
 {
     if points.len() < 2 {
         return None;
