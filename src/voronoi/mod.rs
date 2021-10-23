@@ -409,7 +409,7 @@ where
                         match self.found {
                             Some(found) => {
                                 // TODO confirm the euclidean_distance is the same as the rust_geo::distance....
-                                if distance(&p, &self.points[found]) < radius {
+                                if distance(p, &self.points[found]) < radius {
                                     // if p.euclidean_distance(&self.points[found]) < radius {
                                     Some(found)
                                 } else {
