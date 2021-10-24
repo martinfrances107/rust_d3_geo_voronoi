@@ -18,7 +18,11 @@ use geo::Geometry::Polygon;
 use geo::MultiPoint;
 use js_sys::try_iter;
 use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
+use web_sys::Document;
 use web_sys::PerformanceMeasure;
+// use web_sys::console;
+use web_sys::HtmlElement;
 
 use rust_d3_geo::clip::circle::line::Line;
 use rust_d3_geo::clip::circle::pv::PV;
@@ -33,17 +37,9 @@ use rust_d3_geo::projection::Raw;
 use rust_d3_geo::projection::Rotate;
 use rust_d3_geo::stream::StreamDrainStub;
 use rust_d3_geo::Transform;
-
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 
-use wasm_bindgen::JsCast;
-use web_sys::Document;
-// use web_sys::console;
-use web_sys::HtmlElement;
-
 mod dom_macros;
-
-const TWO_PI: f64 = 2.0 * std::f64::consts::PI;
 
 type Result<T> = std::result::Result<T, JsValue>;
 

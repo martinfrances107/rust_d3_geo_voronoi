@@ -5,7 +5,7 @@ use std::fmt::Display;
 use std::ops::AddAssign;
 use std::rc::Rc;
 
-use derivative::Derivative;
+use derivative::*;
 use geo::centroid::Centroid;
 use geo::line_string;
 use geo::CoordFloat;
