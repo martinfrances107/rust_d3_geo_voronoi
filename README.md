@@ -1,15 +1,15 @@
 # Project: rust d3 geo voronoi
 
+rust 2021 edition.
+
 This is a port of the [d3-geo-voronoi](https://github.com/Fil/d3-geo-voronoi) library into a RUST library crate/package. It is in a very early development phase.
+
+Currently we have 82% test coverage ( as reported by cargo tarpaulin -o Html )
 
 ## Phase 1
 
 Early draft port - sub module by submodule. Sub module porting means the test have also been ported.
 No API stability guarentees.
-
-delaunay first then  voronoi.
-
-Currently we have 78% test coverage ( as reported by cargo tarpaulin -o Html )
 
 ## Phase 2
 
@@ -17,6 +17,13 @@ API finialization. There maybe optimisation in the area of generics. So the API 
  The code will be profiled and bottlenecks identified.
 
 Modules, passing test ready for phase 2 evaluation :-
+
+## Other To-do list
+
+To be ported:-
+
+contour.js and geo-contour-test.js
+geo_voronoi_test "geoVoronoi.hull does not break on difficult polygons"
 
 ## Instructions
 
@@ -34,9 +41,7 @@ This module contains a benchmark library crate. That crate is used in a wasm-pac
         npm install
         npm run start
 
-<br/>
-<br/>
-<br/>
+
 <br/>
 
 ## Module Dependencies
