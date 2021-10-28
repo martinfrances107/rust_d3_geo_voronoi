@@ -27,7 +27,7 @@ use crate::delaunay::excess::excess;
 
 use super::delaunay::GeoDelaunay;
 
-/// Return type used by .x() and .y()
+/// Returns type used by .x() and .y()
 #[allow(missing_debug_implementations)]
 pub enum XYReturn<'a, DRAIN, T>
 where
@@ -36,7 +36,7 @@ where
 {
     /// Voronoi
     Voronoi(GeoVoronoi<'a, DRAIN, T>),
-    /// Function.
+    /// Function
     Func(Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>),
 }
 
@@ -296,7 +296,7 @@ where
         }
     }
 
-    /// Return an annotated Feature collection labelled with distance urquhart etc.
+    /// Returns an annotated Feature collection labelled with distance urquhart etc.
     pub fn links(&mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
         match data {
             None => {

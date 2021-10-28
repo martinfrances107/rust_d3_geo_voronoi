@@ -115,7 +115,7 @@ where
     /// Urquhart graph .. by index the set the of points in the plane.
     #[derivative(Debug = "ignore")]
     pub urquhart: Box<dyn Fn(&Vec<T>) -> Vec<bool> + 'a>,
-    /// Return the indexes of the points.
+    /// Returns the indexes of the points.
     #[derivative(Debug = "ignore")]
     pub find: Box<dyn Fn(&Coordinate<T>, Option<usize>) -> Option<usize> + 'a>,
 }

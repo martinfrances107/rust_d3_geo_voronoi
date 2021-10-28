@@ -5,7 +5,7 @@ use rust_d3_geo::cartesian::dot;
 
 use super::cartesian::cartesian;
 
-/// Spherical excess of a triangle (in spherical coordinates)
+/// Spherical excess of a triangle (in spherical coordinates).
 pub fn excess<T: CoordFloat>(triangle_p: &[Coordinate<T>]) -> T {
     let triangle: [[T; 3]; 3] = [
         cartesian(&triangle_p[0]),
