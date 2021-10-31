@@ -9,6 +9,7 @@ extern crate rand;
 extern crate web_sys;
 
 use std::cell::RefCell;
+use std::f64::consts::TAU;
 use std::iter::repeat_with;
 use std::rc::Rc;
 
@@ -205,7 +206,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
                 context.begin_path();
                 context.arc(
                     pt.x, pt.y, 5.0, // radius
-                    0.0, TWO_PI,
+                    0.0, TAU,
                 )?;
                 context.fill();
                 context.stroke();
