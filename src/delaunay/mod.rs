@@ -41,7 +41,6 @@ use geo_triangles::geo_triangles;
 use geo_urquhart::geo_urquhart;
 
 use rust_d3_delaunay::delaunay::Delaunay;
-use rust_d3_geo::clip::circle::line::Line;
 use rust_d3_geo::clip::circle::pv::PV;
 use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::stream::Stream;

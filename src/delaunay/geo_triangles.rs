@@ -1,13 +1,13 @@
+use std::ops::AddAssign;
+
 use approx::AbsDiffEq;
-use rust_d3_geo::clip::Line;
+use geo::CoordFloat;
+use num_traits::{AsPrimitive, FloatConst};
+
+use rust_d3_delaunay::delaunay::Delaunay;
 use rust_d3_geo::clip::PointVisible;
 use rust_d3_geo::projection::Raw;
 use rust_d3_geo::stream::Stream;
-use std::ops::AddAssign;
-
-use geo::CoordFloat;
-use num_traits::{AsPrimitive, FloatConst};
-use rust_d3_delaunay::delaunay::Delaunay;
 
 pub fn geo_triangles<
     DRAIN: Stream<T = T>,

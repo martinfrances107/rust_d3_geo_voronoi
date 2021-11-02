@@ -1,12 +1,12 @@
-use approx::AbsDiffEq;
-use geo::kernels::HasKernel;
 use std::borrow::Borrow;
 use std::fmt::Display;
 use std::ops::AddAssign;
 use std::rc::Rc;
 
+use approx::AbsDiffEq;
 use derivative::*;
 use geo::centroid::Centroid;
+use geo::kernels::HasKernel;
 use geo::line_string;
 use geo::CoordFloat;
 use geo::Coordinate;
@@ -15,7 +15,9 @@ use geo::LineString;
 use geo::MultiLineString;
 use geo::Point;
 use geo::Polygon;
-use num_traits::{AsPrimitive, FloatConst, FromPrimitive};
+use num_traits::AsPrimitive;
+use num_traits::FloatConst;
+use num_traits::FromPrimitive;
 
 use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::data_object::FeatureProperty;

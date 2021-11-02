@@ -6,7 +6,9 @@ use std::rc::Rc;
 
 use approx::AbsDiffEq;
 use geo::{CoordFloat, Coordinate};
-use num_traits::{float::FloatConst, AsPrimitive, FromPrimitive};
+use num_traits::float::FloatConst;
+use num_traits::AsPrimitive;
+use num_traits::FromPrimitive;
 
 use rust_d3_delaunay::delaunay::Delaunay;
 use rust_d3_geo::clip::circle::pv::PV;
