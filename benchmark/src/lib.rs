@@ -140,7 +140,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
 
     // let rcC = Rc::new(context);
     let cs: ContextStream<f64> = ContextStream::C(Context::new(context.clone()));
-    let pb: PathBuilder<Line<f64>, Orthographic<ContextStream<f64>, f64>, PV<f64>, f64> =
+    let pb: PathBuilder<Orthographic<ContextStream<f64>, f64>, PV<f64>, f64> =
         PathBuilder::new(Rc::new(RefCell::new(cs)));
 
     // let ortho_builder: ProjectionBuilder<
