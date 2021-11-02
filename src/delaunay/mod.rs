@@ -97,7 +97,7 @@ where
 {
     /// The wrapped delaunay object.
     #[derivative(Debug = "ignore")]
-    pub delaunay: Delaunay<DRAIN, Line<T>, Stereographic<DRAIN, T>, PV<T>, T>,
+    pub delaunay: Delaunay<DRAIN, Stereographic<DRAIN, T>, PV<T>, T>,
     /// The edges and triangles properties need RC because the values are close over in the urquhart function.
     pub edges: Rc<HashSet<[usize; 2]>>,
     /// A set of triangles as defined by set of indicies.

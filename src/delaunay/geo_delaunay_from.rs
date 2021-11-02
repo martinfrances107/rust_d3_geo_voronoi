@@ -9,7 +9,6 @@ use geo::{CoordFloat, Coordinate};
 use num_traits::{float::FloatConst, AsPrimitive, FromPrimitive};
 
 use rust_d3_delaunay::delaunay::Delaunay;
-use rust_d3_geo::clip::circle::line::Line;
 use rust_d3_geo::clip::circle::pv::PV;
 use rust_d3_geo::projection::builder::Builder;
 use rust_d3_geo::projection::stereographic::Stereographic;
@@ -26,7 +25,7 @@ use delaunator::EMPTY;
 /// Creates a delaunay object from a set of points.
 pub fn geo_delaunay_from<DRAIN, T>(
     points: Rc<Vec<Coordinate<T>>>,
-) -> Option<Delaunay<DRAIN, Line<T>, Stereographic<DRAIN, T>, PV<T>, T>>
+) -> Option<Delaunay<DRAIN, Stereographic<DRAIN, T>, PV<T>, T>>
 where
     DRAIN: Stream<T = T> + Default,
     T: AbsDiffEq<Epsilon = T>
@@ -51,8 +50,7 @@ where
         y: T::zero(),
     });
 
-    let builder: Builder<DRAIN, Line<T>, Stereographic<DRAIN, T>, PV<T>, T> =
-        Stereographic::builder();
+    let builder: Builder<DRAIN, Stereographic<DRAIN, T>, PV<T>, T> = Stereographic::builder();
     let projection = builder
         .translate(&Coordinate {
             x: T::zero(),

@@ -11,12 +11,11 @@ use rust_d3_delaunay::delaunay::Delaunay;
 
 pub fn geo_triangles<
     DRAIN: Stream<T = T>,
-    L: Line,
     PR: Raw<T>,
     PV: PointVisible<T = T>,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
 >(
-    delaunay: &Delaunay<DRAIN, L, PR, PV, T>,
+    delaunay: &Delaunay<DRAIN, PR, PV, T>,
 ) -> Vec<[usize; 3]> {
     let Delaunay { triangles, .. } = delaunay;
     if triangles.is_empty() {
