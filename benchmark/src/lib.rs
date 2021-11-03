@@ -84,20 +84,14 @@ pub fn run() -> Result<()> {
     let document = get_document()?;
     let body = document.body().expect("Could not get body");
 
-    mount_app(&document, &body)?;
     attach_listener(&document)?;
 
     Ok(())
 }
 
-fn mount_app(_document: &Document, _body: &HtmlElement) -> Result<()> {
-    // mount_controls(&document, &body)?;
-    Ok(())
-}
-
-// draw dot
+// Draw dot.
 fn update_canvas(document: &Document, size: u32) -> Result<()> {
-    // grab canvas
+    // Grab canvas.
     let canvas = document
         .get_element_by_id("c")
         .unwrap()
@@ -140,13 +134,6 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
     let pb: PathBuilder<Orthographic<ContextStream<f64>, f64>, PV<f64>, f64> =
         PathBuilder::new(Rc::new(RefCell::new(cs)));
 
-    // let ortho_builder: ProjectionBuilder<
-    //     ContextStream<f64>,
-    //     Line<f64>,
-    //     Orthographic<ContextStream<f64>, f64>,
-    //     PV<f64>,
-    //     f64,
-    // > = Orthographic::builder();
     let ortho_builder = Orthographic::builder();
 
     let sites = MultiPoint(
