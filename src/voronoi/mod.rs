@@ -160,8 +160,7 @@ where
                         y: d.2.y(),
                     })
                     .collect();
-                let pclone = v.points.clone();
-                v.geo_delaunay = GeoDelaunay::delaunay(pclone);
+                v.geo_delaunay = GeoDelaunay::delaunay(v.points.clone());
             }
             None => {
                 v = Self::default();
@@ -337,7 +336,7 @@ where
         };
     }
 
-    /// Returns the mesh in the form a mutliline string.
+    /// Returns the mesh in the form of a mutliline string.
     pub fn mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
         match data {
             None => {
@@ -361,7 +360,7 @@ where
         }
     }
 
-    /// Returns a Multiline string assoicated witn the input geometry.
+    /// Returns a Multiline string assoicated with the input geometry.
     pub fn cell_mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
         match data {
             None => {
@@ -401,20 +400,16 @@ where
             Some(delaunay_return) => {
                 self.found = (delaunay_return.find)(p, self.found);
                 match radius {
-                    Some(radius) => {
-                        match self.found {
-                            Some(found) => {
-                                // TODO confirm the euclidean_distance is the same as the rust_geo::distance....
-                                if distance(p, &self.points[found]) < radius {
-                                    // if p.euclidean_distance(&self.points[found]) < radius {
-                                    Some(found)
-                                } else {
-                                    None
-                                }
+                    Some(radius) => match self.found {
+                        Some(found) => {
+                            if distance(p, &self.points[found]) < radius {
+                                Some(found)
+                            } else {
+                                None
                             }
-                            None => None,
                         }
-                    }
+                        None => None,
+                    },
                     None => self.found,
                 }
             }
