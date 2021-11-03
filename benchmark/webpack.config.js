@@ -14,12 +14,23 @@ module.exports = {
     filename: "[name].js"
   },
   devServer: {
-    contentBase: dist,
+    static: {
+      directory: dist,
+    }
   },
+  performance: {
+    // HACK: the .wasm file is too big it should be chunked.
+    // but I think atm I need to use asyncWebAssembley for that
+    // TODO must resolve.
+    maxAssetSize: 512000
+  },
+  experiments: { syncWebAssembly: true, },
   plugins: [
-    new CopyPlugin([
-      path.resolve(__dirname, "static")
-    ]),
+    new CopyPlugin({
+      patterns: [
+        path.resolve(__dirname, "static")
+      ]
+    }),
 
     new WasmPackPlugin({
       crateDirectory: __dirname,

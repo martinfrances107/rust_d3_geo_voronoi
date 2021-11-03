@@ -2,7 +2,11 @@
 
 rust 2021 edition.
 
-This is a port of the [d3-geo-voronoi](https://github.com/Fil/d3-geo-voronoi) library into a RUST library crate/package. It is in a very early development phase.
+This is a port of the [d3-geo-voronoi](https://github.com/Fil/d3-geo-voronoi) library into a RUST library.
+
+A demonstration webpage is supplied which acts as both a benchmark and a template for running this library in a browser.
+
+ It is in a very early development phase.
 
 Currently we have 82% test coverage ( as reported by cargo tarpaulin -o Html )
 
@@ -31,14 +35,13 @@ geo_voronoi_test "geoVoronoi.hull does not break on difficult polygons"
 
         cargo test
 
-This module contains a benchmark library crate. That crate is used in a wasm-pack web application. A web site which can be deployed.
+This module contains a benchmarking webpage.
+It used [wasm pack](<https://github.com/rustwasm/wasm-pack>) to package rust_d3_geo, rust_d3_delaunay and rust_d3_geo_voronoi into a wasm. From this a simple demo application constructed.
+The application displays a delaunay mesh of a large number of cells onto a sphere.
 
 * To build and start the web server:-
 
         cd benchmark
-        wasm-pack build
-        cd www
-        npm install
         npm run start
 
 
