@@ -21,7 +21,6 @@ use js_sys::try_iter;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::Document;
-use web_sys::HtmlElement;
 use web_sys::PerformanceMeasure;
 
 use rust_d3_geo::clip::circle::pv::PV;
@@ -82,7 +81,6 @@ fn get_document() -> Result<Document> {
 pub fn run() -> Result<()> {
     console_log!("run() - wasm entry point");
     let document = get_document()?;
-    let body = document.body().expect("Could not get body");
 
     attach_listener(&document)?;
 
