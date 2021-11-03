@@ -9,11 +9,12 @@ pub fn geo_edges<T: CoordFloat>(
     triangles: &[[usize; 3]],
     point: &[Coordinate<T>],
 ) -> HashSet<[usize; 2]> {
-    let mut h_index = HashSet::new();
     if point.len() == 1 {
-        h_index.insert([0usize, 1usize]);
-        return h_index;
+        return HashSet::from([[0usize, 1usize]]);
     }
+    // capacity is a underesimate but if triangles is large
+    // it will provide some relief from constant reallocation.
+    let mut h_index = HashSet::with_capacity(triangles.len());
     let zero = T::zero();
     for tri in triangles {
         if tri[0] == tri[1] {
