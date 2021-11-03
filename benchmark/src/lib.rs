@@ -129,7 +129,6 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
     context.set_stroke_style(&"black".into());
     context.fill_rect(0.0, 0.0, width, height);
 
-    // let rcC = Rc::new(context);
     let cs: ContextStream<f64> = ContextStream::C(Context::new(context.clone()));
     let pb: PathBuilder<Orthographic<ContextStream<f64>, f64>, PV<f64>, f64> =
         PathBuilder::new(Rc::new(RefCell::new(cs)));
@@ -233,14 +232,14 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
     Ok(())
 }
 
-// update the size-output span
+// Update the size-output span.
 fn update_span(document: &Document, new_size: u32) -> Result<()> {
     let span = document.get_element_by_id("size-output").unwrap();
     span.set_text_content(Some(&format!("{}", new_size)));
     Ok(())
 }
 
-// given a new size, sets all relevant DOM elements
+// Given a new size, sets all relevant DOM elements.
 fn update_all() -> Result<()> {
     // get new size
     let document = get_document()?;
@@ -257,8 +256,6 @@ fn update_all() -> Result<()> {
 }
 
 fn attach_listener(document: &Document) -> Result<()> {
-    // listen for size change events
-
     update_all()?; // call once for initial render before any changes
 
     let callback = Closure::wrap(Box::new(move |_evt: web_sys::Event| {
