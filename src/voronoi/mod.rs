@@ -145,13 +145,7 @@ where
             Some(Geometry::MultiPoint(ref data)) => {
                 temp = data
                     .iter()
-                    .map(|d| {
-                        (
-                            (Self::default().vx)(&d.clone()),
-                            (Self::default().vy)(&d.clone()),
-                            *d,
-                        )
-                    })
+                    .map(|d| ((Self::default().vx)(d), (Self::default().vy)(d), *d))
                     .filter(|(d0, d1, _)| (*d0 + *d1).is_finite())
                     .collect();
                 let points: Vec<Coordinate<T>> = temp
