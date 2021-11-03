@@ -377,7 +377,10 @@ where
         let delaunay = self.geo_delaunay.unwrap();
         let polygons = delaunay.polygons;
         let centers = delaunay.centers;
-        let mut coordinates: Vec<LineString<T>> = Vec::new();
+        // Here can only supply an underestimate of the capacity
+        // but if the number of polygons is large it will provide
+        // some relief from constant rellocation.
+        let mut coordinates: Vec<LineString<T>> = Vec::with_capacity(polygons.len());
         for p in polygons {
             let mut p0 = *p.last().unwrap();
             let mut p1 = p[0];
