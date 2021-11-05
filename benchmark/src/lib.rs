@@ -183,14 +183,10 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
             performance.mark("polygons_rendered")?;
             // Render points.
             context.set_fill_style(&"white".into());
+            context.set_stroke_style(&"black".into());
             for p in sites {
-                // console_log!("{:?}", p);
-                let pt = ortho.clone().transform(&p.into());
                 context.begin_path();
-                context.arc(
-                    pt.x, pt.y, 5.0, // radius
-                    0.0, TAU,
-                )?;
+                path.object(&DataObject::Geometry(Geometry::Point(p)));
                 context.fill();
                 context.stroke();
             }
