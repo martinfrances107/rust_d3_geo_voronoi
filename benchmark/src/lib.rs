@@ -3,13 +3,17 @@
 #![warn(missing_docs)]
 //! # rust d3 geo voronoi
 //!
+//! Know bugs.
+//!
+//! When I convert this benchmark to run on f32's
+//! The polygons are mis-shaped
+//!
 //! See the README.md.
 extern crate js_sys;
 extern crate rand;
 extern crate web_sys;
 
 use std::cell::RefCell;
-use std::f64::consts::TAU;
 use std::iter::repeat_with;
 use std::rc::Rc;
 
@@ -33,7 +37,6 @@ use rust_d3_geo::projection::orthographic::Orthographic;
 use rust_d3_geo::projection::Raw;
 use rust_d3_geo::projection::Rotate;
 use rust_d3_geo::stream::StreamDrainStub;
-use rust_d3_geo::Transform;
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 
 mod dom_macros;
@@ -154,7 +157,6 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
     performance.mark("render_start")?;
     let ortho = Rc::new(ortho_builder.rotate(&[0_f64, 0_f64, 0_f64]).build());
     let mut path = pb.build(ortho.clone());
-    // this is not quite proejction rebuilt.
     performance.mark("projection_rebuilt")?;
     match gv.polygons(None) {
         None => {
@@ -163,11 +165,8 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
         Some(FeatureCollection(fc)) => {
             performance.mark("computed_polygons")?;
             context.set_stroke_style(&"black".into());
-            // console_log!("{:?}",fc);
             for (i, features) in fc.iter().enumerate() {
-                // console_log!("i {}",i%10);
                 context.set_fill_style(&scheme_category10[i % 10]);
-                // console_log!("{:?}",features.geometry[0]);
                 match &features.geometry[0] {
                     Polygon(polygon) => {
                         context.begin_path();
