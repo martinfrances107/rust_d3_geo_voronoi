@@ -5,7 +5,7 @@
 This is a port of the [d3-geo-voronoi](<https://github.com/Fil/d3-geo-voronoi>) library into a [RUST](<https://www.rust-lang.org/>) library.
 
  It is in a very early development phase, but to show progress. The library can be used to compute the following delaunay mesh.
-![Delaunay mesh from a set of random points on a sphere](./lamp_crop.png "Delaunay mesh from a set of random points on a sphere")
+![Delaunay mesh from a set of random points on a sphere](./lamp.png "Delaunay mesh from a set of random points on a sphere")
 
 ( computed from 6,000 points on a sphere selected at random )
 
