@@ -146,6 +146,8 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
             .collect(),
     );
 
+    // Insert graticule.
+
     let mut gv: GeoVoronoi<StreamDrainStub<f64>, f64> =
         GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
 
