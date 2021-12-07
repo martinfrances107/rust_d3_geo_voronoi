@@ -13,6 +13,7 @@ mod geo_voronoi_test {
     use geo::MultiPoint;
     use geo::Point;
 
+    use rust_d3_geo::clip::circle::line::Line as LineCircle;
     use rust_d3_geo::data_object::FeatureCollection;
     use rust_d3_geo::data_object::FeatureProperty;
     use rust_d3_geo::stream::StreamDrainStub;
@@ -25,7 +26,7 @@ mod geo_voronoi_test {
         println!("two points leads to two hemispheres.");
         let sites = MultiPoint(vec![Point::new(-20f64, -20f64), Point::new(20f64, 20f64)]);
 
-        let mut gv: GeoVoronoi<StreamDrainStub<f64>, f64> =
+        let mut gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> =
             GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
         match gv.polygons(None) {
             None => {
@@ -101,7 +102,7 @@ mod geo_voronoi_test {
             Point::new(0f64, 10f64),
         ]);
 
-        let mut gv: GeoVoronoi<StreamDrainStub<f64>, f64> =
+        let mut gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> =
             GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
         match gv.polygons(None) {
             None => {
@@ -140,7 +141,8 @@ mod geo_voronoi_test {
         // TODO the javascript version makes no assertions - if the test ends without expception then PASS!
         // This should be tightened up.
         let g = Geometry::MultiPoint(sites);
-        let mut gv: GeoVoronoi<StreamDrainStub<f64>, f64> = GeoVoronoi::new(Some(g));
+        let mut gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> =
+            GeoVoronoi::new(Some(g));
         let _u = gv.polygons(None);
     }
 
@@ -178,7 +180,7 @@ mod geo_voronoi_test {
             Point::new(-2f64, 5f64),
             Point::new(0f64, 0f64),
         ]);
-        let gv: GeoVoronoi<StreamDrainStub<f64>, f64> = GeoVoronoi::new(None);
+        let gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> = GeoVoronoi::new(None);
         let hull = gv.hull(Some(Geometry::MultiPoint(sites)));
         match hull {
             Some(polygon) => {
@@ -207,7 +209,7 @@ mod geo_voronoi_test {
             Point::new(-2f64, 5f64),
             Point::new(0f64, 0f64),
         ]);
-        let gv: GeoVoronoi<StreamDrainStub<f64>, f64> =
+        let gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> =
             GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
         let mesh = gv.mesh(None);
 
@@ -266,7 +268,7 @@ mod geo_voronoi_test {
             "1 15/8 5".into(),
             "5 0/8 5".into(),
         ];
-        let gv: GeoVoronoi<StreamDrainStub<f64>, f64> = GeoVoronoi::new(None);
+        let gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> = GeoVoronoi::new(None);
         let cell_mesh_maybe = gv.cell_mesh(Some(Geometry::MultiPoint(sites)));
         match cell_mesh_maybe {
             Some(cell_mesh) => {
@@ -300,12 +302,12 @@ mod geo_voronoi_test {
             Point::new(-2f64, 5f64),
             Point::new(0f64, 0f64),
         ]);
-        let mut voro: GeoVoronoi<StreamDrainStub<f64>, f64> =
+        let mut voro: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> =
             GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
 
         assert_eq!(voro.find(&Coordinate { x: 1.0, y: 1.0 }, None), Some(4));
         // TODO bug ... strange bug/hang ... unless I define voro twice.
-        let mut voro2: GeoVoronoi<StreamDrainStub<f64>, f64> =
+        let mut voro2: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> =
             GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
         assert_eq!(
             voro2.find(&Coordinate { x: 1.0, y: 1.0 }, Some(4.0)),
@@ -320,7 +322,7 @@ mod geo_voronoi_test {
             Point::new(10f64, 0f64),
             Point::new(0f64, 10f64),
         ]));
-        let mut gv: GeoVoronoi<StreamDrainStub<f64>, f64> = GeoVoronoi::new(None);
+        let mut gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> = GeoVoronoi::new(None);
         match gv.links(Some(sites)) {
             Some(FeatureCollection(features)) => {
                 let mut out: Vec<f64> = features
@@ -352,7 +354,7 @@ mod geo_voronoi_test {
             Point::new(10f64, 0f64),
             Point::new(0f64, 10f64),
         ]));
-        let gv: GeoVoronoi<StreamDrainStub<f64>, f64> = GeoVoronoi::new(None);
+        let gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> = GeoVoronoi::new(None);
         match gv.triangles(Some(sites)) {
             Some(FeatureCollection(features)) => {
                 assert_eq!(features.len(), 1);
@@ -371,7 +373,7 @@ mod geo_voronoi_test {
             Point::new(0f64, 10f64),
         ]));
 
-        let mut gv: GeoVoronoi<StreamDrainStub<f64>, f64> = GeoVoronoi::new(None);
+        let mut gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> = GeoVoronoi::new(None);
         match gv.links(Some(sites)) {
             Some(FeatureCollection(features)) => {
                 let mut results: Vec<bool> = Vec::new();
@@ -410,7 +412,7 @@ mod geo_voronoi_test {
             Point::new(0f64, 10f64),
         ]));
 
-        let gv: GeoVoronoi<StreamDrainStub<f64>, f64> = GeoVoronoi::new(None);
+        let gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> = GeoVoronoi::new(None);
         match gv.triangles(Some(sites)) {
             Some(FeatureCollection(features)) => {
                 println!("features {:?}", features);
@@ -458,7 +460,7 @@ mod geo_voronoi_test {
             Point::new(0f64, 10f64),
         ];
 
-        let u: GeoVoronoi<StreamDrainStub<f64>, f64> =
+        let u: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> =
             GeoVoronoi::new(Some(Geometry::MultiPoint(MultiPoint(sites.clone()))));
         assert_eq!(
             u.geo_delaunay.unwrap().delaunay.triangles.iter().max(),

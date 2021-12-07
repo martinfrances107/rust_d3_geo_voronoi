@@ -11,9 +11,15 @@ use num_traits::AsPrimitive;
 use num_traits::FromPrimitive;
 
 use rust_d3_delaunay::delaunay::Delaunay;
+use rust_d3_geo::clip::buffer::Buffer;
+use rust_d3_geo::clip::circle::line::Line as LineCircle;
 use rust_d3_geo::clip::circle::pv::PV;
+use rust_d3_geo::clip::post_clip_node::PostClipNode;
+use rust_d3_geo::clip::Line;
 use rust_d3_geo::projection::builder::Builder;
+use rust_d3_geo::projection::resample::ResampleNode;
 use rust_d3_geo::projection::stereographic::Stereographic;
+use rust_d3_geo::projection::stream_node::StreamNode;
 use rust_d3_geo::projection::Raw;
 use rust_d3_geo::projection::Rotate;
 use rust_d3_geo::projection::Scale;
@@ -27,15 +33,22 @@ use delaunator::EMPTY;
 /// Creates a delaunay object from a set of points.
 pub fn geo_delaunay_from<DRAIN, T>(
     points: Rc<Vec<Coordinate<T>>>,
-) -> Option<Delaunay<DRAIN, Stereographic<DRAIN, T>, PV<T>, T>>
+) -> Option<Delaunay<DRAIN, LineCircle<T>, Stereographic<DRAIN, T>, PV<T>, T>>
 where
-    DRAIN: Stream<T = T> + Default,
+    DRAIN: Stream<EP = DRAIN, T = T> + Default,
     T: AbsDiffEq<Epsilon = T>
         + AddAssign
         + AsPrimitive<T>
         + CoordFloat
         + FloatConst
         + FromPrimitive,
+    StreamNode<Buffer<T>, LineCircle<T>, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
+    StreamNode<
+        DRAIN,
+        LineCircle<T>,
+        ResampleNode<DRAIN, Stereographic<DRAIN, T>, PostClipNode<DRAIN, DRAIN, T>, T>,
+        T,
+    >: Stream<EP = DRAIN, T = T>,
 {
     if points.len() < 2 {
         return None;
@@ -52,7 +65,8 @@ where
         y: T::zero(),
     });
 
-    let builder: Builder<DRAIN, Stereographic<DRAIN, T>, PV<T>, T> = Stereographic::builder();
+    let builder: Builder<DRAIN, LineCircle<T>, Stereographic<DRAIN, T>, PV<T>, T> =
+        Stereographic::builder();
     let projection = builder
         .translate(&Coordinate {
             x: T::zero(),

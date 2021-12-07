@@ -19,10 +19,17 @@ use num_traits::AsPrimitive;
 use num_traits::FloatConst;
 use num_traits::FromPrimitive;
 
+use rust_d3_geo::clip::buffer::Buffer;
+use rust_d3_geo::clip::circle::line::Line as LineCircle;
+use rust_d3_geo::clip::post_clip_node::PostClipNode;
+use rust_d3_geo::clip::Line;
 use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::data_object::FeatureProperty;
 use rust_d3_geo::data_object::Features;
 use rust_d3_geo::distance::distance;
+use rust_d3_geo::projection::resample::ResampleNode;
+use rust_d3_geo::projection::stereographic::Stereographic;
+use rust_d3_geo::projection::stream_node::StreamNode;
 use rust_d3_geo::stream::Stream;
 
 use crate::delaunay::excess::excess;
@@ -31,13 +38,21 @@ use super::delaunay::GeoDelaunay;
 
 /// Returns type used by .x() and .y()
 #[allow(missing_debug_implementations)]
-pub enum XYReturn<'a, DRAIN, T>
+pub enum XYReturn<'a, DRAIN, LINE, T>
 where
-    DRAIN: Stream<T = T>,
+    DRAIN: Stream<EP = DRAIN, T = T>,
+    LINE: Line,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + Display + CoordFloat + FloatConst,
+    StreamNode<Buffer<T>, LINE, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
+    StreamNode<
+        DRAIN,
+        LINE,
+        ResampleNode<DRAIN, Stereographic<DRAIN, T>, PostClipNode<DRAIN, DRAIN, T>, T>,
+        T,
+    >: Stream<EP = DRAIN, T = T>,
 {
     /// Voronoi
-    Voronoi(GeoVoronoi<'a, DRAIN, T>),
+    Voronoi(GeoVoronoi<'a, DRAIN, LINE, T>),
     /// Function
     Func(Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>),
 }
@@ -54,13 +69,21 @@ where
 #[derive(Derivative)]
 #[derivative(Debug)]
 /// Holds data centered on a GeoDelauany instance.
-pub struct GeoVoronoi<'a, DRAIN, T>
+pub struct GeoVoronoi<'a, DRAIN, LINE, T>
 where
-    DRAIN: Stream<T = T>,
+    DRAIN: Stream<EP = DRAIN, T = T>,
+    LINE: Line,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
+    StreamNode<Buffer<T>, LINE, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
+    StreamNode<
+        DRAIN,
+        LINE,
+        ResampleNode<DRAIN, Stereographic<DRAIN, T>, PostClipNode<DRAIN, DRAIN, T>, T>,
+        T,
+    >: Stream<EP = DRAIN, T = T>,
 {
     /// The wrapped GeoDelaunay instance.
-    pub geo_delaunay: Option<GeoDelaunay<'a, DRAIN, T>>,
+    pub geo_delaunay: Option<GeoDelaunay<'a, DRAIN, LINE, T>>,
     data: Option<Geometry<T>>,
     found: Option<usize>,
     //Points: Rc needed here as the egdes, triangles, neigbours etc all index into thts vec.
@@ -73,12 +96,20 @@ where
     vy: Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>,
 }
 
-impl<'a, DRAIN, T> Default for GeoVoronoi<'a, DRAIN, T>
+impl<'a, DRAIN, LINE, T> Default for GeoVoronoi<'a, DRAIN, LINE, T>
 where
-    DRAIN: Stream<T = T> + Default,
+    DRAIN: Stream<EP = DRAIN, T = T> + Default,
+    LINE: Line,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
+    StreamNode<Buffer<T>, LINE, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
+    StreamNode<
+        DRAIN,
+        LINE,
+        ResampleNode<DRAIN, Stereographic<DRAIN, T>, PostClipNode<DRAIN, DRAIN, T>, T>,
+        T,
+    >: Stream<EP = DRAIN, T = T>,
 {
-    fn default() -> GeoVoronoi<'a, DRAIN, T> {
+    fn default() -> GeoVoronoi<'a, DRAIN, LINE, T> {
         GeoVoronoi {
             data: None,
             geo_delaunay: None,
@@ -91,9 +122,9 @@ where
     }
 }
 
-impl<'a, DRAIN, T> GeoVoronoi<'a, DRAIN, T>
+impl<'a, DRAIN, T> GeoVoronoi<'a, DRAIN, LineCircle<T>, T>
 where
-    DRAIN: Stream<T = T> + Default,
+    DRAIN: Stream<EP = DRAIN, T = T> + Default,
     T: AbsDiffEq<Epsilon = T>
         + AddAssign
         + AsPrimitive<T>
@@ -102,11 +133,18 @@ where
         + FloatConst
         + FromPrimitive
         + HasKernel,
+    StreamNode<Buffer<T>, LineCircle<T>, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
+    StreamNode<
+        DRAIN,
+        LineCircle<T>,
+        ResampleNode<DRAIN, Stereographic<DRAIN, T>, PostClipNode<DRAIN, DRAIN, T>, T>,
+        T,
+    >: Stream<EP = DRAIN, T = T>,
 {
     /// If the input is a collection we act only on the first element in the collection.
     /// by copying over the data into a new single element before proceeding.
-    pub fn new(data: Option<Geometry<T>>) -> GeoVoronoi<'a, DRAIN, T> {
-        let mut v: GeoVoronoi<'a, DRAIN, T>;
+    pub fn new(data: Option<Geometry<T>>) -> GeoVoronoi<'a, DRAIN, LineCircle<T>, T> {
+        let mut v: GeoVoronoi<'a, DRAIN, LineCircle<T>, T>;
 
         // let delaunay_return: Option<GeoDelaunay> = None;
 
@@ -177,7 +215,7 @@ where
     pub fn x(
         mut self,
         f: Option<Box<impl Fn(&dyn Centroid<Output = Point<T>>) -> T + 'static>>,
-    ) -> XYReturn<'a, DRAIN, T> {
+    ) -> XYReturn<'a, DRAIN, LineCircle<T>, T> {
         return match f {
             None => XYReturn::Func(self.vx),
             Some(f) => {
@@ -191,7 +229,7 @@ where
     pub fn y(
         mut self,
         f: Option<Box<impl Fn(&dyn Centroid<Output = Point<T>>) -> T + 'static>>,
-    ) -> XYReturn<'a, DRAIN, T> {
+    ) -> XYReturn<'a, DRAIN, LineCircle<T>, T> {
         return match f {
             None => XYReturn::Func(self.vy),
             Some(f) => {

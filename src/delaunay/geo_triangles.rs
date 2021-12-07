@@ -5,18 +5,28 @@ use geo::CoordFloat;
 use num_traits::{AsPrimitive, FloatConst};
 
 use rust_d3_delaunay::delaunay::Delaunay;
+use rust_d3_geo::clip::buffer::Buffer;
+use rust_d3_geo::clip::post_clip_node::PostClipNode;
+use rust_d3_geo::clip::Line;
 use rust_d3_geo::clip::PointVisible;
+use rust_d3_geo::projection::resample::ResampleNode;
+use rust_d3_geo::projection::stream_node::StreamNode;
 use rust_d3_geo::projection::Raw;
 use rust_d3_geo::stream::Stream;
 
-pub fn geo_triangles<
-    DRAIN: Stream<T = T>,
+pub fn geo_triangles<DRAIN, LINE, PR, PV, T>(
+    delaunay: &Delaunay<DRAIN, LINE, PR, PV, T>,
+) -> Vec<[usize; 3]>
+where
+    DRAIN: Stream<EP = DRAIN, T = T>,
+    LINE: Line,
     PR: Raw<T>,
     PV: PointVisible<T = T>,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
->(
-    delaunay: &Delaunay<DRAIN, PR, PV, T>,
-) -> Vec<[usize; 3]> {
+    StreamNode<Buffer<T>, LINE, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
+    StreamNode<DRAIN, LINE, ResampleNode<DRAIN, PR, PostClipNode<DRAIN, DRAIN, T>, T>, T>:
+        Stream<EP = DRAIN, T = T>,
+{
     let Delaunay { triangles, .. } = delaunay;
     if triangles.is_empty() {
         // panic!("empty triangles");

@@ -41,8 +41,14 @@ use geo_triangles::geo_triangles;
 use geo_urquhart::geo_urquhart;
 
 use rust_d3_delaunay::delaunay::Delaunay;
+use rust_d3_geo::clip::buffer::Buffer;
+use rust_d3_geo::clip::circle::line::Line as LineCircle;
 use rust_d3_geo::clip::circle::pv::PV;
+use rust_d3_geo::clip::post_clip_node::PostClipNode;
+use rust_d3_geo::clip::Line;
+use rust_d3_geo::projection::resample::ResampleNode;
 use rust_d3_geo::projection::stereographic::Stereographic;
+use rust_d3_geo::projection::stream_node::StreamNode;
 use rust_d3_geo::stream::Stream;
 
 // #[derive(Default, Debug)]
@@ -89,14 +95,22 @@ use rust_d3_geo::stream::Stream;
 /// Wraps data associated with a delaunay object.
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct GeoDelaunay<'a, DRAIN, T>
+pub struct GeoDelaunay<'a, DRAIN, LINE, T>
 where
-    DRAIN: Stream<T = T>,
+    DRAIN: Stream<EP = DRAIN, T = T>,
+    LINE: Line,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
+    StreamNode<Buffer<T>, LINE, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
+    StreamNode<
+        DRAIN,
+        LINE,
+        ResampleNode<DRAIN, Stereographic<DRAIN, T>, PostClipNode<DRAIN, DRAIN, T>, T>,
+        T,
+    >: Stream<EP = DRAIN, T = T>,
 {
     /// The wrapped delaunay object.
     #[derivative(Debug = "ignore")]
-    pub delaunay: Delaunay<DRAIN, Stereographic<DRAIN, T>, PV<T>, T>,
+    pub delaunay: Delaunay<DRAIN, LINE, Stereographic<DRAIN, T>, PV<T>, T>,
     /// The edges and triangles properties need RC because the values are close over in the urquhart function.
     pub edges: Rc<HashSet<[usize; 2]>>,
     /// A set of triangles as defined by set of indicies.
@@ -119,18 +133,27 @@ where
     pub find: Box<dyn Fn(&Coordinate<T>, Option<usize>) -> Option<usize> + 'a>,
 }
 
-impl<'a, DRAIN, T> GeoDelaunay<'a, DRAIN, T>
+impl<'a, DRAIN, T> GeoDelaunay<'a, DRAIN, LineCircle<T>, T>
 where
-    DRAIN: Stream<T = T> + Default,
+    DRAIN: Stream<EP = DRAIN, T = T> + Default,
     T: AbsDiffEq<Epsilon = T>
         + AddAssign
         + AsPrimitive<T>
         + CoordFloat
         + FloatConst
         + FromPrimitive,
+    StreamNode<Buffer<T>, LineCircle<T>, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
+    StreamNode<
+        DRAIN,
+        LineCircle<T>,
+        ResampleNode<DRAIN, Stereographic<DRAIN, T>, PostClipNode<DRAIN, DRAIN, T>, T>,
+        T,
+    >: Stream<EP = DRAIN, T = T>,
 {
     /// Creates a GeoDelaunay object from a set of points.
-    pub fn delaunay(points: Rc<Vec<Coordinate<T>>>) -> Option<GeoDelaunay<'a, DRAIN, T>> {
+    pub fn delaunay(
+        points: Rc<Vec<Coordinate<T>>>,
+    ) -> Option<GeoDelaunay<'a, DRAIN, LineCircle<T>, T>> {
         let p = points.clone();
         match geo_delaunay_from(p) {
             Some(delaunay) => {
