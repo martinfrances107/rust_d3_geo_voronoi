@@ -27,6 +27,7 @@ use wasm_bindgen::JsCast;
 use web_sys::Document;
 use web_sys::PerformanceMeasure;
 
+use rust_d3_geo::clip::circle::line::Line;
 use rust_d3_geo::clip::circle::pv::PV;
 use rust_d3_geo::data_object::DataObject;
 use rust_d3_geo::data_object::FeatureCollection;
@@ -130,9 +131,9 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
     context.set_stroke_style(&"black".into());
     context.fill_rect(0.0, 0.0, width, height);
 
-    let cs: ContextStream<f64> = ContextStream::C(Context::new(context.clone()));
-    let pb: PathBuilder<Orthographic<ContextStream<f64>, f64>, PV<f64>, f64> =
-        PathBuilder::new(Rc::new(RefCell::new(cs)));
+    let cs: ContextStream<f64> = ContextStream::Context(Context::new(context.clone()));
+    let pb: PathBuilder<Line<f64>, Orthographic<ContextStream<f64>, f64>, PV<f64>, f64> =
+        PathBuilder::new(cs);
 
     let ortho_builder = Orthographic::builder();
 
@@ -151,11 +152,11 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
 
     // Insert graticule.
 
-    let mut gv: GeoVoronoi<StreamDrainStub<f64>, f64> =
+    let mut gv: GeoVoronoi<StreamDrainStub<f64>, Line<f64>, f64> =
         GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
 
     performance.mark("render_start")?;
-    let ortho = Rc::new(ortho_builder.rotate(&[0_f64, 0_f64, 0_f64]).build());
+    let ortho = ortho_builder.rotate(&[0_f64, 0_f64, 0_f64]).build();
     let mut path = pb.build(ortho.clone());
     performance.mark("projection_rebuilt")?;
     match gv.polygons(None) {
