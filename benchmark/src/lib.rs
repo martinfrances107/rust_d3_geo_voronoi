@@ -13,7 +13,6 @@ extern crate js_sys;
 extern crate rand;
 extern crate web_sys;
 
-use std::cell::RefCell;
 use std::iter::repeat_with;
 use std::rc::Rc;
 
