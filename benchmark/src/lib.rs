@@ -156,7 +156,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
 
     performance.mark("render_start")?;
     let ortho = ortho_builder.rotate(&[0_f64, 0_f64, 0_f64]).build();
-    let mut path = pb.build(ortho.clone());
+    let mut path = pb.build(ortho);
     performance.mark("projection_rebuilt")?;
     match gv.polygons(None) {
         None => {
