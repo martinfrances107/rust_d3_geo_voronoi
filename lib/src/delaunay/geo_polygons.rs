@@ -164,6 +164,6 @@ where
             })
             .collect();
 
-        ((*reordered).to_vec(), self.centers)
+        (reordered, self.centers)
     }
 }
