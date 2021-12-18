@@ -28,7 +28,6 @@ use web_sys::PerformanceMeasure;
 
 use rust_d3_geo::clip::circle::line::Line;
 use rust_d3_geo::clip::circle::pv::PV;
-use rust_d3_geo::data_object::DataObject;
 use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::path::builder::Builder as PathBuilder;
 use rust_d3_geo::path::context::Context;
@@ -170,7 +169,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
                 match &features.geometry[0] {
                     Polygon(polygon) => {
                         context.begin_path();
-                        path.object(&DataObject::Geometry(Geometry::Polygon(polygon.clone())));
+                        path.object(&Geometry::Polygon(polygon.clone()));
                         context.fill();
                         context.stroke();
                     }
@@ -185,7 +184,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
             context.set_stroke_style(&"black".into());
             for p in sites {
                 context.begin_path();
-                path.object(&DataObject::Geometry(Geometry::Point(p)));
+                path.object(&Geometry::Point(p));
                 context.fill();
                 context.stroke();
             }

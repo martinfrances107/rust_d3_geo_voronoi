@@ -162,7 +162,7 @@ where
                 let e = Rc::new(geo_edges(&tri, &points));
                 let circumcenters = geo_circumcenters(&tri, &points);
                 let (polys, centers) =
-                    GeoPolygons::default().gen(circumcenters, tri.clone(), &points);
+                    GeoPolygons::default().gen(circumcenters.collect(), tri.clone(), &points);
 
                 // RC is needed here as it is both closed over in the find function an is part of the Delaunay return.
                 let n = Rc::new(RefCell::new(geo_neighbors(tri.clone(), points.len())));

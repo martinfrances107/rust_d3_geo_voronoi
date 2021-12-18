@@ -258,10 +258,10 @@ where
                 for (i, poly) in dr.polygons.iter().enumerate() {
                     let mut poly_closed: Vec<usize> = poly.to_vec();
                     poly_closed.push(poly[0]);
-                    let coordinates: Vec<Coordinate<T>> =
-                        poly_closed.iter().map(|&i| (dr.centers[i])).collect();
+                    let exterior: LineString<T> =
+                        LineString::from_iter(poly_closed.iter().map(|&i| (dr.centers[i])));
 
-                    let geometry = Geometry::Polygon(Polygon::new(coordinates.into(), vec![]));
+                    let geometry = Geometry::Polygon(Polygon::new(exterior, vec![]));
                     // TODO why does this need to be borrow_mut
                     let neighbors = dr.neighbors.borrow_mut();
                     let n = neighbors.get(&i).unwrap().to_vec();
@@ -388,12 +388,11 @@ where
         match &self.geo_delaunay {
             None => None,
             Some(delaunay_return) => {
-                let coordinates: Vec<LineString<T>> = delaunay_return
+                let le = delaunay_return
                     .edges
                     .iter()
-                    .map(|e| line_string![(self.points)[e[0]], (self.points)[e[1]]])
-                    .collect();
-                Some(MultiLineString(coordinates))
+                    .map(|e| line_string![(self.points)[e[0]], (self.points)[e[1]]]);
+                Some(MultiLineString::from_iter(le))
             }
         }
     }
