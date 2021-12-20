@@ -31,7 +31,6 @@ use rust_d3_geo::clip::circle::pv::PV;
 use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::path::builder::Builder as PathBuilder;
 use rust_d3_geo::path::context::Context;
-use rust_d3_geo::path::context_stream::ContextStream;
 use rust_d3_geo::projection::orthographic::Orthographic;
 use rust_d3_geo::projection::Raw;
 use rust_d3_geo::projection::Rotate;
@@ -129,8 +128,8 @@ fn update_canvas(document: &Document, size: u32) -> Result<()> {
     context.set_stroke_style(&"black".into());
     context.fill_rect(0.0, 0.0, width, height);
 
-    let cs: ContextStream<f64> = ContextStream::Context(Context::new(context.clone()));
-    let pb: PathBuilder<Line<f64>, Orthographic<ContextStream<f64>, f64>, PV<f64>, f64> =
+    let cs: Context<f64> = Context::new(context.clone());
+    let pb: PathBuilder<Context<f64>, Line<f64>, Orthographic<Context<f64>, f64>, PV<f64>, f64> =
         PathBuilder::new(cs);
 
     let ortho_builder = Orthographic::builder();

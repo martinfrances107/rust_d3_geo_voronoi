@@ -375,6 +375,7 @@ mod geo_voronoi_test {
         match gv.links(Some(sites)) {
             Some(FeatureCollection(features)) => {
                 let mut results: Vec<bool> = Vec::new();
+                // TODO: rewrite using find ?
                 for fs in features {
                     // Extract the Urquhart property from the FeatureStruct.
                     let fs_u: Vec<bool> = fs
