@@ -10,6 +10,7 @@ mod geo_voronoi_test {
     use geo::Coordinate;
     use geo::Geometry;
     use geo::LineString;
+    use geo::MultiLineString;
     use geo::MultiPoint;
     use geo::Point;
 
@@ -225,24 +226,16 @@ mod geo_voronoi_test {
         ];
 
         match mesh {
-            Some(mesh) => {
-                for computed_ls in mesh {
-                    let mut found = false;
-                    for golden_ls in &golden {
-                        if computed_ls.abs_diff_eq(&golden_ls, 1e-2) {
-                            found = true;
-                            continue; // Skip golden loop.
-                        }
-                    }
-                    if !found {
-                        assert!(false, "linestring not found in golden list.");
-                    }
+            Some(mls) => {
+                assert!(mls.0.len() == golden.len());
+                // The golden values are unique so no need to worry about diplicate
+                // computed values.
+                for ls in mls {
+                    assert!(golden.contains(&ls), "Linestring not found in golden list.");
                 }
-                // All mesh points inspected no rejections
-                assert!(true, "all linestrings found.")
             }
             None => {
-                assert!(false);
+                assert!(false, "Expected the mesh as a MultiLineString.");
             }
         }
     }
