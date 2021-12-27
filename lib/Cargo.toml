@@ -13,11 +13,11 @@ crate-type = ["cdylib", "rlib"]
 default = ["console_error_panic_hook"]
 
 [dependencies]
-approx="0.4.0"
+approx="0.5.0"
 num-traits = "0.2.14"
 wasm-bindgen = "0.2.68"
 derivative="2.2.0"
-geo={git = "https://github.com/martinfrances107/geo.git", branch="cyclic_match", features=["use-approx"] }
+geo={ version="0.18.0", feature="approx"}
 delaunator = { git = "https://github.com/mourner/delaunator-rs.git" }
 # d3_geo: At the moment just use for math carteasian functions.
 rust_d3_geo = { git="https://github.com/martinfrances107/rust_d3_geo.git", branch="main"}
@@ -55,8 +55,8 @@ features = [
 ]
 
 [dev-dependencies]
-measureme = "9.0.0"
-pretty_assertions = "0.7.1"
+measureme = "10.0.0"
+pretty_assertions = "1.0.0"
 wasm-bindgen-test="0.3.13"
 
 
