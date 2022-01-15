@@ -15,7 +15,6 @@ use rust_d3_geo::clip::buffer::Buffer;
 use rust_d3_geo::clip::circle::line::Line as LineCircle;
 use rust_d3_geo::clip::circle::pv::PV;
 use rust_d3_geo::clip::post_clip_node::PostClipNode;
-use rust_d3_geo::clip::Line;
 use rust_d3_geo::projection::builder::Builder;
 use rust_d3_geo::projection::resample::ResampleNode;
 use rust_d3_geo::projection::stereographic::Stereographic;

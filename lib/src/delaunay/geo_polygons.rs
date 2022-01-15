@@ -2,7 +2,9 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use geo::{CoordFloat, Coordinate};
+use geo::CoordFloat;
+use geo::Coordinate;
+use num_traits::FloatConst;
 
 use rust_d3_geo::cartesian::add;
 use rust_d3_geo::cartesian::cross;
@@ -40,7 +42,7 @@ where
 
 impl<T> GeoPolygons<T>
 where
-    T: CoordFloat,
+    T: CoordFloat + FloatConst,
 {
     fn supplement(&mut self, point: &Coordinate<T>) -> usize {
         let mut f = None;

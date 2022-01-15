@@ -3,24 +3,21 @@
 mod geo_voronoi_test {
     extern crate pretty_assertions;
 
-    use approx::AbsDiffEq;
     use geo::algorithm::cyclic_match::CyclicMatch;
     use geo::coords_iter::CoordsIter;
     use geo::line_string;
     use geo::Coordinate;
     use geo::Geometry;
     use geo::LineString;
-    use geo::MultiLineString;
     use geo::MultiPoint;
     use geo::Point;
+    use pretty_assertions::assert_eq;
 
     use rust_d3_geo::clip::circle::line::Line as LineCircle;
     use rust_d3_geo::data_object::FeatureCollection;
     use rust_d3_geo::data_object::FeatureProperty;
     use rust_d3_geo::stream::StreamDrainStub;
     use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
-
-    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_two_hemispheres() {
@@ -437,11 +434,6 @@ mod geo_voronoi_test {
             }
         }
     }
-    // tape("geoVoronoi’s delaunay does not list fake points in its triangles", function(test) {
-    //   const u = geoVoronoi.geoVoronoi()(sites);
-    //   test.equal(Math.max(...u.delaunay.delaunay.triangles), sites.length - 1);
-    //   test.end();
-    // });
 
     #[test]
     fn test_does_not_list_fake_points() {
