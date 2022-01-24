@@ -1,4 +1,4 @@
-use std::fs::{self, File};
+use std::fs::File;
 use std::io::prelude::*;
 use std::io::LineWriter;
 use std::iter::repeat_with;
@@ -36,7 +36,7 @@ fn draw() -> String {
     );
 
     let mut gv: GeoVoronoi<StreamDrainStub<f64>, Line<f64>, f64> =
-        GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
+        GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
 
     let ortho = ortho_builder.rotate(&[0_f64, 0_f64, 0_f64]).build();
     let mut path = PathBuilder::context_pathstring().build(ortho);
@@ -72,7 +72,7 @@ fn draw() -> String {
                     }
                 };
                 let line = format!(
-                    "<path d={:?} fill=\"{}\" stroke=\"white\" /> </path> ",
+                    "<path d={:?} fill=\"{}\" stroke=\"white\" />",
                     d,
                     scheme_category10[i % 10]
                 );
@@ -114,7 +114,7 @@ fn main() -> std::io::Result<()> {
     let d_string = draw();
     let d = d_string.as_bytes();
 
-    file.write_all(&d)?;
+    file.write_all(d)?;
 
     let tail = b"</svg></body></html>";
 
