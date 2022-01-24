@@ -2,6 +2,7 @@
 members = [
     "./lib",
     "./benchmark",
+    "./profile_target"
 ]
 
 [profile.release]
