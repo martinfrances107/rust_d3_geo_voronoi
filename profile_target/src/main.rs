@@ -2,9 +2,12 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::LineWriter;
 use std::iter::repeat_with;
-extern crate rand;
-use geo::Geometry::Polygon;
 
+#[macro_use]
+extern crate lazy_static;
+extern crate rand;
+
+use geo::Geometry::Polygon;
 use geo::{Coordinate, Geometry, MultiPoint};
 
 use rust_d3_geo::clip::circle::line::Line;
@@ -15,6 +18,21 @@ use rust_d3_geo::projection::{Raw, Rotate};
 use rust_d3_geo::stream::StreamDrainStub;
 
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
+
+lazy_static! {
+    static ref SCHEME_CATEGORY10: [String; 10] = [
+        String::from("#1f77b4"),
+        String::from("#ff7f0e"),
+        String::from("#2ca02c"),
+        String::from("#d62728"),
+        String::from("#9467bd"),
+        String::from("#8c564b"),
+        String::from("#e377c2"),
+        String::from("#7f7f7f"),
+        String::from("#bcbd22"),
+        String::from("#17becf"),
+    ];
+}
 
 fn draw() -> String {
     // size is the number of voronoi
@@ -41,20 +59,6 @@ fn draw() -> String {
     let ortho = ortho_builder.rotate(&[0_f64, 0_f64, 0_f64]).build();
     let mut path = PathBuilder::context_pathstring().build(ortho);
 
-    // TODO can this be defined statically
-    let scheme_category10: [String; 10] = [
-        String::from("#1f77b4"),
-        String::from("#ff7f0e"),
-        String::from("#2ca02c"),
-        String::from("#d62728"),
-        String::from("#9467bd"),
-        String::from("#8c564b"),
-        String::from("#e377c2"),
-        String::from("#7f7f7f"),
-        String::from("#bcbd22"),
-        String::from("#17becf"),
-    ];
-
     match gv.polygons(None) {
         None => {
             panic!("failed to get polygons");
@@ -74,7 +78,7 @@ fn draw() -> String {
                 let line = format!(
                     "<path d={:?} fill=\"{}\" stroke=\"white\" />",
                     d,
-                    scheme_category10[i % 10]
+                    SCHEME_CATEGORY10[i % 10]
                 );
                 paths.push_str(&line);
             }
