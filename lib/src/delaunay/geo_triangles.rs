@@ -29,7 +29,6 @@ where
 {
     let Delaunay { triangles, .. } = delaunay;
     if triangles.is_empty() {
-        // panic!("empty triangles");
         return Vec::new();
     }
 
