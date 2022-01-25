@@ -23,7 +23,6 @@ where
     T: CoordFloat,
 {
     centers: Vec<Coordinate<T>>,
-    polygons: Vec<Vec<usize>>,
     triangles: Rc<Vec<[usize; 3]>>,
 }
 
@@ -34,7 +33,6 @@ where
     fn default() -> Self {
         Self {
             centers: Vec::new(),
-            polygons: Vec::new(),
             triangles: Rc::new(Vec::new()),
         }
     }

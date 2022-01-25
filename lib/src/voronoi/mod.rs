@@ -344,13 +344,11 @@ where
             None => None,
             Some(delaunay_return) => {
                 let points: &Vec<Coordinate<T>> = self.points.borrow();
-                let distances: Rc<Vec<T>> = Rc::new(
-                    delaunay_return
-                        .edges
-                        .iter()
-                        .map(|e| distance(&points[e[0]], &points[e[1]]))
-                        .collect(),
-                );
+                let distances: Vec<T> = delaunay_return
+                    .edges
+                    .iter()
+                    .map(|e| distance(&points[e[0]], &points[e[1]]))
+                    .collect();
                 let urquhart = (delaunay_return.urquhart)(&distances);
                 let features: Vec<Features<T>> = delaunay_return
                     .edges
