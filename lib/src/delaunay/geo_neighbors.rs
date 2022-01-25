@@ -1,12 +1,8 @@
-use std::borrow::Borrow;
 use std::collections::HashMap;
-use std::rc::Rc;
 
-pub fn geo_neighbors(triangles: Rc<Vec<[usize; 3]>>, npoints: usize) -> HashMap<usize, Vec<usize>> {
-    let triangles_borrowed: &Vec<[usize; 3]> = triangles.borrow();
-    let mut h_neighbors: HashMap<usize, Vec<usize>> =
-        HashMap::with_capacity(triangles_borrowed.len());
-    for tri in triangles_borrowed {
+pub fn geo_neighbors(triangles: &[[usize; 3]], npoints: usize) -> HashMap<usize, Vec<usize>> {
+    let mut h_neighbors: HashMap<usize, Vec<usize>> = HashMap::with_capacity(triangles.len());
+    for tri in triangles {
         for j in 0..3 {
             let a: usize = tri[j];
             let b = tri[(j + 1) % 3];
