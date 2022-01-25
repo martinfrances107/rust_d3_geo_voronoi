@@ -171,7 +171,7 @@ where
                     delaunay,
                     edges: e.clone(),
                     centers,
-                    hull: geo_hull(tri.clone(), &points),
+                    hull: geo_hull(&tri, &points),
                     find: geo_find(n.clone(), points),
                     neighbors: n,
                     mesh: geo_mesh(&polys),
