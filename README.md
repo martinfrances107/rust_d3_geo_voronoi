@@ -43,10 +43,15 @@ This workspace contain a binary "profie_target" which outputs the result of a co
 
 ## Further Development.
 
+Known bugs
+
+Currently the demo works only then f64 is used as the floating point type. [For f32 the cell integrity is broken as some of the cell appear to takeup the whole sphere.]
 To be ported:-
 
 contour.js and geo-contour-test.js
-geo_voronoi_test "geoVoronoi.hull does not break on difficult polygons"
+
+Currenly there is a failing test suite
+geo_voronoi_test.rs "geoVoronoi.hull does not break on difficult polygons"
 
 
 ## Instructions for building the benchmark.

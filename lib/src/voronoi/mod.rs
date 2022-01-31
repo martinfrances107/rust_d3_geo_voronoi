@@ -27,7 +27,7 @@ use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::data_object::FeatureProperty;
 use rust_d3_geo::data_object::Features;
 use rust_d3_geo::distance::distance;
-use rust_d3_geo::projection::resample::ResampleNode;
+use rust_d3_geo::projection::resampler::ResampleNode;
 use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::projection::stream_node::StreamNode;
 use rust_d3_geo::stream::Stream;

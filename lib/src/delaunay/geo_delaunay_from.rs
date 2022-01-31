@@ -16,23 +16,23 @@ use rust_d3_geo::clip::circle::line::Line as LineCircle;
 use rust_d3_geo::clip::circle::pv::PV;
 use rust_d3_geo::clip::post_clip_node::PostClipNode;
 use rust_d3_geo::projection::builder::Builder;
-use rust_d3_geo::projection::resample::ResampleNode;
+use rust_d3_geo::projection::resampler::ResampleNode;
 use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::projection::stream_node::StreamNode;
 use rust_d3_geo::projection::Raw;
 use rust_d3_geo::projection::Rotate;
 use rust_d3_geo::projection::Scale;
 use rust_d3_geo::projection::Translate;
-use rust_d3_geo::rotation::rotation::Rotation;
+use rust_d3_geo::rot::rotation::Rotation;
 use rust_d3_geo::stream::Stream;
 use rust_d3_geo::Transform;
 
 use delaunator::EMPTY;
 
+type DReturn<DRAIN, T> = Delaunay<DRAIN, LineCircle<T>, Stereographic<DRAIN, T>, PV<T>, T>;
+
 /// Creates a delaunay object from a set of points.
-pub fn geo_delaunay_from<DRAIN, T>(
-    points: Rc<Vec<Coordinate<T>>>,
-) -> Option<Delaunay<DRAIN, LineCircle<T>, Stereographic<DRAIN, T>, PV<T>, T>>
+pub fn geo_delaunay_from<DRAIN, T>(points: Rc<Vec<Coordinate<T>>>) -> Option<DReturn<DRAIN, T>>
 where
     DRAIN: Stream<EP = DRAIN, T = T> + Default,
     T: AbsDiffEq<Epsilon = T>

@@ -9,7 +9,7 @@ use rust_d3_geo::clip::buffer::Buffer;
 use rust_d3_geo::clip::post_clip_node::PostClipNode;
 use rust_d3_geo::clip::Line;
 use rust_d3_geo::clip::PointVisible;
-use rust_d3_geo::projection::resample::ResampleNode;
+use rust_d3_geo::projection::resampler::ResampleNode;
 use rust_d3_geo::projection::stream_node::StreamNode;
 use rust_d3_geo::projection::Raw;
 use rust_d3_geo::stream::Stream;
