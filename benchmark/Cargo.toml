@@ -27,7 +27,7 @@ js-sys = "0.3.55"
 # `wee_alloc` is a tiny allocator for wasm that is only ~1K in code size
 # compared to the default allocator's ~10K. However, it is slower than the default
 # allocator, so it's not enabled by default.
-wee_alloc = { version = "0.4.5", optional = true }
+# wee_alloc = { version = "0.4.5", optional = true }
 
 
 
@@ -40,6 +40,7 @@ debuginfo-level=1
 futures = "0.3.17"
 wasm-bindgen-test = "0.3.28"
 wasm-bindgen-futures = "0.4.28"
+
 
 # The `web-sys` crate allows you to interact with the various browser APIs,
 # like the DOM.
@@ -56,6 +57,7 @@ features = [
     "HtmlCanvasElement",
     "HtmlElement",
     "HtmlInputElement",
+    "HtmlParagraphElement",
     "Node",
     "Performance",
     "PerformanceTiming",

@@ -5,17 +5,29 @@
   <title>BenchMark: Sphere</title>
   <meta charset="utf-8">
   <meta name="description" content="Benchmark for the rust d3 geo voronoi project.">
+  <style>
+    .range-wrapper {
+      display: grid;
+      grid-template-columns: 10% 50% 10% 30%;
+    }
+  </style>
 </head>
 
 <body>
 
   <h1>Benchmark: Sphere</h1>
   <h2>Rust d3 geo voronoi</h2>
-  <p>
+  <p class="range-wrapper">
     <span id="size-output"></span>
-    <input id="size" type="range" value="6000" min="2" max="6000" step="1">
+    <input id="size-range" type="range" value="6000" min="2" max="6000" step="1">
     <label for="size">Size</label>
   </p>
+  <div style="font-weight: bold;">
+    <label id="size-label" for="size-range">The number of points on the sphere</label>
+    <p id="perf">Mean Render Time: ...Calculating</p>
+  </div>
+  <p> The mean render time and standard deviation are based on the last 200 frames. </p>
+
   <canvas id="c" width="960" height="600"></canvas>
   <h2>Suggestion:</h2>
   <p>Enable the browsers FPS meter.</p>
