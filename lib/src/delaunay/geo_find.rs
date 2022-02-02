@@ -7,6 +7,7 @@ use geo::{CoordFloat, Coordinate};
 use num_traits::Float;
 
 use super::cartesian::cartesian;
+use crate::delaunay::FindReturn;
 
 #[inline]
 fn distance2<T: Float>(a: &[T; 3], b: &[T; 3]) -> T {
@@ -19,7 +20,7 @@ fn distance2<T: Float>(a: &[T; 3], b: &[T; 3]) -> T {
 pub fn geo_find<'a, T: CoordFloat + 'static>(
     neighbors: Rc<RefCell<HashMap<usize, Vec<usize>>>>,
     points: Rc<Vec<Coordinate<T>>>,
-) -> Box<dyn Fn(&Coordinate<T>, Option<usize>) -> Option<usize> + 'a> {
+) -> FindReturn<'a, T> {
     Box::new(
         move |p: &Coordinate<T>, next_p: Option<usize>| -> Option<usize> {
             let next_or_none = match next_p {

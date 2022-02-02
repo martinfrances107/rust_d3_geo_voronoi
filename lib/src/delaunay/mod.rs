@@ -92,6 +92,8 @@ use rust_d3_geo::stream::Stream;
 //     pub projection: Option<ProjectionMutator>,
 // }
 
+type FindReturn<'a, T> = Box<dyn Fn(&Coordinate<T>, Option<usize>) -> Option<usize> + 'a>;
+
 /// Wraps data associated with a delaunay object.
 #[derive(Derivative)]
 #[derivative(Debug)]
@@ -130,7 +132,7 @@ where
     pub urquhart: Box<dyn Fn(&Vec<T>) -> Vec<bool> + 'a>,
     /// Returns the indexes of the points.
     #[derivative(Debug = "ignore")]
-    pub find: Box<dyn Fn(&Coordinate<T>, Option<usize>) -> Option<usize> + 'a>,
+    pub find: FindReturn<'a, T>,
 }
 
 impl<'a, DRAIN, T> GeoDelaunay<'a, DRAIN, LineCircle<T>, T>

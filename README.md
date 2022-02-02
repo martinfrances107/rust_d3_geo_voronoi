@@ -9,7 +9,7 @@ This is a port of the [d3-geo-voronoi](<https://github.com/Fil/d3-geo-voronoi>) 
 
 ( computed from 6,000 points on a sphere selected at random )
 
-Currently we have 83% test coverage ( as reported by cargo tarpaulin -o Html )
+Currently we have 84% test coverage ( as reported by cargo tarpaulin -o Html )
 
 ## Performance Profiling.
 
