@@ -135,7 +135,6 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
     // index into the elapsedArray 0..199
     let mut index = 0;
 
-    // TODO can this be defined statically
     let scheme_category10: [JsValue; 10] = [
         JsValue::from_str("#1f77b4"),
         JsValue::from_str("#ff7f0e"),

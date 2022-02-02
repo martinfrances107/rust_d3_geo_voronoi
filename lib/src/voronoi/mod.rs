@@ -173,7 +173,7 @@ where
         // Data sanitization:-
         // Transform points using vx() and vy().
         // Remove infinities, store list of untransformed - valid points.
-        let temp: Vec<(T, T, Point<T>)>;
+
         match v.data {
             // Some(FeatureCollection { features: f }) => {
             //     f.iter()
@@ -181,7 +181,7 @@ where
             //         .filter(|t| (t.0 + t.1).is_finite());
             // }
             Some(Geometry::MultiPoint(ref data)) => {
-                temp = data
+                let temp: Vec<(T, T, Point<T>)> = data
                     .iter()
                     .map(|d| ((Self::default().vx)(d), (Self::default().vy)(d), *d))
                     .filter(|(d0, d1, _)| (*d0 + *d1).is_finite())
@@ -240,12 +240,9 @@ where
     }
     /// Returns polygons in the form of a feature collection.
     pub fn polygons(&mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
-        match data {
-            None => {}
-            Some(_) => {
-                *self = Self::new(data);
-            }
-        }
+        if let Some(data) = data {
+            *self = Self::new(Some(data));
+        };
 
         match &self.geo_delaunay {
             None => None,
@@ -283,13 +280,8 @@ where
 
     /// Returns a freature collection representing the triangularization of the input object.
     pub fn triangles(mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
-        match data {
-            None => {
-                // No op
-            }
-            Some(_) => {
-                self = Self::new(data);
-            }
+        if let Some(data) = data {
+            self = Self::new(Some(data));
         }
 
         match self.geo_delaunay {
@@ -331,13 +323,8 @@ where
 
     /// Returns an annotated Feature collection labelled with distance urquhart etc.
     pub fn links(&mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
-        match data {
-            None => {
-                // No op
-            }
-            _ => {
-                *self = Self::new(data);
-            }
+        if let Some(data) = data {
+            *self = Self::new(Some(data));
         }
 
         return match &self.geo_delaunay {
@@ -374,13 +361,8 @@ where
 
     /// Returns the mesh in the form of a mutliline string.
     pub fn mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
-        match data {
-            None => {
-                // No op
-            }
-            _ => {
-                self = Self::new(data);
-            }
+        if let Some(data) = data {
+            self = Self::new(Some(data));
         }
 
         match &self.geo_delaunay {
@@ -397,13 +379,8 @@ where
 
     /// Returns a Multiline string assoicated with the input geometry.
     pub fn cell_mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
-        match data {
-            None => {
-                // No op
-            }
-            Some(_) => {
-                self = Self::new(data);
-            }
+        if let Some(data) = data {
+            self = Self::new(Some(data));
         }
 
         // Return early maybe?
@@ -456,13 +433,8 @@ where
 
     /// Returns the hull for a given geometry.
     pub fn hull(mut self, data: Option<Geometry<T>>) -> Option<Polygon<T>> {
-        match data {
-            None => {
-                // No op
-            }
-            _ => {
-                self = Self::new(data);
-            }
+        if let Some(data) = data {
+            self = Self::new(Some(data));
         }
 
         match self.geo_delaunay {
