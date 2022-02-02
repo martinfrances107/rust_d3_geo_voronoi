@@ -17,8 +17,6 @@ extern crate rust_d3_geo;
 
 /// delaunay helper functions.
 pub mod delaunay;
-/// A set of helper methods.
-pub mod math;
 
 /// Wrapper for Delaunay contains helper methods.
 pub mod voronoi;
