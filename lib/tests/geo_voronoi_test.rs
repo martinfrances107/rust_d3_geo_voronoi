@@ -3,8 +3,8 @@
 mod geo_voronoi_test {
     extern crate pretty_assertions;
 
-    use geo::algorithm::cyclic_match::CyclicMatch;
     use geo::coords_iter::CoordsIter;
+    use geo::cyclic_match::CyclicMatch;
     use geo::line_string;
     use geo::Coordinate;
     use geo::Geometry;
@@ -12,20 +12,66 @@ mod geo_voronoi_test {
     use geo::MultiPoint;
     use geo::Point;
     use pretty_assertions::assert_eq;
+    use rust_d3_geo::clip::buffer::Buffer;
+    use rust_d3_geo::projection::builder::template::NoClipC;
+    use rust_d3_geo::projection::builder::template::NoClipU;
+    use rust_d3_geo::projection::builder::template::ResampleNoClipC;
+    use rust_d3_geo::projection::builder::template::ResampleNoClipU;
+    use rust_d3_geo::projection::stereographic::Stereographic;
+    use rust_d3_geo::stream::Connected;
+    use rust_d3_geo::stream::Unconnected;
 
+    use rust_d3_geo::clip::circle::interpolate::Interpolate as InterpolateCircle;
     use rust_d3_geo::clip::circle::line::Line as LineCircle;
+    use rust_d3_geo::clip::circle::pv::PV as PVCircle;
     use rust_d3_geo::data_object::FeatureCollection;
     use rust_d3_geo::data_object::FeatureProperty;
     use rust_d3_geo::stream::StreamDrainStub;
     use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
+
+    type GV<'a> = GeoVoronoi<
+        'a,
+        StreamDrainStub<f64>,
+        InterpolateCircle<
+            StreamDrainStub<f64>,
+            ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
+            f64,
+        >,
+        LineCircle<Buffer<f64>, Buffer<f64>, Connected<Buffer<f64>>, f64>,
+        LineCircle<
+            StreamDrainStub<f64>,
+            ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
+            Connected<
+                ResampleNoClipC<
+                    StreamDrainStub<f64>,
+                    Stereographic<StreamDrainStub<f64>, f64>,
+                    f64,
+                >,
+            >,
+            f64,
+        >,
+        LineCircle<
+            StreamDrainStub<f64>,
+            ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
+            Unconnected,
+            f64,
+        >,
+        NoClipC<StreamDrainStub<f64>, f64>,
+        NoClipU<StreamDrainStub<f64>, f64>,
+        Stereographic<StreamDrainStub<f64>, f64>,
+        PVCircle<f64>,
+        ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
+        ResampleNoClipU<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
+        f64,
+    >;
 
     #[test]
     fn test_two_hemispheres() {
         println!("two points leads to two hemispheres.");
         let sites = MultiPoint(vec![Point::new(-20f64, -20f64), Point::new(20f64, 20f64)]);
 
-        let mut gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> =
-            GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
+        // pub struct GeoVoronoi<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
+        let mut gv: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
         match gv.polygons(None) {
             None => {
                 assert!(false, "Must return a FeatureCollectiont<T>.");
@@ -100,8 +146,7 @@ mod geo_voronoi_test {
             Point::new(0f64, 10f64),
         ]);
 
-        let mut gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> =
-            GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
+        let mut gv: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
         match gv.polygons(None) {
             None => {
                 assert!(false, "Must return a FeatureCollection<T>.");
@@ -139,8 +184,7 @@ mod geo_voronoi_test {
         // TODO the javascript version makes no assertions - if the test ends without expception then PASS!
         // This should be tightened up.
         let g = Geometry::MultiPoint(sites);
-        let mut gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> =
-            GeoVoronoi::new(Some(g));
+        let mut gv: GV = GeoVoronoi::new(Some(g));
         let _u = gv.polygons(None);
     }
 
@@ -178,7 +222,7 @@ mod geo_voronoi_test {
             Point::new(-2f64, 5f64),
             Point::new(0f64, 0f64),
         ]);
-        let gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> = GeoVoronoi::new(None);
+        let gv: GV = GeoVoronoi::new(None);
         let hull = gv.hull(Some(Geometry::MultiPoint(sites)));
         match hull {
             Some(polygon) => {
@@ -207,8 +251,7 @@ mod geo_voronoi_test {
             Point::new(-2f64, 5f64),
             Point::new(0f64, 0f64),
         ]);
-        let gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> =
-            GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
+        let gv: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
         let mesh = gv.mesh(None);
 
         let golden: Vec<LineString<f64>> = vec![
@@ -258,7 +301,7 @@ mod geo_voronoi_test {
             "1 15/8 5".into(),
             "5 0/8 5".into(),
         ];
-        let gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> = GeoVoronoi::new(None);
+        let gv: GV = GeoVoronoi::new(None);
         let cell_mesh_maybe = gv.cell_mesh(Some(Geometry::MultiPoint(sites)));
         match cell_mesh_maybe {
             Some(cell_mesh) => {
@@ -290,13 +333,11 @@ mod geo_voronoi_test {
             Point::new(-2f64, 5f64),
             Point::new(0f64, 0f64),
         ]);
-        let mut voro: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> =
-            GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
+        let mut voro: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
 
         assert_eq!(voro.find(&Coordinate { x: 1.0, y: 1.0 }, None), Some(4));
         // TODO bug ... strange bug/hang ... unless I define voro twice.
-        let mut voro2: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> =
-            GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
+        let mut voro2: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
         assert_eq!(
             voro2.find(&Coordinate { x: 1.0, y: 1.0 }, Some(4.0)),
             Some(4)
@@ -310,7 +351,7 @@ mod geo_voronoi_test {
             Point::new(10f64, 0f64),
             Point::new(0f64, 10f64),
         ]));
-        let mut gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> = GeoVoronoi::new(None);
+        let mut gv: GV = GeoVoronoi::new(None);
         match gv.links(Some(sites)) {
             Some(FeatureCollection(features)) => {
                 let mut out: Vec<f64> = features
@@ -342,7 +383,7 @@ mod geo_voronoi_test {
             Point::new(10f64, 0f64),
             Point::new(0f64, 10f64),
         ]));
-        let gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> = GeoVoronoi::new(None);
+        let gv: GV = GeoVoronoi::new(None);
         match gv.triangles(Some(sites)) {
             Some(FeatureCollection(features)) => {
                 assert_eq!(features.len(), 1);
@@ -361,7 +402,7 @@ mod geo_voronoi_test {
             Point::new(0f64, 10f64),
         ]));
 
-        let mut gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> = GeoVoronoi::new(None);
+        let mut gv: GV = GeoVoronoi::new(None);
         match gv.links(Some(sites)) {
             Some(FeatureCollection(features)) => {
                 let mut results: Vec<bool> = Vec::new();
@@ -401,7 +442,7 @@ mod geo_voronoi_test {
             Point::new(0f64, 10f64),
         ]));
 
-        let gv: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> = GeoVoronoi::new(None);
+        let gv: GV = GeoVoronoi::new(None);
         match gv.triangles(Some(sites)) {
             Some(FeatureCollection(features)) => {
                 println!("features {:?}", features);
@@ -409,12 +450,12 @@ mod geo_voronoi_test {
                     FeatureProperty::Circumecenter(u) => {
                         println!("c {:?}", u);
                         let v = Coordinate {
-                            x: 5.0,
-                            y: 4.981069,
+                            x: 5.0_f64,
+                            y: 4.981069_f64,
                         };
                         let w = Coordinate {
-                            x: -180.0 + v.x,
-                            y: -1.0 * v.y,
+                            x: -180.0_f64 + v.x,
+                            y: -1.0_f64 * v.y,
                         };
                         if ((u.x - v.x).abs() < 1e-6 && (u.y - v.y).abs() < 1e-6)
                             || ((u.x - w.x).abs() < 1e-6 && (u.y - w.y).abs() < 1e-6)
@@ -444,8 +485,7 @@ mod geo_voronoi_test {
             Point::new(0f64, 10f64),
         ];
 
-        let u: GeoVoronoi<StreamDrainStub<f64>, LineCircle<f64>, f64> =
-            GeoVoronoi::new(Some(Geometry::MultiPoint(MultiPoint(sites.clone()))));
+        let u: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(MultiPoint(sites.clone()))));
         assert_eq!(
             u.geo_delaunay.unwrap().delaunay.triangles.iter().max(),
             Some(&(sites.len() - 1usize))

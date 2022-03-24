@@ -1,3 +1,4 @@
+use rust_d3_geo::Transform;
 use std::ops::AddAssign;
 
 use approx::AbsDiffEq;
@@ -5,27 +6,27 @@ use geo::CoordFloat;
 use num_traits::{AsPrimitive, FloatConst};
 
 use rust_d3_delaunay::delaunay::Delaunay;
-use rust_d3_geo::clip::buffer::Buffer;
-use rust_d3_geo::clip::post_clip_node::PostClipNode;
-use rust_d3_geo::clip::Line;
-use rust_d3_geo::clip::PointVisible;
-use rust_d3_geo::projection::resampler::ResampleNode;
-use rust_d3_geo::projection::stream_node::StreamNode;
-use rust_d3_geo::projection::Raw;
 use rust_d3_geo::stream::Stream;
 
-pub fn geo_triangles<DRAIN, LINE, PR, PV, T>(
-    delaunay: &Delaunay<DRAIN, LINE, PR, PV, T>,
+pub fn geo_triangles<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>(
+    delaunay: &Delaunay<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>,
 ) -> Vec<[usize; 3]>
 where
     DRAIN: Stream<EP = DRAIN, T = T>,
-    LINE: Line,
-    PR: Raw<T>,
-    PV: PointVisible<T = T>,
+    I: Clone,
+    LB: Clone,
+    LC: Clone,
+    LU: Clone,
+    PCNC: Clone,
+    PCNU: Clone,
+    PR: Transform<T = T>,
+    PV: Clone,
+    RC: Clone,
+    RU: Clone,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
-    StreamNode<Buffer<T>, LINE, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
-    StreamNode<DRAIN, LINE, ResampleNode<DRAIN, PR, PostClipNode<DRAIN, DRAIN, T>, T>, T>:
-        Stream<EP = DRAIN, T = T>,
+    // StreamNode<Buffer<T>, LINE, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
+    // StreamNode<DRAIN, LINE, ResampleNode<DRAIN, PR, PostClipNode<DRAIN, DRAIN, T>, T>, T>:
+    //     Stream<EP = DRAIN, T = T>,
 {
     let Delaunay { triangles, .. } = delaunay;
     if triangles.is_empty() {

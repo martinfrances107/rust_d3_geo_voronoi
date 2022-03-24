@@ -32,8 +32,6 @@ use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::path::builder::Builder as PathBuilder;
 use rust_d3_geo::path::context::Context;
 use rust_d3_geo::projection::orthographic::Orthographic;
-use rust_d3_geo::projection::Raw;
-use rust_d3_geo::projection::Rotate;
 use rust_d3_geo::stream::StreamDrainStub;
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 

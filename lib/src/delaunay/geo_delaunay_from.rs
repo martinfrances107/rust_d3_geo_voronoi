@@ -1,10 +1,17 @@
 #![allow(clippy::many_single_char_names)]
 
+use rust_d3_geo::projection::builder::template::NoClipC;
+use rust_d3_geo::projection::builder::template::NoClipU;
+use rust_d3_geo::projection::builder::template::ResampleNoClipC;
+use rust_d3_geo::projection::builder::template::ResampleNoClipU;
+use rust_d3_geo::projection::resampler::resample::Resample;
 use std::cmp;
+use std::fmt::Debug;
 use std::ops::AddAssign;
 use std::rc::Rc;
 
 use approx::AbsDiffEq;
+use delaunator::EMPTY;
 use geo::{CoordFloat, Coordinate};
 use num_traits::float::FloatConst;
 use num_traits::AsPrimitive;
@@ -12,42 +19,62 @@ use num_traits::FromPrimitive;
 
 use rust_d3_delaunay::delaunay::Delaunay;
 use rust_d3_geo::clip::buffer::Buffer;
+use rust_d3_geo::clip::circle::interpolate::Interpolate as InterpolateCircle;
 use rust_d3_geo::clip::circle::line::Line as LineCircle;
-use rust_d3_geo::clip::circle::pv::PV;
-use rust_d3_geo::clip::post_clip_node::PostClipNode;
-use rust_d3_geo::projection::builder::Builder;
-use rust_d3_geo::projection::resampler::ResampleNode;
+use rust_d3_geo::clip::circle::pv::PV as PVCircle;
 use rust_d3_geo::projection::stereographic::Stereographic;
-use rust_d3_geo::projection::stream_node::StreamNode;
-use rust_d3_geo::projection::Raw;
 use rust_d3_geo::projection::Rotate;
 use rust_d3_geo::projection::Scale;
 use rust_d3_geo::projection::Translate;
 use rust_d3_geo::rot::rotation::Rotation;
+use rust_d3_geo::stream::Connected;
 use rust_d3_geo::stream::Stream;
+use rust_d3_geo::stream::Unconnected;
 use rust_d3_geo::Transform;
 
-use delaunator::EMPTY;
+use crate::rust_d3_geo::projection::ProjectionRawBase;
 
-type DReturn<DRAIN, T> = Delaunay<DRAIN, LineCircle<T>, Stereographic<DRAIN, T>, PV<T>, T>;
+type DReturn<DRAIN, PCNC, PCNU, PR, RC, RU, T> = Delaunay<
+    DRAIN,
+    InterpolateCircle<DRAIN, RC, T>,
+    LineCircle<Buffer<T>, Buffer<T>, Connected<Buffer<T>>, T>,
+    LineCircle<DRAIN, RC, Connected<RC>, T>,
+    LineCircle<DRAIN, RC, Unconnected, T>,
+    PCNC,
+    PCNU,
+    PR,
+    PVCircle<T>,
+    RC,
+    RU,
+    T,
+>;
 
 /// Creates a delaunay object from a set of points.
-pub fn geo_delaunay_from<DRAIN, T>(points: Rc<Vec<Coordinate<T>>>) -> Option<DReturn<DRAIN, T>>
+pub fn geo_delaunay_from<DRAIN, PCNC, PCNU, RC, RU, T>(
+    points: Rc<Vec<Coordinate<T>>>,
+) -> Option<
+    DReturn<
+        DRAIN,
+        NoClipC<DRAIN, T>,
+        NoClipU<DRAIN, T>,
+        Stereographic<DRAIN, T>,
+        ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,
+        ResampleNoClipU<DRAIN, Stereographic<DRAIN, T>, T>,
+        T,
+    >,
+>
 where
     DRAIN: Stream<EP = DRAIN, T = T> + Default,
+    PCNC: Clone + Debug,
+    PCNU: Clone + Debug,
+    RC: Clone + Debug,
+    RU: Clone,
     T: AbsDiffEq<Epsilon = T>
         + AddAssign
         + AsPrimitive<T>
         + CoordFloat
         + FloatConst
         + FromPrimitive,
-    StreamNode<Buffer<T>, LineCircle<T>, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
-    StreamNode<
-        DRAIN,
-        LineCircle<T>,
-        ResampleNode<DRAIN, Stereographic<DRAIN, T>, PostClipNode<DRAIN, DRAIN, T>, T>,
-        T,
-    >: Stream<EP = DRAIN, T = T>,
 {
     if points.len() < 2 {
         return None;
@@ -60,12 +87,12 @@ where
 
     let r = Rotation::new(points[pivot].x, points[pivot].y, T::zero());
     let r_invert = r.invert(&Coordinate {
-        x: T::from(180).unwrap(),
+        x: T::from(180_f64).unwrap(),
         y: T::zero(),
     });
 
-    let builder: Builder<DRAIN, LineCircle<T>, Stereographic<DRAIN, T>, PV<T>, T> =
-        Stereographic::builder();
+    // let builder: Builder<DRAIN, LineCircle<T>, Stereographic<DRAIN, T>, PV<T>, T> =
+    let builder = Stereographic::builder();
     let projection = builder
         .translate(&Coordinate {
             x: T::zero(),
@@ -88,7 +115,7 @@ where
             max2 = m;
         }
     }
-    let far = T::from(1e6).unwrap() * (max2).sqrt();
+    let far = T::from(1e6_f64).unwrap() * (max2).sqrt();
 
     zeros.iter().for_each(|i| {
         points[*i] = Coordinate {
