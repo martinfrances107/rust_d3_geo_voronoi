@@ -3,6 +3,7 @@ use rust_d3_geo::projection::builder::template::NoClipC;
 use rust_d3_geo::projection::builder::template::NoClipU;
 use rust_d3_geo::projection::builder::template::ResampleNoClipC;
 use rust_d3_geo::projection::builder::template::ResampleNoClipU;
+use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::projection::ProjectionRawBase;
 use rust_d3_geo::projection::Rotate;
 use rust_d3_geo::stream::Connected;
@@ -68,30 +69,34 @@ fn draw() -> String {
         StreamDrainStub<f64>,
         InterpolateCircle<
             StreamDrainStub<f64>,
-            ResampleNoClipC<StreamDrainStub<f64>, Orthographic<StreamDrainStub<f64>, f64>, f64>,
+            ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
             f64,
         >,
         LineCircle<Buffer<f64>, Buffer<f64>, Connected<Buffer<f64>>, f64>,
         LineCircle<
             StreamDrainStub<f64>,
-            ResampleNoClipC<StreamDrainStub<f64>, Orthographic<StreamDrainStub<f64>, f64>, f64>,
+            ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
             Connected<
-                ResampleNoClipC<StreamDrainStub<f64>, Orthographic<StreamDrainStub<f64>, f64>, f64>,
+                ResampleNoClipC<
+                    StreamDrainStub<f64>,
+                    Stereographic<StreamDrainStub<f64>, f64>,
+                    f64,
+                >,
             >,
             f64,
         >,
         LineCircle<
             StreamDrainStub<f64>,
-            ResampleNoClipC<StreamDrainStub<f64>, Orthographic<StreamDrainStub<f64>, f64>, f64>,
+            ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
             Unconnected,
             f64,
         >,
         NoClipC<StreamDrainStub<f64>, f64>,
         NoClipU<StreamDrainStub<f64>, f64>,
-        ResampleNoClipC<StreamDrainStub<f64>, Orthographic<StreamDrainStub<f64>, f64>, f64>,
+        Stereographic<StreamDrainStub<f64>, f64>,
         PVCircle<f64>,
-        ResampleNoClipC<StreamDrainStub<f64>, Orthographic<StreamDrainStub<f64>, f64>, f64>,
-        ResampleNoClipU<StreamDrainStub<f64>, Orthographic<StreamDrainStub<f64>, f64>, f64>,
+        ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
+        ResampleNoClipU<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
         f64,
     > = GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
 
