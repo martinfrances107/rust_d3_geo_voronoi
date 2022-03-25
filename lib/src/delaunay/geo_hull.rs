@@ -17,12 +17,7 @@ where
         let ex_in: Vec<Coordinate<T>> = tri
             .iter()
             .map(|i: &usize| {
-                let index;
-                if i > &points.len() {
-                    index = 0;
-                } else {
-                    index = *i;
-                };
+                let index: usize = if i > &points.len() { 0 } else { *i };
                 points[index]
             })
             .collect();

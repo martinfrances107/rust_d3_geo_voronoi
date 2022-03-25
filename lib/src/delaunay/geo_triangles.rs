@@ -24,9 +24,6 @@ where
     RC: Clone,
     RU: Clone,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
-    // StreamNode<Buffer<T>, LINE, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
-    // StreamNode<DRAIN, LINE, ResampleNode<DRAIN, PR, PostClipNode<DRAIN, DRAIN, T>, T>, T>:
-    //     Stream<EP = DRAIN, T = T>,
 {
     let Delaunay { triangles, .. } = delaunay;
     if triangles.is_empty() {

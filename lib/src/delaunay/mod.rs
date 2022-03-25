@@ -16,15 +16,9 @@ mod geo_triangles;
 mod geo_urquhart;
 mod o_midpoint;
 
-use rust_d3_geo::projection::builder::template::NoClipC;
-use rust_d3_geo::projection::builder::template::NoClipU;
-use rust_d3_geo::projection::builder::template::ResampleNoClipC;
-use rust_d3_geo::projection::builder::template::ResampleNoClipU;
-use rust_d3_geo::projection::stereographic::Stereographic;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::collections::HashSet;
-use std::fmt::Debug;
 use std::ops::AddAssign;
 use std::rc::Rc;
 
@@ -51,6 +45,11 @@ use rust_d3_geo::clip::buffer::Buffer;
 use rust_d3_geo::clip::circle::interpolate::Interpolate as InterpolateCircle;
 use rust_d3_geo::clip::circle::line::Line as LineCircle;
 use rust_d3_geo::clip::circle::pv::PV as PVCircle;
+use rust_d3_geo::projection::builder::template::NoClipC;
+use rust_d3_geo::projection::builder::template::NoClipU;
+use rust_d3_geo::projection::builder::template::ResampleNoClipC;
+use rust_d3_geo::projection::builder::template::ResampleNoClipU;
+use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::stream::Connected;
 use rust_d3_geo::stream::Stream;
 use rust_d3_geo::stream::Unconnected;

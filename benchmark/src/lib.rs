@@ -37,7 +37,6 @@ use web_sys::Document;
 use web_sys::PerformanceMeasure;
 
 use rust_d3_geo::clip::circle::interpolate::Interpolate as InterpolateCircle;
-use rust_d3_geo::clip::circle::line::Line;
 use rust_d3_geo::clip::circle::line::Line as LineCircle;
 use rust_d3_geo::clip::circle::pv::PV as PVCircle;
 use rust_d3_geo::data_object::FeatureCollection;
@@ -92,20 +91,6 @@ fn get_document() -> Result<Document, JsValue> {
     Ok(window.document().unwrap())
 }
 
-fn window() -> web_sys::Window {
-    web_sys::window().expect("no global `window` exists")
-}
-
-fn document() -> web_sys::Document {
-    window()
-        .document()
-        .expect("should have a document on window")
-}
-
-fn body() -> web_sys::HtmlElement {
-    document().body().expect("document should have a body")
-}
-
 type GV<'a> = GeoVoronoi<
     'a,
     StreamDrainStub<f64>,
@@ -151,7 +136,6 @@ pub fn run() -> Result<(), JsValue> {
 
 // Draw dot.
 fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
-    let document = get_document()?;
     let size_range = document.get_element_by_id("size-range");
     let size_label = document.get_element_by_id("size-label");
     let perf = document

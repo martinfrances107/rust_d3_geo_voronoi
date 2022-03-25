@@ -77,6 +77,26 @@ where
     Func(Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>),
 }
 
+type XYReturnDefault<'a, DRAIN, T> = XYReturn<
+    'a,
+    DRAIN,
+    InterpolateCircle<DRAIN, ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
+    LineCircle<Buffer<T>, Buffer<T>, Connected<Buffer<T>>, T>,
+    LineCircle<
+        DRAIN,
+        ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,
+        Connected<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>>,
+        T,
+    >,
+    LineCircle<DRAIN, ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, Unconnected, T>,
+    NoClipC<DRAIN, T>,
+    NoClipU<DRAIN, T>,
+    PVCircle<T>,
+    ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,
+    ResampleNoClipU<DRAIN, Stereographic<DRAIN, T>, T>,
+    T,
+>;
+
 #[derive(Debug)]
 struct TriStruct<T>
 where
@@ -197,8 +217,6 @@ where
     /// If the input is a collection we act only on the first element in the collection.
     /// by copying over the data into a new single element before proceeding.
     pub fn new(data: Option<Geometry<T>>) -> Self {
-        let mut v: Self;
-
         // let delaunay_return: Option<GeoDelaunay> = None;
 
         // On finding a Features Collection take the first element only, drop other elements.
@@ -218,7 +236,7 @@ where
         //     }
         // };
 
-        v = GeoVoronoi {
+        let mut v = GeoVoronoi {
             data,
             ..GeoVoronoi::default()
         };
@@ -268,25 +286,7 @@ where
     pub fn x(
         mut self,
         f: Option<Box<impl Fn(&dyn Centroid<Output = Point<T>>) -> T + 'static>>,
-    ) -> XYReturn<
-        'a,
-        DRAIN,
-        InterpolateCircle<DRAIN, ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
-        LineCircle<Buffer<T>, Buffer<T>, Connected<Buffer<T>>, T>,
-        LineCircle<
-            DRAIN,
-            ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,
-            Connected<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>>,
-            T,
-        >,
-        LineCircle<DRAIN, ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, Unconnected, T>,
-        NoClipC<DRAIN, T>,
-        NoClipU<DRAIN, T>,
-        PVCircle<T>,
-        ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,
-        ResampleNoClipU<DRAIN, Stereographic<DRAIN, T>, T>,
-        T,
-    > {
+    ) -> XYReturnDefault<'a, DRAIN, T> {
         return match f {
             None => XYReturn::Func(self.vx),
             Some(f) => {
@@ -300,25 +300,7 @@ where
     pub fn y(
         mut self,
         f: Option<Box<impl Fn(&dyn Centroid<Output = Point<T>>) -> T + 'static>>,
-    ) -> XYReturn<
-        'a,
-        DRAIN,
-        InterpolateCircle<DRAIN, ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
-        LineCircle<Buffer<T>, Buffer<T>, Connected<Buffer<T>>, T>,
-        LineCircle<
-            DRAIN,
-            ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,
-            Connected<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>>,
-            T,
-        >,
-        LineCircle<DRAIN, ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, Unconnected, T>,
-        NoClipC<DRAIN, T>,
-        NoClipU<DRAIN, T>,
-        PVCircle<T>,
-        ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,
-        ResampleNoClipU<DRAIN, Stereographic<DRAIN, T>, T>,
-        T,
-    > {
+    ) -> XYReturnDefault<'a, DRAIN, T> {
         return match f {
             None => XYReturn::Func(self.vy),
             Some(f) => {

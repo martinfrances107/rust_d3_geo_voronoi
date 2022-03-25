@@ -140,9 +140,6 @@ where
                 match p.len() {
                     0 | 1 => Vec::new(),
                     2 => {
-                        let i0;
-                        let i1;
-
                         let r0 = o_midpoint(
                             &points[(poly[0].3).0],
                             &points[(poly[0].3).1],
@@ -154,8 +151,8 @@ where
                             &self.centers[p[0]],
                         );
 
-                        i0 = self.supplement(&r0);
-                        i1 = self.supplement(&r1);
+                        let i0 = self.supplement(&r0);
+                        let i1 = self.supplement(&r1);
 
                         return vec![p[0], i1, p[1], i0];
                     }

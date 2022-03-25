@@ -1,10 +1,5 @@
 #![allow(clippy::many_single_char_names)]
 
-use rust_d3_geo::projection::builder::template::NoClipC;
-use rust_d3_geo::projection::builder::template::NoClipU;
-use rust_d3_geo::projection::builder::template::ResampleNoClipC;
-use rust_d3_geo::projection::builder::template::ResampleNoClipU;
-use rust_d3_geo::projection::resampler::resample::Resample;
 use std::cmp;
 use std::fmt::Debug;
 use std::ops::AddAssign;
@@ -12,7 +7,8 @@ use std::rc::Rc;
 
 use approx::AbsDiffEq;
 use delaunator::EMPTY;
-use geo::{CoordFloat, Coordinate};
+use geo::CoordFloat;
+use geo::Coordinate;
 use num_traits::float::FloatConst;
 use num_traits::AsPrimitive;
 use num_traits::FromPrimitive;
@@ -22,7 +18,12 @@ use rust_d3_geo::clip::buffer::Buffer;
 use rust_d3_geo::clip::circle::interpolate::Interpolate as InterpolateCircle;
 use rust_d3_geo::clip::circle::line::Line as LineCircle;
 use rust_d3_geo::clip::circle::pv::PV as PVCircle;
+use rust_d3_geo::projection::builder::template::NoClipC;
+use rust_d3_geo::projection::builder::template::NoClipU;
+use rust_d3_geo::projection::builder::template::ResampleNoClipC;
+use rust_d3_geo::projection::builder::template::ResampleNoClipU;
 use rust_d3_geo::projection::stereographic::Stereographic;
+use rust_d3_geo::projection::ProjectionRawBase;
 use rust_d3_geo::projection::Rotate;
 use rust_d3_geo::projection::Scale;
 use rust_d3_geo::projection::Translate;
@@ -31,8 +32,6 @@ use rust_d3_geo::stream::Connected;
 use rust_d3_geo::stream::Stream;
 use rust_d3_geo::stream::Unconnected;
 use rust_d3_geo::Transform;
-
-use crate::rust_d3_geo::projection::ProjectionRawBase;
 
 type DReturn<DRAIN, PCNC, PCNU, PR, RC, RU, T> = Delaunay<
     DRAIN,
