@@ -141,7 +141,6 @@ where
     pub find: FindReturn<'a, T>,
 }
 
-// impl<'a, DRAIN, T> GeoDelaunay<'a, DRAIN, LineCircle<T>, T>
 impl<'a, DRAIN, T>
     GeoDelaunay<
         'a,
@@ -165,8 +164,6 @@ impl<'a, DRAIN, T>
     >
 where
     DRAIN: Stream<EP = DRAIN, T = T> + Default,
-    // PR: Transform<T = T>,
-    // PV: Clone,
     T: AbsDiffEq<Epsilon = T>
         + AddAssign
         + AsPrimitive<T>

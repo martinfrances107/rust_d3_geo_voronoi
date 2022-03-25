@@ -1,7 +1,3 @@
-use rust_d3_geo::projection::builder::template::NoClipC;
-use rust_d3_geo::projection::builder::template::NoClipU;
-use rust_d3_geo::projection::builder::template::ResampleNoClipC;
-use rust_d3_geo::projection::builder::template::ResampleNoClipU;
 use std::borrow::Borrow;
 use std::fmt::Debug;
 use std::fmt::Display;
@@ -28,19 +24,19 @@ use rust_d3_geo::clip::buffer::Buffer;
 use rust_d3_geo::clip::circle::interpolate::Interpolate as InterpolateCircle;
 use rust_d3_geo::clip::circle::line::Line as LineCircle;
 use rust_d3_geo::clip::circle::pv::PV as PVCircle;
-use rust_d3_geo::stream::Unconnected;
-use rust_d3_geo::Transform;
-// use rust_d3_geo::clip::post_clip_node::PostClipNode;
-// use rust_d3_geo::clip::Line;
 use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::data_object::FeatureProperty;
 use rust_d3_geo::data_object::Features;
 use rust_d3_geo::distance::distance;
-// use rust_d3_geo::projection::resampler::ResampleNode;
+use rust_d3_geo::projection::builder::template::NoClipC;
+use rust_d3_geo::projection::builder::template::NoClipU;
+use rust_d3_geo::projection::builder::template::ResampleNoClipC;
+use rust_d3_geo::projection::builder::template::ResampleNoClipU;
 use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::stream::Connected;
-// use rust_d3_geo::projection::stream_node::StreamNode;
 use rust_d3_geo::stream::Stream;
+use rust_d3_geo::stream::Unconnected;
+use rust_d3_geo::Transform;
 
 use crate::delaunay::excess::excess;
 
@@ -61,13 +57,6 @@ where
     RC: Clone,
     RU: Clone,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + Display + CoordFloat + FloatConst,
-    // StreamNode<Buffer<T>, LINE, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
-    // StreamNode<
-    //     DRAIN,
-    //     LINE,
-    //     ResampleNode<DRAIN, Stereographic<DRAIN, T>, PostClipNode<DRAIN, DRAIN, T>, T>,
-    //     T,
-    // >: Stream<EP = DRAIN, T = T>,
 {
     /// Voronoi
     Voronoi(
@@ -153,13 +142,6 @@ where
     RU: Clone,
     RC: Clone,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
-    // StreamNode<Buffer<T>, LINE, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
-    // StreamNode<
-    //     DRAIN,
-    //     LINE,
-    //     ResampleNode<DRAIN, Stereographic<DRAIN, T>, PostClipNode<DRAIN, DRAIN, T>, T>,
-    //     T,
-    // >: Stream<EP = DRAIN, T = T>,
 {
     fn default() -> Self {
         GeoVoronoi {
@@ -206,13 +188,6 @@ where
         + FloatConst
         + FromPrimitive
         + HasKernel,
-    // StreamNode<Buffer<T>, LineCircle<T>, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
-    // StreamNode<
-    //     DRAIN,
-    //     LineCircle<T>,
-    //     ResampleNode<DRAIN, Stereographic<DRAIN, T>, PostClipNode<DRAIN, DRAIN, T>, T>,
-    //     T,
-    // >: Stream<EP = DRAIN, T = T>,
 {
     /// If the input is a collection we act only on the first element in the collection.
     /// by copying over the data into a new single element before proceeding.
