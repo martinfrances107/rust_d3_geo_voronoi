@@ -13,6 +13,15 @@ extern crate js_sys;
 extern crate rand;
 extern crate web_sys;
 
+use rust_d3_geo::clip::buffer::Buffer;
+use rust_d3_geo::projection::builder::template::NoClipC;
+use rust_d3_geo::projection::builder::template::NoClipU;
+use rust_d3_geo::projection::builder::template::ResampleNoClipC;
+use rust_d3_geo::projection::builder::template::ResampleNoClipU;
+use rust_d3_geo::projection::stereographic::Stereographic;
+use rust_d3_geo::projection::Rotate;
+use rust_d3_geo::stream::Connected;
+use rust_d3_geo::stream::Unconnected;
 use std::cell::RefCell;
 use std::iter::repeat_with;
 use std::rc::Rc;
@@ -27,14 +36,17 @@ use wasm_bindgen::JsCast;
 use web_sys::Document;
 use web_sys::PerformanceMeasure;
 
+use rust_d3_geo::clip::circle::interpolate::Interpolate as InterpolateCircle;
 use rust_d3_geo::clip::circle::line::Line;
+use rust_d3_geo::clip::circle::line::Line as LineCircle;
+use rust_d3_geo::clip::circle::pv::PV as PVCircle;
 use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::path::builder::Builder as PathBuilder;
 use rust_d3_geo::path::context::Context;
 use rust_d3_geo::projection::orthographic::Orthographic;
+use rust_d3_geo::projection::ProjectionRawBase;
 use rust_d3_geo::stream::StreamDrainStub;
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
-
 mod dom_macros;
 
 #[wasm_bindgen]
@@ -93,6 +105,38 @@ fn document() -> web_sys::Document {
 fn body() -> web_sys::HtmlElement {
     document().body().expect("document should have a body")
 }
+
+type GV<'a> = GeoVoronoi<
+    'a,
+    StreamDrainStub<f64>,
+    InterpolateCircle<
+        StreamDrainStub<f64>,
+        ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
+        f64,
+    >,
+    LineCircle<Buffer<f64>, Buffer<f64>, Connected<Buffer<f64>>, f64>,
+    LineCircle<
+        StreamDrainStub<f64>,
+        ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
+        Connected<
+            ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
+        >,
+        f64,
+    >,
+    LineCircle<
+        StreamDrainStub<f64>,
+        ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
+        Unconnected,
+        f64,
+    >,
+    NoClipC<StreamDrainStub<f64>, f64>,
+    NoClipU<StreamDrainStub<f64>, f64>,
+    Stereographic<StreamDrainStub<f64>, f64>,
+    PVCircle<f64>,
+    ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
+    ResampleNoClipU<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
+    f64,
+>;
 
 /// Entry point.
 #[wasm_bindgen(start)]
@@ -157,9 +201,6 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
     context.set_stroke_style(&"black".into());
     context.fill_rect(0.0, 0.0, width, height);
 
-    let cs: Context<f64> = Context::new(context.clone());
-    let path_builder = PathBuilder::new(cs);
-
     let ortho_builder = Orthographic::builder();
 
     let sites = MultiPoint(
@@ -175,8 +216,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
             .collect(),
     );
 
-    let mut gv: GeoVoronoi<StreamDrainStub<f64>, Line<f64>, f64> =
-        GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
+    let mut gv: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
 
     // let ortho = ortho_builder.rotate(&[0_f64, 0_f64, 0_f64]).build();
     // let mut path = pb.build(ortho);
@@ -202,6 +242,9 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
         performance
             .mark("render_start")
             .expect("Failed render start");
+
+        let cs: Context<f64> = Context::new(&context);
+        let path_builder = PathBuilder::new(cs);
 
         let ob = ortho_builder.clone();
         let pb = path_builder.clone();
