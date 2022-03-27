@@ -5,7 +5,7 @@ use rust_d3_geo::projection::builder::template::ResampleNoClipC;
 use rust_d3_geo::projection::builder::template::ResampleNoClipU;
 use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::projection::ProjectionRawBase;
-use rust_d3_geo::projection::Rotate;
+use rust_d3_geo::projection::RotateSet;
 use rust_d3_geo::stream::Connected;
 use rust_d3_geo::stream::Unconnected;
 use std::fs::File;

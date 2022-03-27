@@ -53,7 +53,6 @@ use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::stream::Connected;
 use rust_d3_geo::stream::Stream;
 use rust_d3_geo::stream::Unconnected;
-use rust_d3_geo::Transform;
 
 // #[derive(Default, Debug)]
 // pub struct Delaunay {
@@ -103,17 +102,6 @@ type FindReturn<'a, T> = Box<dyn Fn(&Coordinate<T>, Option<usize>) -> Option<usi
 #[derivative(Debug)]
 pub struct GeoDelaunay<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
 where
-    DRAIN: Stream<EP = DRAIN, T = T>,
-    I: Clone,
-    LB: Clone,
-    LC: Clone,
-    LU: Clone,
-    PCNC: Clone,
-    PCNU: Clone,
-    PR: Transform<T = T>,
-    PV: Clone,
-    RC: Clone,
-    RU: Clone,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
 {
     /// The wrapped delaunay object.
@@ -163,7 +151,7 @@ impl<'a, DRAIN, T>
         T,
     >
 where
-    DRAIN: Stream<EP = DRAIN, T = T> + Default,
+    DRAIN: Clone + Stream<EP = DRAIN, T = T> + Default,
     T: AbsDiffEq<Epsilon = T>
         + AddAssign
         + AsPrimitive<T>

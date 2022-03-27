@@ -47,15 +47,15 @@ use super::delaunay::GeoDelaunay;
 pub enum XYReturn<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, PV, RC, RU, T>
 where
     DRAIN: Stream<EP = DRAIN, T = T>,
-    I: Clone,
-    LB: Clone,
-    LC: Clone,
-    LU: Clone,
-    PCNC: Clone,
-    PCNU: Clone,
-    PV: Clone,
-    RC: Clone,
-    RU: Clone,
+    // I: Clone,
+    // LB: Clone,
+    // LC: Clone,
+    // LU: Clone,
+    // PCNC: Clone,
+    // PCNU: Clone,
+    // PV: Clone,
+    // RC: Clone,
+    // RU: Clone,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + Display + CoordFloat + FloatConst,
 {
     /// Voronoi
@@ -101,16 +101,16 @@ where
 pub struct GeoVoronoi<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
 where
     DRAIN: Stream<EP = DRAIN, T = T>,
-    I: Clone,
-    LB: Clone,
-    LC: Clone,
-    LU: Clone,
-    PCNC: Clone,
-    PCNU: Clone,
-    PR: Transform<T = T>,
-    PV: Clone,
-    RU: Clone,
-    RC: Clone,
+    // I: Clone,
+    // LB: Clone,
+    // LC: Clone,
+    // LU: Clone,
+    // PCNC: Clone,
+    // PCNU: Clone,
+    // PR: Transform<T = T>,
+    // PV: Clone,
+    // RU: Clone,
+    // RC: Clone,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
     /// The wrapped GeoDelaunay instance.
@@ -179,7 +179,7 @@ impl<'a, DRAIN, T>
         T,
     >
 where
-    DRAIN: Stream<EP = DRAIN, T = T> + Default,
+    DRAIN: Clone + Stream<EP = DRAIN, T = T> + Default,
     T: AbsDiffEq<Epsilon = T>
         + AddAssign
         + AsPrimitive<T>
