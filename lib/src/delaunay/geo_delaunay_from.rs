@@ -1,7 +1,7 @@
 #![allow(clippy::many_single_char_names)]
 
-use crate::rust_d3_geo::projection::RotateSet;
 use std::cmp;
+use std::fmt::Debug;
 use std::ops::AddAssign;
 use std::rc::Rc;
 
@@ -24,7 +24,7 @@ use rust_d3_geo::projection::builder::template::ResampleNoClipC;
 use rust_d3_geo::projection::builder::template::ResampleNoClipU;
 use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::projection::ProjectionRawBase;
-// use rust_d3_geo::projection::Rotate;
+use rust_d3_geo::projection::RotateSet;
 use rust_d3_geo::projection::ScaleSet;
 use rust_d3_geo::projection::TranslateSet;
 use rust_d3_geo::rot::rotation::Rotation;
@@ -35,7 +35,7 @@ use rust_d3_geo::Transform;
 
 type DReturn<DRAIN, PCNC, PCNU, PR, RC, RU, T> = Delaunay<
     DRAIN,
-    InterpolateCircle<DRAIN, RC, T>,
+    InterpolateCircle<T>,
     LineCircle<Buffer<T>, Buffer<T>, Connected<Buffer<T>>, T>,
     LineCircle<DRAIN, RC, Connected<RC>, T>,
     LineCircle<DRAIN, RC, Unconnected, T>,
@@ -63,11 +63,7 @@ pub fn geo_delaunay_from<DRAIN, PCNC, PCNU, RC, RU, T>(
     >,
 >
 where
-    DRAIN: Clone + Stream<EP = DRAIN, T = T> + Default,
-    // PCNC: Clone + Debug,
-    // PCNU: Clone + Debug,
-    // RC: Clone + Debug,
-    // RU: Clone,
+    DRAIN: Clone + Debug + Stream<EP = DRAIN, T = T> + Default,
     T: AbsDiffEq<Epsilon = T>
         + AddAssign
         + AsPrimitive<T>

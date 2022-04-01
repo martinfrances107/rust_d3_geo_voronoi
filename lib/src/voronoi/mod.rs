@@ -69,7 +69,7 @@ where
 type XYReturnDefault<'a, DRAIN, T> = XYReturn<
     'a,
     DRAIN,
-    InterpolateCircle<DRAIN, ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
+    InterpolateCircle<T>,
     LineCircle<Buffer<T>, Buffer<T>, Connected<Buffer<T>>, T>,
     LineCircle<
         DRAIN,
@@ -161,7 +161,7 @@ impl<'a, DRAIN, T>
     GeoVoronoi<
         'a,
         DRAIN,
-        InterpolateCircle<DRAIN, ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
+        InterpolateCircle<T>,
         LineCircle<Buffer<T>, Buffer<T>, Connected<Buffer<T>>, T>,
         LineCircle<
             DRAIN,
@@ -179,7 +179,7 @@ impl<'a, DRAIN, T>
         T,
     >
 where
-    DRAIN: Clone + Stream<EP = DRAIN, T = T> + Default,
+    DRAIN: Clone + Debug + Stream<EP = DRAIN, T = T> + Default,
     T: AbsDiffEq<Epsilon = T>
         + AddAssign
         + AsPrimitive<T>
