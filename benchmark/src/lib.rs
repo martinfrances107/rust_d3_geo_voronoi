@@ -150,7 +150,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
         .unwrap()
         .dyn_into::<web_sys::CanvasRenderingContext2d>()?;
 
-    let context = Rc::new(context_raw);
+    let context = context_raw;
 
     // Holds elapsed samples (use to compute the standard deviation).
     let mut elapsed_array: [f64; 200] = [0_f64; 200];
@@ -223,7 +223,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
             .mark("render_start")
             .expect("Failed render start");
 
-        let cs: Context<f64> = Context::new(&context);
+        let cs: Context<f64> = Context::new(context.clone());
         let path_builder = PathBuilder::new(cs);
 
         let ob = ortho_builder.clone();
