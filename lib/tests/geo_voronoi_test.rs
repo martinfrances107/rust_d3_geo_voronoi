@@ -153,7 +153,7 @@ mod geo_voronoi_test {
                 match g {
                     Geometry::Polygon(polygon) => {
                         let ls = polygon.exterior();
-                        let u = ls.points_iter().next().unwrap();
+                        let u = ls.points().next().unwrap();
                         let v = Point::new(-175f64, -4.981069f64);
                         assert!((u.x() - v.x()).abs() < 1e-6f64);
                         assert!((u.y() - v.y()).abs() < 1e-6f64);
