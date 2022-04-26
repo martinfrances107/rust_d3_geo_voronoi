@@ -227,7 +227,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
         let path_builder = PathBuilder::new(cs);
 
         let ob = ortho_builder.clone();
-        let pb = path_builder.clone();
+        let pb = path_builder;
         let t0 = performance.now();
         let ortho = ob.rotate(&[t0 / 150_f64, 0_f64, 0_f64]).build();
         let mut path = pb.build(ortho);
