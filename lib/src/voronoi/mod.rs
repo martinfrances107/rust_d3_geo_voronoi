@@ -46,16 +46,7 @@ use super::delaunay::GeoDelaunay;
 #[allow(missing_debug_implementations)]
 pub enum XYReturn<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, PV, RC, RU, T>
 where
-    DRAIN: Stream<EP = DRAIN, T = T>,
-    // I: Clone,
-    // LB: Clone,
-    // LC: Clone,
-    // LU: Clone,
-    // PCNC: Clone,
-    // PCNU: Clone,
-    // PV: Clone,
-    // RC: Clone,
-    // RU: Clone,
+    // DRAIN: Stream<EP = DRAIN, T = T>,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + Display + CoordFloat + FloatConst,
 {
     /// Voronoi
@@ -100,17 +91,6 @@ where
 /// Holds data centered on a GeoDelauany instance.
 pub struct GeoVoronoi<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
 where
-    DRAIN: Stream<EP = DRAIN, T = T>,
-    // I: Clone,
-    // LB: Clone,
-    // LC: Clone,
-    // LU: Clone,
-    // PCNC: Clone,
-    // PCNU: Clone,
-    // PR: Transform<T = T>,
-    // PV: Clone,
-    // RU: Clone,
-    // RC: Clone,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
     /// The wrapped GeoDelaunay instance.
@@ -130,17 +110,6 @@ where
 impl<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T> Default
     for GeoVoronoi<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
 where
-    DRAIN: Stream<EP = DRAIN, T = T> + Default,
-    I: Clone,
-    LB: Clone,
-    LC: Clone,
-    LU: Clone,
-    PCNC: Clone,
-    PCNU: Clone,
-    PR: Transform<T = T>,
-    PV: Clone,
-    RU: Clone,
-    RC: Clone,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
     fn default() -> Self {

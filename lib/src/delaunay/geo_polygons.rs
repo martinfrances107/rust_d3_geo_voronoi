@@ -14,7 +14,6 @@ use rust_d3_geo::cartesian::spherical;
 use super::cartesian::cartesian;
 use super::o_midpoint::o_midpoint;
 
-// let mut tuple_vec: Vec<(usize, usize, usize, (usize, usize, usize))>;
 type TupleVec = Vec<(usize, usize, usize, (usize, usize, usize))>;
 
 #[derive(Debug)]

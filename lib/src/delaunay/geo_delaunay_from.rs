@@ -63,7 +63,7 @@ pub fn geo_delaunay_from<DRAIN, PCNC, PCNU, RC, RU, T>(
     >,
 >
 where
-    DRAIN: Clone + Debug + Stream<EP = DRAIN, T = T> + Default,
+    DRAIN: Clone + Debug + Default + Stream<EP = DRAIN, T = T>,
     T: AbsDiffEq<Epsilon = T>
         + AddAssign
         + AsPrimitive<T>
