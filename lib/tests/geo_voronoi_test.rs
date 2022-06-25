@@ -1,3 +1,4 @@
+#![allow(clippy::pedantic)]
 #[cfg(not(tarpaulin_include))]
 #[cfg(test)]
 mod geo_voronoi_test {
@@ -28,6 +29,7 @@ mod geo_voronoi_test {
     use rust_d3_geo::data_object::FeatureProperty;
     use rust_d3_geo::stream::StreamDrainStub;
     use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
+    // use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 
     type GV<'a> = GeoVoronoi<
         'a,
@@ -331,11 +333,26 @@ mod geo_voronoi_test {
         ]);
         let mut voro: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
 
-        assert_eq!(voro.find(&Coordinate { x: 1.0, y: 1.0 }, None), Some(4));
+        assert_eq!(
+            voro.find(
+                &Coordinate {
+                    x: 1.0_f64,
+                    y: 1.0_f64
+                },
+                None
+            ),
+            Some(4)
+        );
         // TODO bug ... strange bug/hang ... unless I define voro twice.
         let mut voro2: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
         assert_eq!(
-            voro2.find(&Coordinate { x: 1.0, y: 1.0 }, Some(4.0)),
+            voro2.find(
+                &Coordinate {
+                    x: 1.0_f64,
+                    y: 1.0_f64
+                },
+                Some(4.0)
+            ),
             Some(4)
         );
     }

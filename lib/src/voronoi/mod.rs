@@ -6,6 +6,7 @@ use std::rc::Rc;
 
 use approx::AbsDiffEq;
 use derivative::*;
+use float_next_after::NextAfter;
 use geo::centroid::Centroid;
 use geo::kernels::HasKernel;
 use geo::line_string;
@@ -17,9 +18,10 @@ use geo::MultiLineString;
 use geo::Point;
 use geo::Polygon;
 use num_traits::AsPrimitive;
+use num_traits::Bounded;
 use num_traits::FloatConst;
 use num_traits::FromPrimitive;
-
+use num_traits::Signed;
 use rust_d3_geo::clip::buffer::Buffer;
 use rust_d3_geo::clip::circle::interpolate::Interpolate as InterpolateCircle;
 use rust_d3_geo::clip::circle::line::Line as LineCircle;
@@ -152,11 +154,14 @@ where
     T: AbsDiffEq<Epsilon = T>
         + AddAssign
         + AsPrimitive<T>
+        + Bounded
         + CoordFloat
         + Display
         + FloatConst
         + FromPrimitive
-        + HasKernel,
+        + HasKernel
+        + Signed
+        + NextAfter<T>,
 {
     /// If the input is a collection we act only on the first element in the collection.
     /// by copying over the data into a new single element before proceeding.
