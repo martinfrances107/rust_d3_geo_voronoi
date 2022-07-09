@@ -13,23 +13,22 @@ mod geo_voronoi_test {
     use geo::MultiPoint;
     use geo::Point;
     use pretty_assertions::assert_eq;
+
     use rust_d3_geo::clip::buffer::Buffer;
+    use rust_d3_geo::clip::circle::interpolate::Interpolate as InterpolateCircle;
+    use rust_d3_geo::clip::circle::line::Line as LineCircle;
+    use rust_d3_geo::clip::circle::pv::PV as PVCircle;
+    use rust_d3_geo::data_object::FeatureCollection;
+    use rust_d3_geo::data_object::FeatureProperty;
     use rust_d3_geo::projection::builder::template::NoClipC;
     use rust_d3_geo::projection::builder::template::NoClipU;
     use rust_d3_geo::projection::builder::template::ResampleNoClipC;
     use rust_d3_geo::projection::builder::template::ResampleNoClipU;
     use rust_d3_geo::projection::stereographic::Stereographic;
     use rust_d3_geo::stream::Connected;
-    use rust_d3_geo::stream::Unconnected;
-
-    use rust_d3_geo::clip::circle::interpolate::Interpolate as InterpolateCircle;
-    use rust_d3_geo::clip::circle::line::Line as LineCircle;
-    use rust_d3_geo::clip::circle::pv::PV as PVCircle;
-    use rust_d3_geo::data_object::FeatureCollection;
-    use rust_d3_geo::data_object::FeatureProperty;
     use rust_d3_geo::stream::StreamDrainStub;
+    use rust_d3_geo::stream::Unconnected;
     use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
-    // use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 
     type GV<'a> = GeoVoronoi<
         'a,

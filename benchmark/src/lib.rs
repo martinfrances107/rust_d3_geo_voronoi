@@ -9,19 +9,11 @@
 //! The polygons are mis-shaped
 //!
 //! See the README.md.
+use rust_d3_geo::projection::Build;
 extern crate js_sys;
 extern crate rand;
 extern crate web_sys;
 
-use rust_d3_geo::clip::buffer::Buffer;
-use rust_d3_geo::projection::builder::template::NoClipC;
-use rust_d3_geo::projection::builder::template::NoClipU;
-use rust_d3_geo::projection::builder::template::ResampleNoClipC;
-use rust_d3_geo::projection::builder::template::ResampleNoClipU;
-use rust_d3_geo::projection::stereographic::Stereographic;
-use rust_d3_geo::projection::RotateSet;
-use rust_d3_geo::stream::Connected;
-use rust_d3_geo::stream::Unconnected;
 use std::cell::RefCell;
 use std::iter::repeat_with;
 use std::rc::Rc;
@@ -36,15 +28,24 @@ use wasm_bindgen::JsCast;
 use web_sys::Document;
 use web_sys::PerformanceMeasure;
 
+use rust_d3_geo::clip::buffer::Buffer;
 use rust_d3_geo::clip::circle::interpolate::Interpolate as InterpolateCircle;
 use rust_d3_geo::clip::circle::line::Line as LineCircle;
 use rust_d3_geo::clip::circle::pv::PV as PVCircle;
 use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::path::builder::Builder as PathBuilder;
 use rust_d3_geo::path::context::Context;
+use rust_d3_geo::projection::builder::template::NoClipC;
+use rust_d3_geo::projection::builder::template::NoClipU;
+use rust_d3_geo::projection::builder::template::ResampleNoClipC;
+use rust_d3_geo::projection::builder::template::ResampleNoClipU;
 use rust_d3_geo::projection::orthographic::Orthographic;
+use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::projection::ProjectionRawBase;
+use rust_d3_geo::projection::Rotate;
+use rust_d3_geo::stream::Connected;
 use rust_d3_geo::stream::StreamDrainStub;
+use rust_d3_geo::stream::Unconnected;
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 mod dom_macros;
 
