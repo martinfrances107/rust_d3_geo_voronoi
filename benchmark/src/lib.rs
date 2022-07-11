@@ -96,9 +96,8 @@ type GV<'a> = GeoVoronoi<
     'a,
     StreamDrainStub<f64>,
     InterpolateCircle<f64>,
-    LineCircle<Buffer<f64>, Buffer<f64>, Connected<Buffer<f64>>, f64>,
+    LineCircle<Buffer<f64>, Connected<Buffer<f64>>, f64>,
     LineCircle<
-        StreamDrainStub<f64>,
         ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
         Connected<
             ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
@@ -106,13 +105,12 @@ type GV<'a> = GeoVoronoi<
         f64,
     >,
     LineCircle<
-        StreamDrainStub<f64>,
         ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
         Unconnected,
         f64,
     >,
-    NoClipC<StreamDrainStub<f64>, f64>,
-    NoClipU<StreamDrainStub<f64>, f64>,
+    NoClipC<StreamDrainStub<f64>>,
+    NoClipU<StreamDrainStub<f64>>,
     Stereographic<StreamDrainStub<f64>, f64>,
     PVCircle<f64>,
     ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
