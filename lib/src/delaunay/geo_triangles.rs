@@ -4,8 +4,8 @@ use num_traits::FloatConst;
 
 use rust_d3_delaunay::delaunay::Delaunay;
 
-pub fn geo_triangles<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>(
-    delaunay: &Delaunay<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>,
+pub fn geo_triangles<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>(
+    delaunay: &Delaunay<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>,
 ) -> Vec<[usize; 3]>
 where
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,

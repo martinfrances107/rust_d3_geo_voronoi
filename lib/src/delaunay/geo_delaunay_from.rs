@@ -34,13 +34,12 @@ use rust_d3_geo::stream::Stream;
 use rust_d3_geo::stream::Unconnected;
 use rust_d3_geo::Transform;
 
-type DReturn<DRAIN, PCNC, PCNU, PR, RC, RU, T> = Delaunay<
+type DReturn<DRAIN, PCNU, PR, RC, RU, T> = Delaunay<
     DRAIN,
     InterpolateCircle<T>,
     LineCircle<Buffer<T>, Connected<Buffer<T>>, T>,
     LineCircle<RC, Connected<RC>, T>,
     LineCircle<RC, Unconnected, T>,
-    PCNC,
     PCNU,
     PR,
     PVCircle<T>,
@@ -55,7 +54,6 @@ pub fn geo_delaunay_from<DRAIN, PCNC, PCNU, RC, RU, T>(
 ) -> Option<
     DReturn<
         DRAIN,
-        NoClipC<DRAIN>,
         NoClipU<DRAIN>,
         Stereographic<DRAIN, T>,
         ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,

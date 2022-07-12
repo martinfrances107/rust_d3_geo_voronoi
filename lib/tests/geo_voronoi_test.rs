@@ -20,7 +20,6 @@ mod geo_voronoi_test {
     use rust_d3_geo::clip::circle::pv::PV as PVCircle;
     use rust_d3_geo::data_object::FeatureCollection;
     use rust_d3_geo::data_object::FeatureProperty;
-    use rust_d3_geo::projection::builder::template::NoClipC;
     use rust_d3_geo::projection::builder::template::NoClipU;
     use rust_d3_geo::projection::builder::template::ResampleNoClipC;
     use rust_d3_geo::projection::builder::template::ResampleNoClipU;
@@ -51,7 +50,6 @@ mod geo_voronoi_test {
             Unconnected,
             f64,
         >,
-        NoClipC<StreamDrainStub<f64>>,
         NoClipU<StreamDrainStub<f64>>,
         Stereographic<StreamDrainStub<f64>, f64>,
         PVCircle<f64>,

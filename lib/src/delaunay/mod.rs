@@ -101,13 +101,13 @@ type FindReturn<'a, T> = Box<dyn Fn(&Coordinate<T>, Option<usize>) -> Option<usi
 /// Wraps data associated with a delaunay object.
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct GeoDelaunay<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
+pub struct GeoDelaunay<'a, DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
 where
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
 {
     /// The wrapped delaunay object.
     #[derivative(Debug = "ignore")]
-    pub delaunay: Delaunay<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>,
+    pub delaunay: Delaunay<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>,
     /// The edges and triangles properties need RC because the values are close over in the urquhart function.
     pub edges: Rc<HashSet<[usize; 2]>>,
     /// A set of triangles as defined by set of indicies.
@@ -142,7 +142,6 @@ impl<'a, DRAIN, T>
             T,
         >,
         LineCircle<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, Unconnected, T>,
-        NoClipC<DRAIN>,
         NoClipU<DRAIN>,
         Stereographic<DRAIN, T>,
         PVCircle<T>,

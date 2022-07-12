@@ -109,7 +109,6 @@ type GV<'a> = GeoVoronoi<
         Unconnected,
         f64,
     >,
-    NoClipC<StreamDrainStub<f64>>,
     NoClipU<StreamDrainStub<f64>>,
     Stereographic<StreamDrainStub<f64>, f64>,
     PVCircle<f64>,

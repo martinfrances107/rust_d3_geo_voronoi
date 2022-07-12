@@ -38,7 +38,6 @@ use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::stream::Connected;
 use rust_d3_geo::stream::Stream;
 use rust_d3_geo::stream::Unconnected;
-use rust_d3_geo::Transform;
 
 use crate::delaunay::excess::excess;
 
@@ -46,15 +45,13 @@ use super::delaunay::GeoDelaunay;
 
 /// Returns type used by .x() and .y()
 #[allow(missing_debug_implementations)]
-pub enum XYReturn<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, PV, RC, RU, T>
+pub enum XYReturn<'a, DRAIN, I, LB, LC, LU, PCNU, PV, RC, RU, T>
 where
     // DRAIN: Stream<EP = DRAIN, T = T>,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + Display + CoordFloat + FloatConst,
 {
     /// Voronoi
-    Voronoi(
-        GeoVoronoi<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, Stereographic<DRAIN, T>, PV, RC, RU, T>,
-    ),
+    Voronoi(GeoVoronoi<'a, DRAIN, I, LB, LC, LU, PCNU, Stereographic<DRAIN, T>, PV, RC, RU, T>),
     /// Function
     Func(Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>),
 }
@@ -70,7 +67,6 @@ type XYReturnDefault<'a, DRAIN, T> = XYReturn<
         T,
     >,
     LineCircle<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, Unconnected, T>,
-    NoClipC<DRAIN>,
     NoClipU<DRAIN>,
     PVCircle<T>,
     ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,
@@ -90,12 +86,12 @@ where
 #[derive(Derivative)]
 #[derivative(Debug)]
 /// Holds data centered on a GeoDelauany instance.
-pub struct GeoVoronoi<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
+pub struct GeoVoronoi<'a, DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
 where
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
     /// The wrapped GeoDelaunay instance.
-    pub geo_delaunay: Option<GeoDelaunay<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>>,
+    pub geo_delaunay: Option<GeoDelaunay<'a, DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>>,
     data: Option<Geometry<T>>,
     found: Option<usize>,
     //Points: Rc needed here as the egdes, triangles, neigbours etc all index into thts vec.
@@ -108,8 +104,8 @@ where
     vy: Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>,
 }
 
-impl<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T> Default
-    for GeoVoronoi<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
+impl<'a, DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T> Default
+    for GeoVoronoi<'a, DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
 where
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
@@ -139,7 +135,6 @@ impl<'a, DRAIN, T>
             T,
         >,
         LineCircle<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, Unconnected, T>,
-        NoClipC<DRAIN>,
         NoClipU<DRAIN>,
         Stereographic<DRAIN, T>,
         PVCircle<T>,
