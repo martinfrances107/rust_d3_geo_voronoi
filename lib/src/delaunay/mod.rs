@@ -155,6 +155,7 @@ where
         + AddAssign
         + AsPrimitive<T>
         + CoordFloat
+        + Default
         + FloatConst
         + FromPrimitive,
 {

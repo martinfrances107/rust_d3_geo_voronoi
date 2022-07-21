@@ -150,6 +150,7 @@ where
         + Bounded
         + CoordFloat
         + Display
+        + Default
         + FloatConst
         + FromPrimitive
         + HasKernel
