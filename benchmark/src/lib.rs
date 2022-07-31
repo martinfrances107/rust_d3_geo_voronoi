@@ -41,7 +41,7 @@ use rust_d3_geo::projection::builder::template::ResampleNoClipU;
 use rust_d3_geo::projection::orthographic::Orthographic;
 use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::projection::ProjectionRawBase;
-use rust_d3_geo::projection::Rotate;
+use rust_d3_geo::projection::RotateSet;
 use rust_d3_geo::stream::Connected;
 use rust_d3_geo::stream::StreamDrainStub;
 use rust_d3_geo::stream::Unconnected;
@@ -226,7 +226,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
         let ob = ortho_builder.clone();
         let pb = path_builder;
         let t0 = performance.now();
-        let ortho = ob.rotate(&[t0 / 150_f64, 0_f64, 0_f64]).build();
+        let ortho = ob.rotate_set(&[t0 / 150_f64, 0_f64, 0_f64]).build();
         let mut path = pb.build(ortho);
 
         performance

@@ -23,7 +23,7 @@ use rust_d3_geo::projection::orthographic::Orthographic;
 use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::projection::Build;
 use rust_d3_geo::projection::ProjectionRawBase;
-use rust_d3_geo::projection::Rotate;
+use rust_d3_geo::projection::RotateSet;
 use rust_d3_geo::stream::Connected;
 use rust_d3_geo::stream::StreamDrainStub;
 use rust_d3_geo::stream::Unconnected;
@@ -89,7 +89,7 @@ fn draw() -> String {
 
     let mut gv: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
 
-    let ortho = ortho_builder.rotate(&[0_f64, 0_f64, 0_f64]).build();
+    let ortho = ortho_builder.rotate_set(&[0_f64, 0_f64, 0_f64]).build();
     let mut path = PathBuilder::context_pathstring().build(ortho);
 
     match gv.polygons(None) {

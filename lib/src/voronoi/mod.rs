@@ -30,7 +30,6 @@ use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::data_object::FeatureProperty;
 use rust_d3_geo::data_object::Features;
 use rust_d3_geo::distance::distance;
-use rust_d3_geo::projection::builder::template::NoClipC;
 use rust_d3_geo::projection::builder::template::NoClipU;
 use rust_d3_geo::projection::builder::template::ResampleNoClipC;
 use rust_d3_geo::projection::builder::template::ResampleNoClipU;
