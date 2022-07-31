@@ -5,9 +5,13 @@ use std::rc::Rc;
 use num_traits::Float;
 use rust_d3_array::extent::extent;
 
+use super::EdgeIndex;
+use super::TriIndex;
+
+
 pub fn geo_urquhart<T: Float>(
-    edges: Rc<HashSet<[usize; 2]>>,
-    triangles: Rc<Vec<[usize; 3]>>,
+    edges: Rc<HashSet<EdgeIndex>>,
+    triangles: Rc<Vec<TriIndex>>,
 ) -> Box<dyn Fn(&Vec<T>) -> Vec<bool>> {
     Box::new(move |distances: &Vec<T>| {
         let len = edges.len();
