@@ -11,14 +11,14 @@ This is a port of the [d3-geo-voronoi](<https://github.com/Fil/d3-geo-voronoi>) 
 
 Currently we have 84% test coverage ( as reported by cargo tarpaulin -o Html )
 
-## Performance Profiling.
+## Performance Profiling
 
 ### Demo Page
+
 The original javascript library has a benchmark in the form of web page which records the number of frames displayed per second. For comparison the benchmark has been ported.
 
- - javascript -  d3-geo_voronoi/src/benchmark/sphereCanvas.html
- - rust -  rust_d3_geo_vornoi/benchmark.
-
+- javascript -  d3-geo_voronoi/src/benchmark/sphereCanvas.html
+- rust -  rust_d3_geo_vornoi/benchmark.
 
 Measuring the performance of a library is compilcated, as different applications employing the library may see different results. Desktop and mobile perfomance may differ.
 
@@ -39,9 +39,10 @@ B) When I increase the number of points given to the RUST version to render, I f
 I am currently looking to add more benchmarks, a diverse collection of example application code, will give greater confidence in what to expect.
 
 ### Profile Target
+
 This workspace contain a binary "profie_target" which outputs the result of a computation similar to that of the demo_page. Before API finialization - I am currently  using cargo flamegraph to identify any obvious optimizations.
 
-## Further Development.
+## Further Development
 
 Known bugs
 
@@ -53,8 +54,7 @@ contour.js and geo-contour-test.js
 Currenly there is a failing test suite
 geo_voronoi_test.rs "geoVoronoi.hull does not break on difficult polygons"
 
-
-## Instructions for building the benchmark.
+## Instructions for building the benchmark
 
 I'm using [wasm pack](<https://github.com/rustwasm/wasm-pack>) to package the
  following packages into a single wasm file.
@@ -63,13 +63,13 @@ I'm using [wasm pack](<https://github.com/rustwasm/wasm-pack>) to package the
 
 The application displays a delaunay mesh of a large number of cells onto a sphere.
 
-* To build and start the web server:-
+- To build and start the web server:-
 
         cd benchmark
         npm install
         npm run start
 
-the last command automatically start you web browser.
+   The last command automatically starts your web browser.
 
 For benchmarking, to obtain best performance
 
@@ -80,16 +80,11 @@ For benchmarking, to obtain best performance
 and then host rust_d3_geo_voronoi/benchmark/dist directory before viewing in a browser.
 Timing specific information is output to the console.
 
-<br/>
-
 ## Module Dependencies
 
-* [`delaunator`]("https://github.com/mourner/delaunator-rs.git") for generation
+- [`delaunator`]("https://github.com/mourner/delaunator-rs.git") for generation
    of the delaunay mesh.
-
-* [`rust_d3_array`]("https://github.com/martinfrances107/rust_d3_array.git")
+- [`rust_d3_array`]("https://github.com/martinfrances107/rust_d3_array.git")
    for a common set of helpers.
-
-* [`rust_d3_delaunay`]("https://github.com/martinfrances107/rust_d3_delaunay.git")
-
-* [`rust_d3_geo`]("https://github.com/martinfrances107/rust_d3_geo.git")
+- [`rust_d3_delaunay`]("https://github.com/martinfrances107/rust_d3_delaunay.git")
+- [`rust_d3_geo`]("https://github.com/martinfrances107/rust_d3_geo.git")
