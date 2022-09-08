@@ -52,7 +52,7 @@ where
     /// Voronoi
     Voronoi(GeoVoronoi<'a, DRAIN, I, LB, LC, LU, PCNU, Stereographic<DRAIN, T>, PV, RC, RU, T>),
     /// Function
-    Func(Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>),
+    Func(VTransform<T>),
 }
 
 type XYReturnDefault<'a, DRAIN, T> = XYReturn<
@@ -82,6 +82,9 @@ where
     center: Coordinate<T>,
 }
 
+/// Velocity Transform.
+pub type VTransform<T> = Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>;
+
 #[derive(Derivative)]
 #[derivative(Debug)]
 /// Holds data centered on a GeoDelauany instance.
@@ -98,9 +101,9 @@ where
     valid: Vec<Coordinate<T>>,
     // Option<Box<impl Fn(&dyn Centroid<Output = Coordinate<T>>) -> T>>
     #[derivative(Debug = "ignore")]
-    vx: Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>,
+    vx: VTransform<T>,
     #[derivative(Debug = "ignore")]
-    vy: Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>,
+    vy: VTransform<T>,
 }
 
 impl<'a, DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T> Default

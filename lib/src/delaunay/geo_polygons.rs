@@ -153,7 +153,7 @@ where
                         let i0 = self.supplement(&r0);
                         let i1 = self.supplement(&r1);
 
-                        return vec![p[0], i1, p[1], i0];
+                        vec![p[0], i1, p[1], i0]
                     }
                     _ => p,
                 }

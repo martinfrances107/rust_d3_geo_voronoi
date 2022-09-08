@@ -99,11 +99,12 @@ use rust_d3_geo::stream::Unconnected;
 type FindReturn<'a, T> = Box<dyn Fn(&Coordinate<T>, Option<usize>) -> Option<usize> + 'a>;
 
 /// A Pair of indicies pointing into a dataset identifying a edge.
-type EdgeIndex = [usize;2];
+type EdgeIndex = [usize; 2];
 
 /// Three indicies pointing into a dataset identifying a triangle.
-type TriIndex = [usize;3];
+type TriIndex = [usize; 3];
 
+type UTransform<T> = Box<dyn Fn(&Vec<T>) -> Vec<bool>>;
 /// Wraps data associated with a delaunay object.
 #[derive(Derivative)]
 #[derivative(Debug)]
@@ -130,7 +131,7 @@ where
     pub hull: Vec<usize>,
     /// Urquhart graph .. by index the set the of points in the plane.
     #[derivative(Debug = "ignore")]
-    pub urquhart: Box<dyn Fn(&Vec<T>) -> Vec<bool> + 'a>,
+    pub urquhart: UTransform<T>,
     /// Returns the indexes of the points.
     #[derivative(Debug = "ignore")]
     pub find: FindReturn<'a, T>,

@@ -7,12 +7,12 @@ use rust_d3_array::extent::extent;
 
 use super::EdgeIndex;
 use super::TriIndex;
-
+use super::UTransform;
 
 pub fn geo_urquhart<T: Float>(
     edges: Rc<HashSet<EdgeIndex>>,
     triangles: Rc<Vec<TriIndex>>,
-) -> Box<dyn Fn(&Vec<T>) -> Vec<bool>> {
+) -> UTransform<T> {
     Box::new(move |distances: &Vec<T>| {
         let len = edges.len();
         let mut h_lengths: HashMap<(usize, usize), T> = HashMap::with_capacity(len);
