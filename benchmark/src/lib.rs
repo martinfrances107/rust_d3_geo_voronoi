@@ -91,31 +91,6 @@ fn get_document() -> Result<Document, JsValue> {
     Ok(window.document().unwrap())
 }
 
-type GV<'a> = GeoVoronoi<
-    'a,
-    StreamDrainStub<f64>,
-    InterpolateCircle<f64>,
-    LineCircle<Buffer<f64>, Connected<Buffer<f64>>, f64>,
-    LineCircle<
-        ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
-        Connected<
-            ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
-        >,
-        f64,
-    >,
-    LineCircle<
-        ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
-        Unconnected,
-        f64,
-    >,
-    NoClipU<StreamDrainStub<f64>>,
-    Stereographic<StreamDrainStub<f64>, f64>,
-    PVCircle<f64>,
-    ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
-    ResampleNoClipU<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
-    f64,
->;
-
 /// Entry point.
 #[wasm_bindgen(start)]
 pub fn run() -> Result<(), JsValue> {
@@ -193,7 +168,8 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
             .collect(),
     );
 
-    let mut gv: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
+    let mut gv: GeoVoronoi<'_, StreamDrainStub<f64>, _, _, _, _, _, _, _, _, _, _> =
+        GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
 
     // let ortho = ortho_builder.rotate(&[0_f64, 0_f64, 0_f64]).build();
     // let mut path = pb.build(ortho);
