@@ -1,6 +1,6 @@
 [package]
 name = "benchmark"
-description="rust_d3_geo_voronoi benchmark wasm app"
+description = "rust_d3_geo_voronoi benchmark wasm app"
 license = "MIT"
 version = "0.1.0"
 authors = ["martin <martinfrances107@hotmail.com>"]
@@ -13,33 +13,23 @@ crate-type = ["cdylib"]
 #default = ["wee_alloc"]
 
 [dependencies]
-rust_d3_geo_voronoi = {path="../lib"}
-rust_d3_geo = { git="https://github.com/martinfrances107/rust_d3_geo.git", branch="main"}
-rust_d3_delaunay = { git="https://github.com/martinfrances107/rust_d3_delaunay.git", branch="main"}
-geo="0.22.0"
+rust_d3_geo_voronoi = { path = "../lib" }
+rust_d3_geo = { git = "https://github.com/martinfrances107/rust_d3_geo.git", branch = "main" }
+rust_d3_delaunay = { git = "https://github.com/martinfrances107/rust_d3_delaunay.git", branch = "main" }
+geo = "0.23.0"
 # The `wasm-bindgen` crate provides the bare minimum functionality needed
 # to interact with JavaScript.
 wasm-bindgen = "0.2.78"
 getrandom = { version = "0.2.3", features = ["js"] }
-rand = { version = "0.8.4"}
+rand = { version = "0.8.4" }
 js-sys = "0.3.55"
 
-# `wee_alloc` is a tiny allocator for wasm that is only ~1K in code size
-# compared to the default allocator's ~10K. However, it is slower than the default
-# allocator, so it's not enabled by default.
-# wee_alloc = { version = "0.4.5", optional = true }
-
-
+wasm-bindgen-test = "0.3.28"
+wasm-bindgen-futures = "0.4.28"
 
 # Forces rebuild of the std library with debug info.
 [rust]
-debuginfo-level=1
-
-# These crates are used for running unit tests.
-[dev-dependencies]
-futures = "0.3.17"
-wasm-bindgen-test = "0.3.28"
-wasm-bindgen-futures = "0.4.28"
+debuginfo-level = 1
 
 
 # The `web-sys` crate allows you to interact with the various browser APIs,
@@ -63,5 +53,5 @@ features = [
     "PerformanceTiming",
     "PerformanceMeasure",
     "Text",
-    "Window"
+    "Window",
 ]

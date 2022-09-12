@@ -4,8 +4,8 @@
 mod geo_voronoi_test {
     extern crate pretty_assertions;
 
+    use geo::algorithm::cyclic_match::CyclicMatch;
     use geo::coords_iter::CoordsIter;
-    use geo::cyclic_match::CyclicMatch;
     use geo::line_string;
     use geo::Coordinate;
     use geo::Geometry;

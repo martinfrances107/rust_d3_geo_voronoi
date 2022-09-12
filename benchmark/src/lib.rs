@@ -9,9 +9,9 @@
 //! The polygons are mis-shaped
 //!
 //! See the README.md.
-use rust_d3_geo::projection::Build;
 extern crate js_sys;
 extern crate rand;
+extern crate wasm_bindgen_test;
 extern crate web_sys;
 
 use std::cell::RefCell;
@@ -25,6 +25,7 @@ use geo::MultiPoint;
 use js_sys::try_iter;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
+use wasm_bindgen_test::console_log;
 use web_sys::Document;
 use web_sys::PerformanceMeasure;
 
@@ -40,44 +41,13 @@ use rust_d3_geo::projection::builder::template::ResampleNoClipC;
 use rust_d3_geo::projection::builder::template::ResampleNoClipU;
 use rust_d3_geo::projection::orthographic::Orthographic;
 use rust_d3_geo::projection::stereographic::Stereographic;
+use rust_d3_geo::projection::Build;
 use rust_d3_geo::projection::ProjectionRawBase;
 use rust_d3_geo::projection::RotateSet;
 use rust_d3_geo::stream::Connected;
 use rust_d3_geo::stream::StreamDrainStub;
 use rust_d3_geo::stream::Unconnected;
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
-mod dom_macros;
-
-#[wasm_bindgen]
-extern "C" {
-    // Use `js_namespace` here to bind `console.log(..)` instead of just
-    // `log(..)`
-    #[wasm_bindgen(js_namespace = console)]
-    fn log(s: &str);
-
-    // The `console.log` is quite polymorphic, so we can bind it with multiple
-    // signatures. Note that we need to use `js_name` to ensure we always call
-    // `log` in JS.
-    #[wasm_bindgen(js_namespace = console, js_name = log)]
-    fn log_u32(a: u32);
-
-    // Multiple arguments too!
-    #[wasm_bindgen(js_namespace = console, js_name = log)]
-    fn log_many(a: &str, b: &str);
-
-    fn alert(s: &str);
-}
-
-// Next let's define a macro that's like `println!`, only it works for
-// `console.log`. Note that `println!` doesn't actually work on the wasm target
-// because the standard library currently just eats all output. To get
-// `println!`-like behavior in your app you'll likely want a macro like this.
-
-macro_rules! console_log {
-    // Note that this is using the `log` function imported above during
-    // `bare_bones`
-    ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
-}
 
 fn request_animation_frame(f: &Closure<dyn FnMut()>) {
     web_sys::window()
@@ -236,6 +206,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
         performance
             .mark("polygons_rendered")
             .expect("failed polgons rendered");
+
         // Render points.
         context.set_fill_style(&"white".into());
         context.set_stroke_style(&"black".into());
