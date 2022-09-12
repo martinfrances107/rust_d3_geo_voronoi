@@ -53,6 +53,8 @@ type GV<'a> = GeoVoronoi<
     ResampleNoClipU<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
     f64,
 >;
+
+#[cfg(not(tarpaulin_include))]
 lazy_static! {
     static ref SCHEME_CATEGORY10: [String; 10] = [
         String::from("#1f77b4"),
@@ -68,6 +70,7 @@ lazy_static! {
     ];
 }
 
+#[cfg(not(tarpaulin_include))]
 fn draw() -> String {
     // size is the number of voronoi
     let size = 6000;
@@ -117,6 +120,7 @@ fn draw() -> String {
     }
 }
 
+#[cfg(not(tarpaulin_include))]
 fn main() -> std::io::Result<()> {
     let file = File::create("profile_output.html")?;
     let mut file = LineWriter::new(file);

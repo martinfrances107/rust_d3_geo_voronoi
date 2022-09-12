@@ -49,6 +49,7 @@ use rust_d3_geo::stream::StreamDrainStub;
 use rust_d3_geo::stream::Unconnected;
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 
+#[cfg(not(tarpaulin_include))]
 fn request_animation_frame(f: &Closure<dyn FnMut()>) {
     web_sys::window()
         .expect("should have a window in this context")
@@ -56,12 +57,14 @@ fn request_animation_frame(f: &Closure<dyn FnMut()>) {
         .expect("should register `requestAnimationFrame` OK");
 }
 
+#[cfg(not(tarpaulin_include))]
 fn get_document() -> Result<Document, JsValue> {
     let window = web_sys::window().unwrap();
     Ok(window.document().unwrap())
 }
 
 /// Entry point.
+#[cfg(not(tarpaulin_include))]
 #[wasm_bindgen(start)]
 pub fn run() -> Result<(), JsValue> {
     console_log!("run() - wasm entry point");
@@ -73,6 +76,7 @@ pub fn run() -> Result<(), JsValue> {
 }
 
 // Draw dot.
+#[cfg(not(tarpaulin_include))]
 fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
     let size_range = document.get_element_by_id("size-range");
     let size_label = document.get_element_by_id("size-label");
@@ -293,6 +297,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
 }
 
 // Update the size-output span.
+#[cfg(not(tarpaulin_include))]
 fn update_span(document: &Document, new_size: u32) -> Result<(), JsValue> {
     let span = document.get_element_by_id("size-output").unwrap();
     span.set_text_content(Some(&format!("{}", new_size)));
@@ -300,6 +305,7 @@ fn update_span(document: &Document, new_size: u32) -> Result<(), JsValue> {
 }
 
 // Given a new size, sets all relevant DOM elements.
+#[cfg(not(tarpaulin_include))]
 fn update_all() -> Result<(), JsValue> {
     // get new size
     let document = get_document()?;
@@ -315,6 +321,7 @@ fn update_all() -> Result<(), JsValue> {
     Ok(())
 }
 
+#[cfg(not(tarpaulin_include))]
 fn attach_listener(document: &Document) -> Result<(), JsValue> {
     update_all()?; // call once for initial render before any changes
 
