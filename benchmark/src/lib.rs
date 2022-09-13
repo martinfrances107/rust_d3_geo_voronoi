@@ -78,6 +78,7 @@ pub fn run() -> Result<(), JsValue> {
 // Draw dot.
 #[cfg(not(tarpaulin_include))]
 fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
+    console_log!("inside update_canvas");
     let size_range = document.get_element_by_id("size-range");
     let size_label = document.get_element_by_id("size-label");
     let perf = document
@@ -329,13 +330,20 @@ fn attach_listener(document: &Document) -> Result<(), JsValue> {
         update_all().expect("Could not update");
     }) as Box<dyn Fn(_)>);
 
-    document
-        .get_element_by_id("size")
-        .unwrap()
-        .dyn_into::<web_sys::HtmlInputElement>()?
-        .set_onchange(Some(callback.as_ref().unchecked_ref()));
+    match document.get_element_by_id("size-range") {
+        Some(sr) => match sr.dyn_into::<web_sys::HtmlInputElement>() {
+            Ok(ie) => {
+                ie.set_onchange(Some(callback.as_ref().unchecked_ref()));
+            }
+            _ => {
+                console_log!("Could not attach onchange");
+            }
+        },
+        None => {
+            console_log!("aborting attach: Could not find element.");
+        }
+    }
 
     callback.forget();
-
     Ok(())
 }
