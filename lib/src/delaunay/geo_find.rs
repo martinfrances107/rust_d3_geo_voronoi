@@ -1,4 +1,3 @@
-#![allow(clippy::many_single_char_names)]
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
