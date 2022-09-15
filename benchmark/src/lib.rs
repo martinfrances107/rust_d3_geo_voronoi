@@ -25,11 +25,15 @@ use geo::Coordinate;
 use geo::Geometry;
 use geo::Geometry::Polygon;
 use geo::MultiPoint;
-use js_sys::try_iter;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_test::console_log;
+use web_sys::window;
+use web_sys::CanvasRenderingContext2d;
 use web_sys::Document;
+use web_sys::Event;
+use web_sys::HtmlCanvasElement;
+use web_sys::HtmlInputElement;
 use web_sys::PerformanceMeasure;
 
 use rust_d3_geo::data_object::FeatureCollection;
@@ -41,10 +45,9 @@ use rust_d3_geo::projection::ProjectionRawBase;
 use rust_d3_geo::projection::RotateSet;
 use rust_d3_geo::stream::StreamDrainStub;
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
-
 #[cfg(not(tarpaulin_include))]
 fn request_animation_frame(f: &Closure<dyn FnMut()>) {
-    web_sys::window()
+    window()
         .expect("should have a window in this context")
         .request_animation_frame(f.as_ref().unchecked_ref())
         .expect("should register `requestAnimationFrame` OK");
@@ -52,7 +55,7 @@ fn request_animation_frame(f: &Closure<dyn FnMut()>) {
 
 #[cfg(not(tarpaulin_include))]
 fn get_document() -> Result<Document, JsValue> {
-    if let Some(window) = web_sys::window() {
+    if let Some(window) = window() {
         if let Some(document) = window.document() {
             Ok(document)
         } else {
@@ -93,7 +96,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
 
     // Grab canvas.
     let canvas = match document.get_element_by_id("c") {
-        Some(element) => match element.dyn_into::<web_sys::HtmlCanvasElement>() {
+        Some(element) => match element.dyn_into::<HtmlCanvasElement>() {
             Ok(canvas) => canvas,
             Err(_) => return Err(JsValue::from_str("#c is not a canvas element.")),
         },
@@ -104,7 +107,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
 
     let context = match canvas.get_context("2d") {
         Ok(o) => match o {
-            Some(c) => match c.dyn_into::<web_sys::CanvasRenderingContext2d>() {
+            Some(c) => match c.dyn_into::<CanvasRenderingContext2d>() {
                 Ok(c) => c,
                 Err(_) => {
                     return Err(JsValue::from_str("hello"));
@@ -137,7 +140,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
         JsValue::from_str("#17becf"),
     ];
 
-    let window = web_sys::window().expect("should have a window in this context");
+    let window = window().expect("should have a window in this context");
     let performance = window
         .performance()
         .expect("performance should be available");
@@ -332,10 +335,11 @@ fn update_span(document: &Document, new_size: u32) -> Result<(), JsValue> {
 #[cfg(not(tarpaulin_include))]
 fn update_all() -> Result<(), JsValue> {
     // get new size
+
     let document = get_document()?;
 
     if let Some(element) = document.get_element_by_id("size-range") {
-        if let Ok(input_element) = element.dyn_into::<web_sys::HtmlInputElement>() {
+        if let Ok(input_element) = element.dyn_into::<HtmlInputElement>() {
             if let Ok(new_size) = input_element.value().parse::<u32>() {
                 update_canvas(&document, new_size)?;
                 update_span(&document, new_size)?;
@@ -353,12 +357,12 @@ fn update_all() -> Result<(), JsValue> {
 
 #[cfg(not(tarpaulin_include))]
 fn attach_listener(document: &Document) -> Result<(), JsValue> {
-    let callback = Closure::wrap(Box::new(move |_evt: web_sys::Event| {
+    let callback = Closure::wrap(Box::new(move |_evt: Event| {
         update_all().expect("Could not update");
     }) as Box<dyn Fn(_)>);
 
     match document.get_element_by_id("size-range") {
-        Some(sr) => match sr.dyn_into::<web_sys::HtmlInputElement>() {
+        Some(sr) => match sr.dyn_into::<HtmlInputElement>() {
             Ok(ie) => {
                 ie.set_onchange(Some(callback.as_ref().unchecked_ref()));
             }
