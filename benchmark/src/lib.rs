@@ -17,6 +17,9 @@ extern crate web_sys;
 use std::cell::RefCell;
 use std::iter::repeat_with;
 use std::rc::Rc;
+use std::time::Duration;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use geo::Coordinate;
 use geo::Geometry;
@@ -29,24 +32,14 @@ use wasm_bindgen_test::console_log;
 use web_sys::Document;
 use web_sys::PerformanceMeasure;
 
-use rust_d3_geo::clip::buffer::Buffer;
-use rust_d3_geo::clip::circle::interpolate::Interpolate as InterpolateCircle;
-use rust_d3_geo::clip::circle::line::Line as LineCircle;
-use rust_d3_geo::clip::circle::pv::PV as PVCircle;
 use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::path::builder::Builder as PathBuilder;
 use rust_d3_geo::path::context::Context;
-use rust_d3_geo::projection::builder::template::NoClipU;
-use rust_d3_geo::projection::builder::template::ResampleNoClipC;
-use rust_d3_geo::projection::builder::template::ResampleNoClipU;
 use rust_d3_geo::projection::orthographic::Orthographic;
-use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::projection::Build;
 use rust_d3_geo::projection::ProjectionRawBase;
 use rust_d3_geo::projection::RotateSet;
-use rust_d3_geo::stream::Connected;
 use rust_d3_geo::stream::StreamDrainStub;
-use rust_d3_geo::stream::Unconnected;
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 
 #[cfg(not(tarpaulin_include))]
@@ -59,8 +52,15 @@ fn request_animation_frame(f: &Closure<dyn FnMut()>) {
 
 #[cfg(not(tarpaulin_include))]
 fn get_document() -> Result<Document, JsValue> {
-    let window = web_sys::window().unwrap();
-    Ok(window.document().unwrap())
+    if let Some(window) = web_sys::window() {
+        if let Some(document) = window.document() {
+            Ok(document)
+        } else {
+            Err(JsValue::from_str("unable to get document"))
+        }
+    } else {
+        Err(JsValue::from_str("Unable to get window."))
+    }
 }
 
 /// Entry point.
@@ -70,34 +70,54 @@ pub fn run() -> Result<(), JsValue> {
     console_log!("run() - wasm entry point");
     let document = get_document()?;
 
+    update_all()?; // call once for initial render before any changes
+
     attach_listener(&document)?;
 
     Ok(())
 }
 
+fn perf_to_system(amt: f64) -> SystemTime {
+    let secs = (amt as u64) / 1_000;
+    let nanos = (((amt as u64) % 1_000) as u32) * 1_000_000;
+    UNIX_EPOCH + Duration::new(secs, nanos)
+}
+
 // Draw dot.
 #[cfg(not(tarpaulin_include))]
 fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
-    console_log!("inside update_canvas");
-    let size_range = document.get_element_by_id("size-range");
-    let size_label = document.get_element_by_id("size-label");
     let perf = document
         .get_element_by_id("perf")
         .unwrap()
         .dyn_into::<web_sys::HtmlParagraphElement>()?;
 
     // Grab canvas.
-    let canvas = document
-        .get_element_by_id("c")
-        .unwrap()
-        .dyn_into::<web_sys::HtmlCanvasElement>()?;
+    let canvas = match document.get_element_by_id("c") {
+        Some(element) => match element.dyn_into::<web_sys::HtmlCanvasElement>() {
+            Ok(canvas) => canvas,
+            Err(_) => return Err(JsValue::from_str("#c is not a canvas element.")),
+        },
+        None => {
+            return Err(JsValue::from_str("Did not find #c on the page."));
+        }
+    };
 
-    let context_raw = canvas
-        .get_context("2d")?
-        .unwrap()
-        .dyn_into::<web_sys::CanvasRenderingContext2d>()?;
-
-    let context = context_raw;
+    let context = match canvas.get_context("2d") {
+        Ok(o) => match o {
+            Some(c) => match c.dyn_into::<web_sys::CanvasRenderingContext2d>() {
+                Ok(c) => c,
+                Err(_) => {
+                    return Err(JsValue::from_str("hello"));
+                }
+            },
+            None => {
+                return Err(JsValue::from_str("did not receive a context"));
+            }
+        },
+        Err(_) => {
+            return Err(JsValue::from_str("unable to get context"));
+        }
+    };
 
     // Holds elapsed samples (use to compute the standard deviation).
     let mut elapsed_array: [f64; 200] = [0_f64; 200];
@@ -300,9 +320,12 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
 // Update the size-output span.
 #[cfg(not(tarpaulin_include))]
 fn update_span(document: &Document, new_size: u32) -> Result<(), JsValue> {
-    let span = document.get_element_by_id("size-output").unwrap();
-    span.set_text_content(Some(&format!("{}", new_size)));
-    Ok(())
+    if let Some(span) = document.get_element_by_id("size-output") {
+        span.set_text_content(Some(&format!("{}", new_size)));
+        Ok(())
+    } else {
+        Err(JsValue::from_str("did not find #size-output on the page."))
+    }
 }
 
 // Given a new size, sets all relevant DOM elements.
@@ -310,22 +333,26 @@ fn update_span(document: &Document, new_size: u32) -> Result<(), JsValue> {
 fn update_all() -> Result<(), JsValue> {
     // get new size
     let document = get_document()?;
-    let new_size = document
-        .get_element_by_id("size-range")
-        .unwrap()
-        .dyn_into::<web_sys::HtmlInputElement>()?
-        .value()
-        .parse::<u32>()
-        .expect("Could not parse slider value");
-    update_canvas(&document, new_size)?;
-    update_span(&document, new_size)?;
-    Ok(())
+
+    if let Some(element) = document.get_element_by_id("size-range") {
+        if let Ok(input_element) = element.dyn_into::<web_sys::HtmlInputElement>() {
+            if let Ok(new_size) = input_element.value().parse::<u32>() {
+                update_canvas(&document, new_size)?;
+                update_span(&document, new_size)?;
+                Ok(())
+            } else {
+                Err(JsValue::from_str("Could not parse input to number."))
+            }
+        } else {
+            Err(JsValue::from_str("Could not find #size-range on page."))
+        }
+    } else {
+        Err(JsValue::from_str("Could not find #size-range on page."))
+    }
 }
 
 #[cfg(not(tarpaulin_include))]
 fn attach_listener(document: &Document) -> Result<(), JsValue> {
-    update_all()?; // call once for initial render before any changes
-
     let callback = Closure::wrap(Box::new(move |_evt: web_sys::Event| {
         update_all().expect("Could not update");
     }) as Box<dyn Fn(_)>);
@@ -335,12 +362,12 @@ fn attach_listener(document: &Document) -> Result<(), JsValue> {
             Ok(ie) => {
                 ie.set_onchange(Some(callback.as_ref().unchecked_ref()));
             }
-            _ => {
-                console_log!("Could not attach onchange");
-            }
+            _ => return Err(JsValue::from_str("Could not attach onchange")),
         },
         None => {
-            console_log!("aborting attach: Could not find element.");
+            return Err(JsValue::from_str(
+                "aborting attach_listener: Could not find element.",
+            ));
         }
     }
 
