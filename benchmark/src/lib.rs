@@ -194,7 +194,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
             .mark("render_start")
             .expect("Failed render start");
 
-        let cs: Context<f64> = Context::new(context.clone());
+        let cs: Context = Context::new(context.clone());
         let path_builder = PathBuilder::new(cs);
 
         let ob = ortho_builder.clone();
