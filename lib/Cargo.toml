@@ -20,7 +20,6 @@ derivative = "2.2.0"
 float_next_after = "0.1.5"
 geo = { version = "0.23.0", feature = "approx" }
 delaunator = { git = "https://github.com/mourner/delaunator-rs.git" }
-# d3_geo: At the moment just use for math carteasian functions.
 rust_d3_geo = { git = "https://github.com/martinfrances107/rust_d3_geo.git", branch = "main" }
 rust_d3_array = { git = "https://github.com/martinfrances107/rust_d3_array.git" }
 rust_d3_delaunay = { git = "https://github.com/martinfrances107/rust_d3_delaunay.git", branch = "main" }
@@ -30,12 +29,6 @@ rust_d3_delaunay = { git = "https://github.com/martinfrances107/rust_d3_delaunay
 # code size when deploying.
 console_error_panic_hook = { version = "0.1.6", optional = true }
 
-# `wee_alloc` is a tiny allocator for wasm that is only ~1K in code size
-# compared to the default allocator's ~10K. It is slower than the default
-# allocator, however.
-#
-# Unfortunately, `wee_alloc` requires nightly Rust when targeting wasm for now.
-wee_alloc = { version = "0.4.5", optional = true }
 
 [dependencies.web-sys]
 version = "0.3.45"
