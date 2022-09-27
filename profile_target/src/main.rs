@@ -10,10 +10,8 @@ extern crate rand;
 use geo::Geometry::Polygon;
 use geo::{Coordinate, Geometry, MultiPoint};
 
-use rust_d3_geo::clip::buffer::Buffer;
-use rust_d3_geo::clip::circle::interpolate::Interpolate as InterpolateCircle;
-use rust_d3_geo::clip::circle::line::Line as LineCircle;
-use rust_d3_geo::clip::circle::pv::PV as PVCircle;
+use rust_d3_geo::clip::circle::ClipCircleC;
+use rust_d3_geo::clip::circle::ClipCircleU;
 use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::path::builder::Builder as PathBuilder;
 use rust_d3_geo::projection::builder::template::NoClipU;
@@ -24,31 +22,22 @@ use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::projection::Build;
 use rust_d3_geo::projection::ProjectionRawBase;
 use rust_d3_geo::projection::RotateSet;
-use rust_d3_geo::stream::Connected;
 use rust_d3_geo::stream::StreamDrainStub;
-use rust_d3_geo::stream::Unconnected;
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 
 type GV<'a> = GeoVoronoi<
     'a,
+    ClipCircleC<
+        ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
+        f64,
+    >,
+    ClipCircleU<
+        ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
+        f64,
+    >,
     StreamDrainStub<f64>,
-    InterpolateCircle<f64>,
-    LineCircle<Buffer<f64>, Connected<Buffer<f64>>, f64>,
-    LineCircle<
-        ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
-        Connected<
-            ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
-        >,
-        f64,
-    >,
-    LineCircle<
-        ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
-        Unconnected,
-        f64,
-    >,
     NoClipU<StreamDrainStub<f64>>,
     Stereographic<StreamDrainStub<f64>, f64>,
-    PVCircle<f64>,
     ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
     ResampleNoClipU<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
     f64,

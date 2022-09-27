@@ -22,10 +22,9 @@ use num_traits::Bounded;
 use num_traits::FloatConst;
 use num_traits::FromPrimitive;
 use num_traits::Signed;
-use rust_d3_geo::clip::buffer::Buffer;
-use rust_d3_geo::clip::circle::interpolate::Interpolate as InterpolateCircle;
-use rust_d3_geo::clip::circle::line::Line as LineCircle;
-use rust_d3_geo::clip::circle::pv::PV as PVCircle;
+
+use rust_d3_geo::clip::circle::ClipCircleC;
+use rust_d3_geo::clip::circle::ClipCircleU;
 use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::data_object::FeatureProperty;
 use rust_d3_geo::data_object::Features;
@@ -34,9 +33,7 @@ use rust_d3_geo::projection::builder::template::NoClipU;
 use rust_d3_geo::projection::builder::template::ResampleNoClipC;
 use rust_d3_geo::projection::builder::template::ResampleNoClipU;
 use rust_d3_geo::projection::stereographic::Stereographic;
-use rust_d3_geo::stream::Connected;
 use rust_d3_geo::stream::Stream;
-use rust_d3_geo::stream::Unconnected;
 
 use crate::delaunay::excess::excess;
 
@@ -44,30 +41,24 @@ use super::delaunay::GeoDelaunay;
 
 /// Returns type used by .x() and .y()
 #[allow(missing_debug_implementations)]
-pub enum XYReturn<'a, DRAIN, I, LB, LC, LU, PCNU, PV, RC, RU, T>
+pub enum XYReturn<'a, CLIPC, CLIPU, DRAIN, PCNU, RC, RU, T>
 where
-    // DRAIN: Stream<EP = DRAIN, T = T>,
+    CLIPC: Clone,
+    CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + Display + CoordFloat + FloatConst,
 {
     /// Voronoi
-    Voronoi(GeoVoronoi<'a, DRAIN, I, LB, LC, LU, PCNU, Stereographic<DRAIN, T>, PV, RC, RU, T>),
+    Voronoi(GeoVoronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, Stereographic<DRAIN, T>, RC, RU, T>),
     /// Function
     Func(VTransform<T>),
 }
 
 type XYReturnDefault<'a, DRAIN, T> = XYReturn<
     'a,
+    ClipCircleC<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
+    ClipCircleU<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
     DRAIN,
-    InterpolateCircle<T>,
-    LineCircle<Buffer<T>, Connected<Buffer<T>>, T>,
-    LineCircle<
-        ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,
-        Connected<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>>,
-        T,
-    >,
-    LineCircle<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, Unconnected, T>,
     NoClipU<DRAIN>,
-    PVCircle<T>,
     ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,
     ResampleNoClipU<DRAIN, Stereographic<DRAIN, T>, T>,
     T,
@@ -88,12 +79,14 @@ pub type VTransform<T> = Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>;
 #[derive(Derivative)]
 #[derivative(Debug)]
 /// Holds data centered on a GeoDelauany instance.
-pub struct GeoVoronoi<'a, DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
+pub struct GeoVoronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
 where
+    CLIPC: Clone,
+    CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
     /// The wrapped GeoDelaunay instance.
-    pub geo_delaunay: Option<GeoDelaunay<'a, DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>>,
+    pub geo_delaunay: Option<GeoDelaunay<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>>,
     data: Option<Geometry<T>>,
     found: Option<usize>,
     //Points: Rc needed here as the egdes, triangles, neigbours etc all index into thts vec.
@@ -106,9 +99,11 @@ where
     vy: VTransform<T>,
 }
 
-impl<'a, DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T> Default
-    for GeoVoronoi<'a, DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
+impl<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T> Default
+    for GeoVoronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
 where
+    CLIPC: Clone,
+    CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
     fn default() -> Self {
@@ -128,18 +123,11 @@ where
 impl<'a, DRAIN, T>
     GeoVoronoi<
         'a,
+        ClipCircleC<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
+        ClipCircleU<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
         DRAIN,
-        InterpolateCircle<T>,
-        LineCircle<Buffer<T>, Connected<Buffer<T>>, T>,
-        LineCircle<
-            ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,
-            Connected<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>>,
-            T,
-        >,
-        LineCircle<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, Unconnected, T>,
         NoClipU<DRAIN>,
         Stereographic<DRAIN, T>,
-        PVCircle<T>,
         ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,
         ResampleNoClipU<DRAIN, Stereographic<DRAIN, T>, T>,
         T,

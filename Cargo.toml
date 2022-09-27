@@ -1,9 +1,10 @@
 [workspace]
-members = [
-    "./lib",
-    "./benchmark",
-    "./profile_target"
-]
+members = ["./lib", "./benchmark", "./profile_target"]
+
+[workspace.dependencies]
+geo = "0.23.0"
+rust_d3_geo = { git = "https://github.com/martinfrances107/rust_d3_geo.git", branch = "main" }
+rust_d3_delaunay = { git = "https://github.com/martinfrances107/rust_d3_delaunay.git", branch = "main" }
 
 [profile.release]
 # This makes the compiled code faster and smaller, but it makes compiling slower,
@@ -13,7 +14,7 @@ debug = 2
 
 # Needed by benchmark, debug symbols are essential.
 [profile.dev]
-debug=2
+debug = 2
 
 # patch over the latest release with a version that adds
 # cyclic_match for test builds.
@@ -21,5 +22,6 @@ debug=2
 # Only "./lib" needs this extra functionality.
 [patch.crates-io]
 # geo = { path = "../geo/geo/", feature=["use-approx"]}
-geo = { git = "https://github.com/martinfrances107/geo.git", branch="cyclic_match", package="geo", feature=["use-approx"]}
-
+geo = { git = "https://github.com/martinfrances107/geo.git", branch = "cyclic_match", package = "geo", feature = [
+    "use-approx",
+] }

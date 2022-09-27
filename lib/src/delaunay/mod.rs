@@ -42,18 +42,14 @@ use geo_triangles::geo_triangles;
 use geo_urquhart::geo_urquhart;
 
 use rust_d3_delaunay::delaunay::Delaunay;
-use rust_d3_geo::clip::buffer::Buffer;
-use rust_d3_geo::clip::circle::interpolate::Interpolate as InterpolateCircle;
-use rust_d3_geo::clip::circle::line::Line as LineCircle;
-use rust_d3_geo::clip::circle::pv::PV as PVCircle;
+use rust_d3_geo::clip::circle::ClipCircleC;
+use rust_d3_geo::clip::circle::ClipCircleU;
 use rust_d3_geo::projection::builder::template::NoClipC;
 use rust_d3_geo::projection::builder::template::NoClipU;
 use rust_d3_geo::projection::builder::template::ResampleNoClipC;
 use rust_d3_geo::projection::builder::template::ResampleNoClipU;
 use rust_d3_geo::projection::stereographic::Stereographic;
-use rust_d3_geo::stream::Connected;
 use rust_d3_geo::stream::Stream;
-use rust_d3_geo::stream::Unconnected;
 
 // #[derive(Default, Debug)]
 // pub struct Delaunay {
@@ -108,13 +104,15 @@ type UTransform<T> = Box<dyn Fn(&Vec<T>) -> Vec<bool>>;
 /// Wraps data associated with a delaunay object.
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct GeoDelaunay<'a, DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
+pub struct GeoDelaunay<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
 where
+    CLIPC: Clone,
+    CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
 {
     /// The wrapped delaunay object.
     #[derivative(Debug = "ignore")]
-    pub delaunay: Delaunay<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>,
+    pub delaunay: Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>,
     /// The edges and triangles properties need RC because the values are close over in the urquhart function.
     pub edges: Rc<HashSet<EdgeIndex>>,
     /// A set of triangles as defined by set of indicies.
@@ -140,18 +138,11 @@ where
 impl<'a, DRAIN, T>
     GeoDelaunay<
         'a,
+        ClipCircleC<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
+        ClipCircleU<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
         DRAIN,
-        InterpolateCircle<T>,
-        LineCircle<Buffer<T>, Connected<Buffer<T>>, T>,
-        LineCircle<
-            ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,
-            Connected<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>>,
-            T,
-        >,
-        LineCircle<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, Unconnected, T>,
         NoClipU<DRAIN>,
         Stereographic<DRAIN, T>,
-        PVCircle<T>,
         ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,
         ResampleNoClipU<DRAIN, Stereographic<DRAIN, T>, T>,
         T,

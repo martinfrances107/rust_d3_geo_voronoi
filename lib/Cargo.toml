@@ -18,11 +18,11 @@ num-traits = "0.2.14"
 wasm-bindgen = "0.2.68"
 derivative = "2.2.0"
 float_next_after = "0.1.5"
-geo = { version = "0.23.0", feature = "approx" }
+geo = { workspace = true, feature = "approx" }
 delaunator = { git = "https://github.com/mourner/delaunator-rs.git" }
-rust_d3_geo = { git = "https://github.com/martinfrances107/rust_d3_geo.git", branch = "main" }
 rust_d3_array = { git = "https://github.com/martinfrances107/rust_d3_array.git" }
-rust_d3_delaunay = { git = "https://github.com/martinfrances107/rust_d3_delaunay.git", branch = "main" }
+rust_d3_geo = { workspace = true, branch = "main" }
+rust_d3_delaunay = { workspace = true, branch = "main" }
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
 # all the `std::fmt` and `std::panicking` infrastructure, so isn't great for

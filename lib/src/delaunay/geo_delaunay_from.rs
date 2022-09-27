@@ -12,10 +12,8 @@ use num_traits::float::FloatConst;
 use num_traits::FromPrimitive;
 
 use rust_d3_delaunay::delaunay::Delaunay;
-use rust_d3_geo::clip::buffer::Buffer;
-use rust_d3_geo::clip::circle::interpolate::Interpolate as InterpolateCircle;
-use rust_d3_geo::clip::circle::line::Line as LineCircle;
-use rust_d3_geo::clip::circle::pv::PV as PVCircle;
+use rust_d3_geo::clip::circle::ClipCircleC;
+use rust_d3_geo::clip::circle::ClipCircleU;
 use rust_d3_geo::projection::builder::template::NoClipU;
 use rust_d3_geo::projection::builder::template::ResampleNoClipC;
 use rust_d3_geo::projection::builder::template::ResampleNoClipU;
@@ -26,24 +24,11 @@ use rust_d3_geo::projection::RotateSet;
 use rust_d3_geo::projection::ScaleSet;
 use rust_d3_geo::projection::TranslateSet;
 use rust_d3_geo::rot::rotation::Rotation;
-use rust_d3_geo::stream::Connected;
 use rust_d3_geo::stream::Stream;
-use rust_d3_geo::stream::Unconnected;
 use rust_d3_geo::Transform;
 
-type DReturn<DRAIN, PCNU, PR, RC, RU, T> = Delaunay<
-    DRAIN,
-    InterpolateCircle<T>,
-    LineCircle<Buffer<T>, Connected<Buffer<T>>, T>,
-    LineCircle<RC, Connected<RC>, T>,
-    LineCircle<RC, Unconnected, T>,
-    PCNU,
-    PR,
-    PVCircle<T>,
-    RC,
-    RU,
-    T,
->;
+type DReturn<DRAIN, PCNU, PR, RC, RU, T> =
+    Delaunay<ClipCircleC<RC, T>, ClipCircleU<RC, T>, DRAIN, PCNU, PR, RC, RU, T>;
 
 /// Creates a delaunay object from a set of points.
 pub fn geo_delaunay_from<DRAIN, PCNC, PCNU, RC, RU, T>(

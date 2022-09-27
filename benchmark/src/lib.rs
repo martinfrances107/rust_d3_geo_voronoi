@@ -166,7 +166,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
             .collect(),
     );
 
-    let mut gv: GeoVoronoi<'_, StreamDrainStub<f64>, _, _, _, _, _, _, _, _, _, _> =
+    let mut gv: GeoVoronoi<'_, _, _, StreamDrainStub<f64>, _, _, _, _, _> =
         GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
 
     // let ortho = ortho_builder.rotate(&[0_f64, 0_f64, 0_f64]).build();
