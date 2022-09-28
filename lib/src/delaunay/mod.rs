@@ -44,10 +44,10 @@ use geo_urquhart::geo_urquhart;
 use rust_d3_delaunay::delaunay::Delaunay;
 use rust_d3_geo::clip::circle::ClipCircleC;
 use rust_d3_geo::clip::circle::ClipCircleU;
-use rust_d3_geo::projection::builder::template::NoClipC;
-use rust_d3_geo::projection::builder::template::NoClipU;
-use rust_d3_geo::projection::builder::template::ResampleNoClipC;
-use rust_d3_geo::projection::builder::template::ResampleNoClipU;
+use rust_d3_geo::projection::builder::template::NoPCNC;
+use rust_d3_geo::projection::builder::template::NoPCNU;
+use rust_d3_geo::projection::builder::template::ResampleNoPCNC;
+use rust_d3_geo::projection::builder::template::ResampleNoPCNU;
 use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::stream::Stream;
 
@@ -138,13 +138,13 @@ where
 impl<'a, DRAIN, T>
     GeoDelaunay<
         'a,
-        ClipCircleC<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
-        ClipCircleU<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
+        ClipCircleC<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
+        ClipCircleU<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
         DRAIN,
-        NoClipU<DRAIN>,
+        NoPCNU<DRAIN>,
         Stereographic<DRAIN, T>,
-        ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,
-        ResampleNoClipU<DRAIN, Stereographic<DRAIN, T>, T>,
+        ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>,
+        ResampleNoPCNU<DRAIN, Stereographic<DRAIN, T>, T>,
         T,
     >
 where
@@ -163,10 +163,10 @@ where
         let p = points.clone();
         match geo_delaunay_from::<
             DRAIN,
-            NoClipC<DRAIN>,
-            NoClipC<DRAIN>,
-            ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,
-            ResampleNoClipU<DRAIN, Stereographic<DRAIN, T>, T>,
+            NoPCNC<DRAIN>,
+            NoPCNC<DRAIN>,
+            ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>,
+            ResampleNoPCNU<DRAIN, Stereographic<DRAIN, T>, T>,
             T,
         >(p)
         {

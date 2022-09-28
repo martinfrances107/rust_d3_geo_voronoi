@@ -18,9 +18,9 @@ mod geo_voronoi_test {
     use rust_d3_geo::clip::circle::ClipCircleU;
     use rust_d3_geo::data_object::FeatureCollection;
     use rust_d3_geo::data_object::FeatureProperty;
-    use rust_d3_geo::projection::builder::template::NoClipU;
-    use rust_d3_geo::projection::builder::template::ResampleNoClipC;
-    use rust_d3_geo::projection::builder::template::ResampleNoClipU;
+    use rust_d3_geo::projection::builder::template::NoPCNU;
+    use rust_d3_geo::projection::builder::template::ResampleNoPCNC;
+    use rust_d3_geo::projection::builder::template::ResampleNoPCNU;
     use rust_d3_geo::projection::stereographic::Stereographic;
     use rust_d3_geo::stream::StreamDrainStub;
     use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
@@ -28,18 +28,18 @@ mod geo_voronoi_test {
     type GV<'a> = GeoVoronoi<
         'a,
         ClipCircleC<
-            ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
+            ResampleNoPCNC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
             f64,
         >,
         ClipCircleU<
-            ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
+            ResampleNoPCNC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
             f64,
         >,
         StreamDrainStub<f64>,
-        NoClipU<StreamDrainStub<f64>>,
+        NoPCNU<StreamDrainStub<f64>>,
         Stereographic<StreamDrainStub<f64>, f64>,
-        ResampleNoClipC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
-        ResampleNoClipU<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
+        ResampleNoPCNC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
+        ResampleNoPCNU<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
         f64,
     >;
 

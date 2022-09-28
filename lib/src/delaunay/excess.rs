@@ -14,3 +14,4 @@ pub fn excess<T: CoordFloat>(triangle_p: &[Coordinate<T>]) -> T {
     ];
     dot(&triangle[0], &cross(&triangle[2], &triangle[1]))
 }
+

@@ -14,9 +14,9 @@ use num_traits::FromPrimitive;
 use rust_d3_delaunay::delaunay::Delaunay;
 use rust_d3_geo::clip::circle::ClipCircleC;
 use rust_d3_geo::clip::circle::ClipCircleU;
-use rust_d3_geo::projection::builder::template::NoClipU;
-use rust_d3_geo::projection::builder::template::ResampleNoClipC;
-use rust_d3_geo::projection::builder::template::ResampleNoClipU;
+use rust_d3_geo::projection::builder::template::NoPCNU;
+use rust_d3_geo::projection::builder::template::ResampleNoPCNC;
+use rust_d3_geo::projection::builder::template::ResampleNoPCNU;
 use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::projection::Build;
 use rust_d3_geo::projection::ProjectionRawBase;
@@ -36,10 +36,10 @@ pub fn geo_delaunay_from<DRAIN, PCNC, PCNU, RC, RU, T>(
 ) -> Option<
     DReturn<
         DRAIN,
-        NoClipU<DRAIN>,
+        NoPCNU<DRAIN>,
         Stereographic<DRAIN, T>,
-        ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,
-        ResampleNoClipU<DRAIN, Stereographic<DRAIN, T>, T>,
+        ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>,
+        ResampleNoPCNU<DRAIN, Stereographic<DRAIN, T>, T>,
         T,
     >,
 >

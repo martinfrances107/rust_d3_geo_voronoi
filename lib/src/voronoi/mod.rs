@@ -29,9 +29,9 @@ use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::data_object::FeatureProperty;
 use rust_d3_geo::data_object::Features;
 use rust_d3_geo::distance::distance;
-use rust_d3_geo::projection::builder::template::NoClipU;
-use rust_d3_geo::projection::builder::template::ResampleNoClipC;
-use rust_d3_geo::projection::builder::template::ResampleNoClipU;
+use rust_d3_geo::projection::builder::template::NoPCNU;
+use rust_d3_geo::projection::builder::template::ResampleNoPCNC;
+use rust_d3_geo::projection::builder::template::ResampleNoPCNU;
 use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::stream::Stream;
 
@@ -55,12 +55,12 @@ where
 
 type XYReturnDefault<'a, DRAIN, T> = XYReturn<
     'a,
-    ClipCircleC<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
-    ClipCircleU<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
+    ClipCircleC<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
+    ClipCircleU<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
     DRAIN,
-    NoClipU<DRAIN>,
-    ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,
-    ResampleNoClipU<DRAIN, Stereographic<DRAIN, T>, T>,
+    NoPCNU<DRAIN>,
+    ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>,
+    ResampleNoPCNU<DRAIN, Stereographic<DRAIN, T>, T>,
     T,
 >;
 
@@ -123,13 +123,13 @@ where
 impl<'a, DRAIN, T>
     GeoVoronoi<
         'a,
-        ClipCircleC<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
-        ClipCircleU<ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
+        ClipCircleC<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
+        ClipCircleU<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
         DRAIN,
-        NoClipU<DRAIN>,
+        NoPCNU<DRAIN>,
         Stereographic<DRAIN, T>,
-        ResampleNoClipC<DRAIN, Stereographic<DRAIN, T>, T>,
-        ResampleNoClipU<DRAIN, Stereographic<DRAIN, T>, T>,
+        ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>,
+        ResampleNoPCNU<DRAIN, Stereographic<DRAIN, T>, T>,
         T,
     >
 where
