@@ -44,7 +44,7 @@ mod geo_voronoi_test {
     >;
 
     #[test]
-    fn test_two_hemispheres() {
+    fn two_hemispheres() {
         println!("two points leads to two hemispheres.");
         let sites = MultiPoint(vec![Point::new(-20f64, -20f64), Point::new(20f64, 20f64)]);
 
@@ -148,7 +148,7 @@ mod geo_voronoi_test {
         }
     }
     #[test]
-    fn test_polygon_tollerates_nan() {
+    fn polygon_tollerates_nan() {
         println!("geoVoronoi.polygons(sites) tolerates NaN.");
         //var u = geoVoronoi.geoVoronoi().polygons(sites)[0][0], v = [ 5, 4.981069 ];
         //test.ok( (Math.abs(u[0]-v[0]) < 1e-6) && (Math.abs(u[1]-v[1]) < 1e-6) );
@@ -192,7 +192,7 @@ mod geo_voronoi_test {
     //   });
 
     #[test]
-    fn test_computes_the_hull() {
+    fn computes_the_hull() {
         let sites = MultiPoint(vec![
             Point::new(10f64, 0f64),
             Point::new(10f64, 10f64),
@@ -470,7 +470,7 @@ mod geo_voronoi_test {
     }
 
     #[test]
-    fn test_does_not_list_fake_points() {
+    fn does_not_list_fake_points() {
         println!("geoVoronoi’s delaunay does not list fake points in its triangles");
         let sites = vec![
             Point::new(0f64, 0f64),
