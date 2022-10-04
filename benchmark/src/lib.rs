@@ -197,10 +197,11 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
         let cs: Context = Context::new(context.clone());
         let path_builder = PathBuilder::new(cs);
 
-        let ob = ortho_builder.clone();
+        let mut ob = ortho_builder.clone();
         let pb = path_builder;
         let t0 = performance.now();
-        let ortho = ob.rotate_set(&[t0 / 150_f64, 0_f64, 0_f64]).build();
+        let ob = ob.rotate_set(&[t0 / 150_f64, 0_f64, 0_f64]);
+        let ortho = ob.build();
         let mut path = pb.build(ortho);
 
         performance

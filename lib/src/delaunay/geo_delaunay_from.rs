@@ -63,15 +63,14 @@ where
     });
 
     // let builder: Builder<DRAIN, LineCircle<T>, Stereographic<DRAIN, T>, PV<T>, T> =
-    let builder = Stereographic::builder();
-    let projection = builder
-        .translate_set(&Coordinate {
-            x: T::zero(),
-            y: T::zero(),
-        })
-        .scale_set(T::one())
-        .rotate_set(&[r_invert.x, r_invert.y, T::zero()])
-        .build();
+    let mut builder = Stereographic::builder();
+    builder.translate_set(&Coordinate {
+        x: T::zero(),
+        y: T::zero(),
+    });
+    builder.scale_set(T::one());
+    builder.rotate_set(&[r_invert.x, r_invert.y, T::zero()]);
+    let projection = builder.build();
 
     let mut points: Vec<Coordinate<T>> = points.iter().map(|p| projection.transform(p)).collect();
 

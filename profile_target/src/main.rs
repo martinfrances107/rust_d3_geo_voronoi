@@ -64,7 +64,7 @@ fn draw() -> String {
     // size is the number of voronoi
     let size = 6000;
     // let s = path.object(&object);
-    let ortho_builder = Orthographic::builder();
+    let mut ortho_builder = Orthographic::builder();
 
     let sites = MultiPoint(
         repeat_with(rand::random)
@@ -81,7 +81,8 @@ fn draw() -> String {
 
     let mut gv: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
 
-    let ortho = ortho_builder.rotate_set(&[0_f64, 0_f64, 0_f64]).build();
+    ortho_builder.rotate_set(&[0_f64, 0_f64, 0_f64]);
+    let ortho = ortho_builder.build();
     let mut path = PathBuilder::context_pathstring().build(ortho);
 
     match gv.polygons(None) {
