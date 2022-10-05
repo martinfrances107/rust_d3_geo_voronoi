@@ -2,7 +2,8 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 
 use delaunator::EMPTY;
-use geo::{CoordFloat, Coordinate};
+use geo::CoordFloat;
+use geo::Coordinate;
 
 use super::excess::excess;
 

@@ -1,12 +1,12 @@
 use std::collections::HashSet;
 
-use geo::{CoordFloat, Coordinate};
+use geo::CoordFloat;
+use geo::Coordinate;
 use rust_d3_array::extent::extent;
 
 use super::excess::excess;
-use super::TriIndex;
 use super::EdgeIndex;
-
+use super::TriIndex;
 
 pub fn geo_edges<T: CoordFloat>(
     triangles: &[TriIndex],

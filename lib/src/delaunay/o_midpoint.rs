@@ -1,5 +1,6 @@
 // use delaunator::Point;
-use geo::{CoordFloat, Coordinate};
+use geo::CoordFloat;
+use geo::Coordinate;
 
 use num_traits::FloatConst;
 use rust_d3_geo::cartesian::add;

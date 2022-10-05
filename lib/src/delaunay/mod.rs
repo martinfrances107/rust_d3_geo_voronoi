@@ -25,7 +25,8 @@ use std::rc::Rc;
 
 use approx::AbsDiffEq;
 use derivative::*;
-use geo::{CoordFloat, Coordinate};
+use geo::CoordFloat;
+use geo::Coordinate;
 use num_traits::AsPrimitive;
 use num_traits::FloatConst;
 use num_traits::FromPrimitive;

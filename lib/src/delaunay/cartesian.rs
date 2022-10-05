@@ -1,4 +1,5 @@
-use geo::{CoordFloat, Coordinate};
+use geo::CoordFloat;
+use geo::Coordinate;
 
 /// Converts spherical coordinates (degrees) to 3D Cartesian.
 /// Note there is a similar but different function rust_d3_geo.
