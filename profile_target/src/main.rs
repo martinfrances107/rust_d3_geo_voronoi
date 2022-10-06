@@ -7,8 +7,10 @@ use std::iter::repeat_with;
 extern crate lazy_static;
 extern crate rand;
 
+use geo::Coordinate;
+use geo::Geometry;
 use geo::Geometry::Polygon;
-use geo::{Coordinate, Geometry, MultiPoint};
+use geo::MultiPoint;
 
 use rust_d3_geo::clip::circle::ClipCircleC;
 use rust_d3_geo::clip::circle::ClipCircleU;
