@@ -151,7 +151,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
     context.set_stroke_style(&"black".into());
     context.fill_rect(0.0, 0.0, width, height);
 
-    let ortho_builder = Orthographic::builder();
+    let mut ob = Orthographic::builder();
 
     let sites = MultiPoint(
         repeat_with(rand::random)
@@ -195,12 +195,10 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
             .expect("Failed render start");
 
         let cs: Context = Context::new(context.clone());
-        let path_builder = PathBuilder::new(cs);
+        let pb = PathBuilder::new(cs);
 
-        let mut ob = ortho_builder.clone();
-        let pb = path_builder;
         let t0 = performance.now();
-        let ob = ob.rotate_set(&[t0 / 150_f64, 0_f64, 0_f64]);
+        ob.rotate_set(&[t0 / 150_f64, 0_f64, 0_f64]);
         let ortho = ob.build();
         let mut path = pb.build(ortho);
 
