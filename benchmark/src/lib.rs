@@ -216,17 +216,10 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
                 context.set_stroke_style(&"black".into());
                 for (i, features) in fc.iter().enumerate() {
                     context.set_fill_style(&scheme_category10[i % 10]);
-                    match &features.geometry[0] {
-                        Polygon(polygon) => {
-                            context.begin_path();
-                            path.object(&Geometry::Polygon(polygon.clone()));
-                            context.fill();
-                            context.stroke();
-                        }
-                        _ => {
-                            console_log!("polygon not found");
-                        }
-                    }
+                    context.begin_path();
+                    path.object(&features.geometry[0]);
+                    context.fill();
+                    context.stroke();
                 }
             }
         }
