@@ -4,3 +4,8 @@ Cargo.lock
 node_modules
 package-lock.json
 profile_target/perf.data
+.*
+!.github
+!.gitattributes
+!.gitignore
+!.vscode
