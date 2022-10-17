@@ -7,6 +7,7 @@ use geo::Coordinate;
 pub(super) fn cartesian<T: CoordFloat>(coordinates: &Coordinate<T>) -> [T; 3] {
     let lambda = coordinates.x.to_radians();
     let phi = coordinates.y.to_radians();
-    let cos_phi = phi.cos();
-    [cos_phi * lambda.cos(), cos_phi * lambda.sin(), phi.sin()]
+    let (sin_phi, cos_phi) = phi.sin_cos();
+    let (sin_lambda, cos_lambda) = lambda.sin_cos();
+    [cos_phi * cos_lambda, cos_phi * sin_lambda, sin_phi]
 }
