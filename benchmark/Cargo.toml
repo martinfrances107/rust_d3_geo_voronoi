@@ -15,23 +15,18 @@ rust_d3_delaunay = { workspace = true, branch = "main" }
 geo = { workspace = true }
 # The `wasm-bindgen` crate provides the bare minimum functionality needed
 # to interact with JavaScript.
-wasm-bindgen = "0.2.78"
+wasm-bindgen = "~0.2"
 getrandom = { version = "0.2.3", features = ["js"] }
 rand = { version = "0.8.4" }
 js-sys = "0.3.55"
 
-wasm-bindgen-test = "0.3.28"
-wasm-bindgen-futures = "0.4.28"
-
-# Forces rebuild of the std library with debug info.
-[rust]
-debuginfo-level = 1
-
+wasm-bindgen-test = "~0.3"
+wasm-bindgen-futures = "~0.4"
 
 # The `web-sys` crate allows you to interact with the various browser APIs,
 # like the DOM.
 [dependencies.web-sys]
-version = "0.3.22"
+version = "~0.3"
 features = [
     "Attr",
     "console",
@@ -51,3 +46,8 @@ features = [
     "Text",
     "Window",
 ]
+
+[profile.release]
+lto = true
+debug = true
+codegen-units = 1
