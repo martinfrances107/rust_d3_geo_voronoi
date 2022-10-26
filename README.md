@@ -11,6 +11,12 @@ This is a port of the [d3-geo-voronoi](<https://github.com/Fil/d3-geo-voronoi>) 
 
 Currently we have 84% test coverage ( as reported by cargo tarpaulin -o Html )
 
+A collection of d3 sub packages is being ported to rust.
+
+* [rust_d3_geo](https://github.com/martinfrances107/rust_d3_geo)
+* [rust_d3_delaunay](https://github.com/martinfrances107/rust_d3_delaunay)
+* rust_d3_geo_voronoi
+
 ## Performance Profiling
 
 ### Demo Page
