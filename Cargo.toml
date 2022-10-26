@@ -11,6 +11,7 @@ rust_d3_delaunay = { git = "https://github.com/martinfrances107/rust_d3_delaunay
 # so it's only enabled in release mode.
 lto = true
 debug = 2
+codegen-units = 1
 
 # Needed by benchmark, debug symbols are essential.
 [profile.dev]
@@ -22,6 +23,4 @@ debug = 2
 # Only "./lib" needs this extra functionality.
 [patch.crates-io]
 # geo = { path = "../geo/geo/", feature=["use-approx"]}
-geo = { git = "https://github.com/martinfrances107/geo.git", branch = "cyclic_match", package = "geo", feature = [
-    "use-approx",
-] }
+geo = { git = "https://github.com/martinfrances107/geo.git", branch = "cyclic_match", package = "geo" }

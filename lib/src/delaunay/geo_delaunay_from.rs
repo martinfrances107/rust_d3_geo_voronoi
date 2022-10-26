@@ -31,6 +31,7 @@ type DReturn<DRAIN, PCNU, PR, RC, RU, T> =
     Delaunay<ClipCircleC<RC, T>, ClipCircleU<RC, T>, DRAIN, PCNU, PR, RC, RU, T>;
 
 /// Creates a delaunay object from a set of points.
+#[allow(clippy::type_complexity)]
 pub fn geo_delaunay_from<DRAIN, PCNC, PCNU, RC, RU, T>(
     points: Rc<Vec<Coordinate<T>>>,
 ) -> Option<

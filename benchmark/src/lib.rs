@@ -17,13 +17,9 @@ extern crate web_sys;
 use std::cell::RefCell;
 use std::iter::repeat_with;
 use std::rc::Rc;
-use std::time::Duration;
-use std::time::SystemTime;
-use std::time::UNIX_EPOCH;
 
 use geo::Coordinate;
 use geo::Geometry;
-use geo::Geometry::Polygon;
 use geo::MultiPoint;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
@@ -34,7 +30,6 @@ use web_sys::Document;
 use web_sys::Event;
 use web_sys::HtmlCanvasElement;
 use web_sys::HtmlInputElement;
-use web_sys::PerformanceMeasure;
 
 use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::path::builder::Builder as PathBuilder;
@@ -45,6 +40,7 @@ use rust_d3_geo::projection::ProjectionRawBase;
 use rust_d3_geo::projection::RotateSet;
 use rust_d3_geo::stream::StreamDrainStub;
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
+
 #[cfg(not(tarpaulin_include))]
 fn request_animation_frame(f: &Closure<dyn FnMut()>) {
     window()
@@ -78,12 +74,6 @@ pub fn run() -> Result<(), JsValue> {
     attach_listener(&document)?;
 
     Ok(())
-}
-
-fn perf_to_system(amt: f64) -> SystemTime {
-    let secs = (amt as u64) / 1_000;
-    let nanos = (((amt as u64) % 1_000) as u32) * 1_000_000;
-    UNIX_EPOCH + Duration::new(secs, nanos)
 }
 
 // Draw dot.

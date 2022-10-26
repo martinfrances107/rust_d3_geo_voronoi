@@ -86,6 +86,7 @@ where
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
     /// The wrapped GeoDelaunay instance.
+    #[allow(clippy::type_complexity)]
     pub geo_delaunay: Option<GeoDelaunay<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>>,
     data: Option<Geometry<T>>,
     found: Option<usize>,
