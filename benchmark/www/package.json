@@ -1,15 +1,11 @@
 {
-  "name": "create-wasm-app",
+  "name": "d3-geo-voronoi-benchmark-wasm-app",
   "version": "0.1.0",
-  "description": "create an app to consume rust-generated wasm packages",
+  "description": "An app renders a voronoi-mesh on a sphere with points.",
   "main": "index.js",
-  "bin": {
-    "create-wasm-app": ".bin/create-wasm-app.js"
-  },
   "scripts": {
-    "build": "rimraf dist pkg && RUST_LOG=info webpack",
-    "start": "rimraf dist pkg && RUST_LOG=info webpack-dev-server --open ",
-    "test": "cargo test && wasm-pack test --headless"
+    "build": "webpack --config webpack.config.js",
+    "start": "webpack-dev-server"
   },
   "repository": {
     "type": "git",
@@ -31,11 +27,9 @@
     "benchmark": "file:../pkg"
   },
   "devDependencies": {
-    "@wasm-tool/wasm-pack-plugin": "1.6.0",
     "copy-webpack-plugin": "^11.0.0",
-    "rimraf": "^3.0.0",
-    "webpack": "^5.67.0",
-    "webpack-cli": "^4.9.1",
-    "webpack-dev-server": "^4.11.0"
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.11.1"
   }
 }

@@ -71,17 +71,25 @@ The application displays a delaunay mesh of a large number of cells onto a spher
 
 - To build and start the web server:-
 
+```console
         cd benchmark
+        wasm-pack build
+        cd www
         npm install
         npm run start
+```
 
    The last command automatically starts your web browser.
 
 For benchmarking, to obtain best performance
 
+```console         
          cd benchmark
+         wasm-pack build
+         cd www
          npm install
          npm run build
+```
 
 and then host rust_d3_geo_voronoi/benchmark/dist directory before viewing in a browser.
 Timing specific information is output to the console.

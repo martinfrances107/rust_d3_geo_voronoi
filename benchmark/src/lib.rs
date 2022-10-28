@@ -79,11 +79,6 @@ pub fn run() -> Result<(), JsValue> {
 // Draw dot.
 #[cfg(not(tarpaulin_include))]
 fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
-    let perf = document
-        .get_element_by_id("perf")
-        .unwrap()
-        .dyn_into::<web_sys::HtmlParagraphElement>()?;
-
     // Grab canvas.
     let canvas = match document.get_element_by_id("c") {
         Some(element) => match element.dyn_into::<HtmlCanvasElement>() {
@@ -100,7 +95,7 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
             Some(c) => match c.dyn_into::<CanvasRenderingContext2d>() {
                 Ok(c) => c,
                 Err(_) => {
-                    return Err(JsValue::from_str("hello"));
+                    return Err(JsValue::from_str("could not convert context"));
                 }
             },
             None => {
@@ -111,11 +106,6 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
             return Err(JsValue::from_str("unable to get context"));
         }
     };
-
-    // Holds elapsed samples (use to compute the standard deviation).
-    let mut elapsed_array: [f64; 200] = [0_f64; 200];
-    // index into the elapsedArray 0..199
-    let mut index = 0;
 
     let scheme_category10: [JsValue; 10] = [
         JsValue::from_str("#1f77b4"),
@@ -180,10 +170,6 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
     let g = f.clone();
 
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
-        performance
-            .mark("render_start")
-            .expect("Failed render start");
-
         let cs: Context = Context::new(context.clone());
         let pb = PathBuilder::new(cs);
 
@@ -226,73 +212,6 @@ fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
             context.fill();
             context.stroke();
         }
-        let t1 = performance.now();
-        performance
-            .mark("points_rendered")
-            .expect("Failed points rendered");
-        performance
-            .measure_with_start_mark_and_end_mark(
-                "rebuilding_projection",
-                "render_start",
-                "projection_rebuilt",
-            )
-            .expect("failed measure_with_start_mark_and_end_mark");
-        performance
-            .measure_with_start_mark_and_end_mark(
-                "computing_polygons",
-                "projection_rebuilt",
-                "computed_polygons",
-            )
-            .expect("Failed computed polygons");
-        performance
-            .measure_with_start_mark_and_end_mark(
-                "rendering_polygons",
-                "computed_polygons",
-                "polygons_rendered",
-            )
-            .expect("Failed polygons rendered.");
-        performance
-            .measure_with_start_mark_and_end_mark(
-                "rendering_points",
-                "polygons_rendered",
-                "points_rendered",
-            )
-            .expect("Failed points rendered.");
-        performance
-            .measure_with_start_mark_and_end_mark("total", "render_start", "points_rendered")
-            .expect("failed points rendered.");
-
-        // let entries = performance.get_entries_by_type("measure");
-        // let iter = try_iter(&entries).expect("failed entries iter");
-        // for e in iter.unwrap() {
-        //     let eu = e.unwrap();
-        //     let pm = eu
-        //         .dyn_into::<PerformanceMeasure>()
-        //         .expect("failed getting e");
-        //     console_log!(" {:?} {:.3} ms", pm.name(), pm.duration());
-        // }
-
-        // Compute the mean elapsed time and compute the standard deviation based on the
-        // // the last 200 samples.
-        let elapsed = t1 - t0;
-        index = (index + 1) % 200;
-        elapsed_array[index] = elapsed;
-
-        let n = elapsed_array.len() as f64;
-
-        let mean: f64 = elapsed_array.iter().sum::<f64>() / n;
-
-        let std_dev = (elapsed_array
-            .iter()
-            .map(|x| (x - mean).powi(2))
-            .sum::<f64>()
-            / n)
-            .sqrt();
-
-        perf.set_inner_html(&format!(
-            "{} Mean Render Time: {} +/- {} ms",
-            index, mean, std_dev
-        ));
 
         // Schedule ourself for another requestAnimationFrame callback.
         request_animation_frame(f.borrow().as_ref().unwrap());
