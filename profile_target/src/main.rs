@@ -65,7 +65,6 @@ lazy_static! {
 fn draw() -> String {
     // size is the number of voronoi
     let size = 6000;
-    // let s = path.object(&object);
     let mut ortho_builder = Orthographic::builder();
 
     let sites = MultiPoint(
@@ -81,13 +80,13 @@ fn draw() -> String {
             .collect(),
     );
 
-    let mut gv: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
+    let mut gv: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
 
     ortho_builder.rotate_set(&[0_f64, 0_f64, 0_f64]);
     let ortho = ortho_builder.build();
     let mut path = PathBuilder::context_pathstring().build(ortho);
 
-    match gv.polygons(None) {
+    let mut out = match gv.polygons(None) {
         None => {
             panic!("failed to get polygons");
         }
@@ -101,7 +100,7 @@ fn draw() -> String {
                     }
                 };
                 let line = format!(
-                    "<path d={:?} fill=\"{}\" stroke=\"white\" />",
+                    "<path d={:?} fill=\"{}\" stroke=\"black\" />",
                     d,
                     SCHEME_CATEGORY10[i % 10]
                 );
@@ -109,7 +108,14 @@ fn draw() -> String {
             }
             paths
         }
+    };
+
+    for p in sites {
+        let d = path.object(&Geometry::Point(p));
+        let line = format!("<path d={:?} fill=\"white\" stroke=\"black\" />", d,);
+        out.push_str(&line);
     }
+    out
 }
 
 #[cfg(not(tarpaulin_include))]

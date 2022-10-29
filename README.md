@@ -48,6 +48,12 @@ I am currently looking to add more benchmarks, a diverse collection of example a
 
 This workspace contain a binary "profie_target" which outputs the result of a computation similar to that of the demo_page. Before API finialization - I am currently  using cargo flamegraph to identify any obvious optimizations.
 
+from rust_d3_geo_voronoi
+```
+cargo install  flamegraph
+ cargo flamegraph -- profile_target
+```
+
 ## Further Development
 
 Known bugs
