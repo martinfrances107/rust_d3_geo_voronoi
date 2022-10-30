@@ -123,7 +123,7 @@ fn main() -> std::io::Result<()> {
     let file = File::create("profile_output.html")?;
     let mut file = LineWriter::new(file);
 
-    let header = b"
+    file.write_all(b"
     <!DOCTYPE html>
     <html lang=\"en\">
     <head>
@@ -136,25 +136,18 @@ fn main() -> std::io::Result<()> {
     <h1>Project: rust_d3_geo_voronoi</h1>
     <p>
      A Complex SVG used for profiling.
-     </p>
-     <?xml version=\"1.0\" standalone=\"no\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">
+    </p>
+    <?xml version=\"1.0\" standalone=\"no\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">
     <svg version=\"1.1\"
       width=\"1280\"
       height=\"640\"
       viewBox=\"0 0 1200 518\"
       xmlns=\"http://www.w3.org/2000/svg\"
-    >";
+    >")?;
 
-    file.write_all(header)?;
+    file.write_all(draw().as_bytes())?;
 
-    let d_string = draw();
-    let d = d_string.as_bytes();
-
-    file.write_all(d)?;
-
-    let tail = b"</svg></body></html>";
-
-    file.write_all(tail)?;
+    file.write_all(b"</svg></body></html>")?;
 
     file.flush()?;
 
