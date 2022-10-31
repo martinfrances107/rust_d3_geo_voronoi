@@ -21,5 +21,4 @@ debug = true
 #
 # Only "./lib" needs this extra functionality.
 [patch.crates-io]
-# geo = { path = "../geo/geo/", feature=["use-approx"]}
 geo = { git = "https://github.com/martinfrances107/geo.git", branch = "cyclic_match", package = "geo" }

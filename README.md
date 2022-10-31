@@ -91,10 +91,11 @@ For benchmarking, to obtain best performance
 
 ```console         
          cd benchmark
-         wasm-pack build
+         wasm-pack build --release
          cd www
          npm install
          npm run build
+         serve dist/
 ```
 
 and then host rust_d3_geo_voronoi/benchmark/dist directory before viewing in a browser.

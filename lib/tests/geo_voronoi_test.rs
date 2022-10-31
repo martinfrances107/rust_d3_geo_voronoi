@@ -15,41 +15,34 @@ mod geo_voronoi_test {
     use pretty_assertions::assert_eq;
 
     use rust_d3_geo::clip::circle::ClipCircleC;
-    use rust_d3_geo::clip::circle::ClipCircleU;
     use rust_d3_geo::data_object::FeatureCollection;
     use rust_d3_geo::data_object::FeatureProperty;
-    use rust_d3_geo::projection::builder::template::NoPCNU;
     use rust_d3_geo::projection::builder::template::ResampleNoPCNC;
-    use rust_d3_geo::projection::builder::template::ResampleNoPCNU;
-    use rust_d3_geo::projection::stereographic::Stereographic;
     use rust_d3_geo::stream::StreamDrainStub;
     use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
-
-    type GV<'a> = GeoVoronoi<
-        'a,
-        ClipCircleC<
-            ResampleNoPCNC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
-            f64,
-        >,
-        ClipCircleU<
-            ResampleNoPCNC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
-            f64,
-        >,
-        StreamDrainStub<f64>,
-        NoPCNU<StreamDrainStub<f64>>,
-        Stereographic<StreamDrainStub<f64>, f64>,
-        ResampleNoPCNC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
-        ResampleNoPCNU<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
-        f64,
-    >;
 
     #[test]
     fn two_hemispheres() {
         println!("two points leads to two hemispheres.");
         let sites = MultiPoint(vec![Point::new(-20f64, -20f64), Point::new(20f64, 20f64)]);
 
-        // pub struct GeoVoronoi<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
-        let mut gv: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
+        let mut gv: GeoVoronoi<
+            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            f64,
+        >;
+        match GeoVoronoi::new(Some(Geometry::MultiPoint(sites))) {
+            Ok(ok) => gv = ok,
+            Err(_) => {
+                assert!(false);
+                panic!("could not proceed");
+            }
+        }
         match gv.polygons(None) {
             None => {
                 assert!(false, "Must return a FeatureCollectiont<T>.");
@@ -124,7 +117,23 @@ mod geo_voronoi_test {
             Point::new(0f64, 10f64),
         ]);
 
-        let mut gv: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
+        let mut gv: GeoVoronoi<
+            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            f64,
+        >;
+        match GeoVoronoi::new(Some(Geometry::MultiPoint(sites))) {
+            Ok(ok) => gv = ok,
+            Err(_) => {
+                assert!(false);
+                panic!("could not proceed");
+            }
+        };
         match gv.polygons(None) {
             None => {
                 assert!(false, "Must return a FeatureCollection<T>.");
@@ -162,7 +171,24 @@ mod geo_voronoi_test {
         // TODO the javascript version makes no assertions - if the test ends without expception then PASS!
         // This should be tightened up.
         let g = Geometry::MultiPoint(sites);
-        let mut gv: GV = GeoVoronoi::new(Some(g));
+
+        let mut gv: GeoVoronoi<
+            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            f64,
+        >;
+        match GeoVoronoi::new(Some(g)) {
+            Ok(ok) => gv = ok,
+            Err(_) => {
+                assert!(false);
+                panic!("could not proceed");
+            }
+        };
         let _u = gv.polygons(None);
     }
 
@@ -200,7 +226,24 @@ mod geo_voronoi_test {
             Point::new(-2f64, 5f64),
             Point::new(0f64, 0f64),
         ]);
-        let gv: GV = GeoVoronoi::new(None);
+
+        let gv: GeoVoronoi<
+            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            f64,
+        >;
+        match GeoVoronoi::new(None) {
+            Ok(ok) => gv = ok,
+            Err(_) => {
+                assert!(false);
+                panic!("could not proceed");
+            }
+        };
         let hull = gv.hull(Some(Geometry::MultiPoint(sites)));
         match hull {
             Some(polygon) => {
@@ -229,7 +272,24 @@ mod geo_voronoi_test {
             Point::new(-2f64, 5f64),
             Point::new(0f64, 0f64),
         ]);
-        let gv: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
+
+        let gv: GeoVoronoi<
+            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            f64,
+        >;
+        match GeoVoronoi::new(Some(Geometry::MultiPoint(sites))) {
+            Ok(ok) => gv = ok,
+            Err(_) => {
+                assert!(false);
+                panic!("could not proceed");
+            }
+        };
         let mesh = gv.mesh(None);
 
         let golden: Vec<LineString<f64>> = vec![
@@ -279,8 +339,25 @@ mod geo_voronoi_test {
             "1 15/8 5".into(),
             "5 0/8 5".into(),
         ];
-        let gv: GV = GeoVoronoi::new(None);
-        let cell_mesh_maybe = gv.cell_mesh(Some(Geometry::MultiPoint(sites)));
+
+        let gv: GeoVoronoi<
+            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            f64,
+        >;
+        match GeoVoronoi::new(Some(Geometry::MultiPoint(sites))) {
+            Ok(ok) => gv = ok,
+            Err(_) => {
+                assert!(false);
+                panic!("could not proceed");
+            }
+        };
+        let cell_mesh_maybe = gv.cell_mesh(None);
         match cell_mesh_maybe {
             Some(cell_mesh) => {
                 let c_string = cell_mesh.iter().map(|ls| {
@@ -311,7 +388,24 @@ mod geo_voronoi_test {
             Point::new(-2f64, 5f64),
             Point::new(0f64, 0f64),
         ]);
-        let mut voro: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
+
+        let mut voro: GeoVoronoi<
+            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            f64,
+        >;
+        match GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone()))) {
+            Ok(ok) => voro = ok,
+            Err(_) => {
+                assert!(false);
+                panic!("cannot proceed");
+            }
+        };
 
         assert_eq!(
             voro.find(
@@ -324,7 +418,24 @@ mod geo_voronoi_test {
             Some(4)
         );
         // TODO bug ... strange bug/hang ... unless I define voro twice.
-        let mut voro2: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites)));
+        let mut voro2: GeoVoronoi<
+            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            f64,
+        >;
+        match GeoVoronoi::new(Some(Geometry::MultiPoint(sites))) {
+            Ok(ok) => voro2 = ok,
+            Err(_) => {
+                assert!(false);
+                panic!("cannot proceed");
+            }
+        };
+
         assert_eq!(
             voro2.find(
                 &Coordinate {
@@ -344,7 +455,24 @@ mod geo_voronoi_test {
             Point::new(10f64, 0f64),
             Point::new(0f64, 10f64),
         ]));
-        let mut gv: GV = GeoVoronoi::new(None);
+        // let mut gv: GV = GeoVoronoi::new(None);
+        let mut gv: GeoVoronoi<
+            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            f64,
+        >;
+        match GeoVoronoi::new(None) {
+            Ok(ok) => gv = ok,
+            Err(_) => {
+                assert!(false);
+                panic!("could not proceed");
+            }
+        };
         match gv.links(Some(sites)) {
             Some(FeatureCollection(features)) => {
                 let mut out: Vec<f64> = features
@@ -376,7 +504,24 @@ mod geo_voronoi_test {
             Point::new(10f64, 0f64),
             Point::new(0f64, 10f64),
         ]));
-        let gv: GV = GeoVoronoi::new(None);
+        // let gv: GV = GeoVoronoi::new(None);
+        let gv: GeoVoronoi<
+            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            f64,
+        >;
+        match GeoVoronoi::new(None) {
+            Ok(ok) => gv = ok,
+            Err(_) => {
+                assert!(false);
+                panic!("cannot proceed");
+            }
+        };
         match gv.triangles(Some(sites)) {
             Some(FeatureCollection(features)) => {
                 assert_eq!(features.len(), 1);
@@ -395,7 +540,25 @@ mod geo_voronoi_test {
             Point::new(0f64, 10f64),
         ]));
 
-        let mut gv: GV = GeoVoronoi::new(None);
+        // let mut gv: GV = GeoVoronoi::new(None);
+        let mut gv: GeoVoronoi<
+            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            f64,
+        >;
+        match GeoVoronoi::new(None) {
+            Ok(ok) => gv = ok,
+            Err(_) => {
+                assert!(false);
+                panic!("could not proceed");
+            }
+        };
+
         match gv.links(Some(sites)) {
             Some(FeatureCollection(features)) => {
                 let mut results: Vec<bool> = Vec::new();
@@ -435,7 +598,24 @@ mod geo_voronoi_test {
             Point::new(0f64, 10f64),
         ]));
 
-        let gv: GV = GeoVoronoi::new(None);
+        let gv: GeoVoronoi<
+            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            f64,
+        >;
+        match GeoVoronoi::new(None) {
+            Ok(ok) => gv = ok,
+            Err(_) => {
+                assert!(false);
+                panic!("could not proceed");
+            }
+        };
+
         match gv.triangles(Some(sites)) {
             Some(FeatureCollection(features)) => {
                 println!("features {:?}", features);
@@ -478,7 +658,24 @@ mod geo_voronoi_test {
             Point::new(0f64, 10f64),
         ];
 
-        let u: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(MultiPoint(sites.clone()))));
+        // let u: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(MultiPoint(sites.clone()))));
+        let u: GeoVoronoi<
+            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            f64,
+        >;
+        match GeoVoronoi::new(Some(Geometry::MultiPoint(MultiPoint(sites.clone())))) {
+            Ok(ok) => u = ok,
+            Err(_) => {
+                assert!(false);
+                panic!("could not proceed");
+            }
+        };
         assert_eq!(
             u.geo_delaunay.unwrap().delaunay.triangles.iter().max(),
             Some(&(sites.len() - 1usize))

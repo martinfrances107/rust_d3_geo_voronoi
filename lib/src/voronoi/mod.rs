@@ -120,7 +120,21 @@ where
     }
 }
 
-// impl<'a, DRAIN, T> GeoVoronoi<'a, DRAIN, LineCircle<T>, T>
+/// Geovoronoi construction error.
+///
+/// Unexpected Geometry input.
+#[derive(Debug, Clone)]
+pub struct ConstructionError;
+
+impl std::fmt::Display for ConstructionError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(
+            f,
+            "Must implement Voronoi::new for other DataObject<T> types"
+        )
+    }
+}
+
 impl<'a, DRAIN, T>
     GeoVoronoi<
         'a,
@@ -150,7 +164,7 @@ where
 {
     /// If the input is a collection we act only on the first element in the collection.
     /// by copying over the data into a new single element before proceeding.
-    pub fn new(data: Option<Geometry<T>>) -> Self {
+    pub fn new(data: Option<Geometry<T>>) -> Result<Self, ConstructionError> {
         // let delaunay_return: Option<GeoDelaunay> = None;
 
         // On finding a Features Collection take the first element only, drop other elements.
@@ -208,12 +222,10 @@ where
             None => {
                 v = Self::default();
             }
-            _ => {
-                panic!("Must implement Voronoi::new for other DataObject<T> types");
-            }
+            _ => return Err(ConstructionError),
         }
 
-        v
+        Ok(v)
     }
 
     /// Sets the y() override function.
@@ -246,7 +258,10 @@ where
     /// Returns polygons in the form of a feature collection.
     pub fn polygons(&mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
         if let Some(data) = data {
-            *self = Self::new(Some(data));
+            match Self::new(Some(data)) {
+                Ok(s) => *self = s,
+                Err(_) => return None,
+            }
         };
 
         match &self.geo_delaunay {
@@ -286,7 +301,12 @@ where
     /// Returns a freature collection representing the triangularization of the input object.
     pub fn triangles(mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
         if let Some(data) = data {
-            self = Self::new(Some(data));
+            match Self::new(Some(data)) {
+                Ok(s) => {
+                    self = s;
+                }
+                Err(_) => return None,
+            }
         }
 
         match self.geo_delaunay {
@@ -329,7 +349,10 @@ where
     /// Returns an annotated Feature collection labelled with distance urquhart etc.
     pub fn links(&mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
         if let Some(data) = data {
-            *self = Self::new(Some(data));
+            match Self::new(Some(data)) {
+                Ok(s) => *self = s,
+                Err(_) => return None,
+            }
         }
 
         return match &self.geo_delaunay {
@@ -367,7 +390,10 @@ where
     /// Returns the mesh in the form of a mutliline string.
     pub fn mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
         if let Some(data) = data {
-            self = Self::new(Some(data));
+            match Self::new(Some(data)) {
+                Ok(s) => self = s,
+                Err(_) => return None,
+            }
         }
 
         match &self.geo_delaunay {
@@ -385,7 +411,12 @@ where
     /// Returns a Multiline string assoicated with the input geometry.
     pub fn cell_mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
         if let Some(data) = data {
-            self = Self::new(Some(data));
+            match Self::new(Some(data)) {
+                Ok(s) => self = s,
+                Err(_) => {
+                    return None;
+                }
+            }
         }
 
         // Return early maybe?
@@ -439,7 +470,12 @@ where
     /// Returns the hull for a given geometry.
     pub fn hull(mut self, data: Option<Geometry<T>>) -> Option<Polygon<T>> {
         if let Some(data) = data {
-            self = Self::new(Some(data));
+            match Self::new(Some(data)) {
+                Ok(s) => self = s,
+                Err(_) => {
+                    return None;
+                }
+            }
         }
 
         match self.geo_delaunay {

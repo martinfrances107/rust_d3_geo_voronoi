@@ -61,9 +61,11 @@ lazy_static! {
     ];
 }
 
+use rust_d3_geo_voronoi::voronoi::ConstructionError;
 #[cfg(not(tarpaulin_include))]
-fn draw() -> String {
+fn draw() -> Result<String, ConstructionError> {
     // size is the number of voronoi
+
     let size = 6000;
     let mut ortho_builder = Orthographic::builder();
 
@@ -80,7 +82,7 @@ fn draw() -> String {
             .collect(),
     );
 
-    let mut gv: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())));
+    let mut gv: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())))?;
 
     ortho_builder.rotate_set(&[0_f64, 0_f64, 0_f64]);
     let ortho = ortho_builder.build();
@@ -115,7 +117,7 @@ fn draw() -> String {
         let line = format!("<path d={:?} fill=\"white\" stroke=\"black\" />", d,);
         out.push_str(&line);
     }
-    out
+    Ok(out)
 }
 
 #[cfg(not(tarpaulin_include))]
@@ -145,11 +147,16 @@ fn main() -> std::io::Result<()> {
       xmlns=\"http://www.w3.org/2000/svg\"
     >")?;
 
-    file.write_all(draw().as_bytes())?;
+    // file.write_all(draw().as_bytes())?;
+    match draw() {
+        Ok(d) => {
+            file.write_all(d.as_bytes())?;
+            file.write_all(b"</svg></body></html>")?;
 
-    file.write_all(b"</svg></body></html>")?;
+            file.flush()?;
 
-    file.flush()?;
-
-    Ok(())
+            Ok(())
+        }
+        Err(_) => Ok(()),
+    }
 }
