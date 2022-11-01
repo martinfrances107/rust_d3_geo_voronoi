@@ -14,22 +14,30 @@ extern crate rand;
 extern crate wasm_bindgen_test;
 extern crate web_sys;
 
-use std::cell::RefCell;
+mod utils;
+
 use std::iter::repeat_with;
-use std::rc::Rc;
 
 use geo::Coordinate;
 use geo::Geometry;
 use geo::MultiPoint;
+use rust_d3_geo::clip::circle::ClipCircleC;
+use rust_d3_geo::clip::circle::ClipCircleU;
+use rust_d3_geo::projection::builder::template::NoPCNU;
+use rust_d3_geo::projection::builder::template::ResampleNoPCNC;
+use rust_d3_geo::projection::builder::template::ResampleNoPCNU;
+use rust_d3_geo::projection::builder::types::BuilderCircleResampleNoClip;
+use rust_d3_geo::projection::stereographic::Stereographic;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_test::console_log;
 use web_sys::window;
 use web_sys::CanvasRenderingContext2d;
 use web_sys::Document;
-use web_sys::Event;
+use web_sys::Performance;
+// use web_sys::Event;
 use web_sys::HtmlCanvasElement;
-use web_sys::HtmlInputElement;
+// use web_sys::HtmlInputElement;
 
 use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::path::builder::Builder as PathBuilder;
@@ -38,15 +46,188 @@ use rust_d3_geo::projection::orthographic::Orthographic;
 use rust_d3_geo::projection::Build;
 use rust_d3_geo::projection::ProjectionRawBase;
 use rust_d3_geo::projection::RotateSet;
-use rust_d3_geo::stream::StreamDrainStub;
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 
-#[cfg(not(tarpaulin_include))]
-fn request_animation_frame(f: &Closure<dyn FnMut()>) {
-    window()
-        .expect("should have a window in this context")
-        .request_animation_frame(f.as_ref().unchecked_ref())
-        .expect("should register `requestAnimationFrame` OK");
+type GV = GeoVoronoi<
+    'static,
+    ClipCircleC<ResampleNoPCNC<Context, Stereographic<Context, f64>, f64>, f64>,
+    ClipCircleU<ResampleNoPCNC<Context, Stereographic<Context, f64>, f64>, f64>,
+    Context,
+    NoPCNU<Context>,
+    Stereographic<Context, f64>,
+    ResampleNoPCNC<Context, Stereographic<Context, f64>, f64>,
+    ResampleNoPCNU<Context, Stereographic<Context, f64>, f64>,
+    f64,
+>;
+
+#[wasm_bindgen]
+#[derive(Debug)]
+/// State associated with render call.
+pub struct Renderer {
+    canvas: HtmlCanvasElement,
+    context: CanvasRenderingContext2d,
+    ob: BuilderCircleResampleNoClip<Context, Orthographic<Context, f64>, f64>,
+    performance: Performance,
+    scheme_category10: [JsValue; 10],
+    sites: MultiPoint<f64>,
+    gv: GV,
+}
+
+// A macro to provide `println!(..)`-style syntax for `console.log` logging.
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
+
+#[wasm_bindgen]
+impl Renderer {
+    /// size is the point of points generated at random.
+    pub fn new(size: u32) -> Result<Renderer, JsValue> {
+        utils::set_panic_hook();
+        log!("entry: new()");
+
+        let document = get_document()?;
+        // Grab canvas.
+        let canvas = match document.get_element_by_id("c") {
+            Some(element) => match element.dyn_into::<HtmlCanvasElement>() {
+                Ok(canvas) => canvas,
+                Err(_) => return Err(JsValue::from_str("#c is not a canvas element.")),
+            },
+            None => {
+                return Err(JsValue::from_str("Did not find #c on the page."));
+            }
+        };
+
+        let context = match canvas.get_context("2d") {
+            Ok(o) => match o {
+                Some(c) => match c.dyn_into::<CanvasRenderingContext2d>() {
+                    Ok(c) => c,
+                    Err(_) => {
+                        return Err(JsValue::from_str("Could not convert context."));
+                    }
+                },
+                None => {
+                    return Err(JsValue::from_str("Did not receive a context."));
+                }
+            },
+            Err(_) => {
+                return Err(JsValue::from_str("Unable to get context."));
+            }
+        };
+
+        let scheme_category10: [JsValue; 10] = [
+            JsValue::from_str("#1f77b4"),
+            JsValue::from_str("#ff7f0e"),
+            JsValue::from_str("#2ca02c"),
+            JsValue::from_str("#d62728"),
+            JsValue::from_str("#9467bd"),
+            JsValue::from_str("#8c564b"),
+            JsValue::from_str("#e377c2"),
+            JsValue::from_str("#7f7f7f"),
+            JsValue::from_str("#bcbd22"),
+            JsValue::from_str("#17becf"),
+        ];
+
+        let w = match window() {
+            Some(w) => w,
+            None => {
+                return Err(JsValue::from_str("Could not get window."));
+            }
+        };
+
+        let performance = match w.performance() {
+            Some(p) => p,
+            None => {
+                return Err(JsValue::from_str("Could not get performance."));
+            }
+        };
+
+        let ob = Orthographic::builder();
+
+        console_log!("size {:?}", size);
+        let sites = MultiPoint(
+            repeat_with(rand::random)
+                .map(|(x, y): (f64, f64)| {
+                    Coordinate {
+                        x: 360_f64 * x,
+                        y: 180_f64 * y - 90_f64,
+                    }
+                    .into()
+                })
+                .take(size as usize)
+                .collect(),
+        );
+
+        let gp = Geometry::MultiPoint(sites.clone());
+
+        let gv = match GeoVoronoi::new(Some(gp)) {
+            Ok(gv) => gv,
+            Err(_) => {
+                return Err(JsValue::from_str("Could not GeoVoronoi mesh."));
+            }
+        };
+
+        Ok(Self {
+            canvas,
+            context,
+            gv,
+            ob,
+            performance,
+            sites,
+            scheme_category10,
+        })
+    }
+
+    /// Render the next frame.
+    pub fn render(&mut self) {
+        utils::set_panic_hook();
+
+        let width = self.canvas.width().into();
+        let height = self.canvas.height().into();
+        self.context.set_fill_style(&"black".into());
+        self.context.set_stroke_style(&"black".into());
+        self.context.fill_rect(0.0, 0.0, width, height);
+
+        let cs: Context = Context::new(self.context.clone());
+        let t0 = self.performance.now();
+        self.ob.rotate_set(&[t0 / 150_f64, 0_f64, 0_f64]);
+        let ortho = self.ob.build();
+
+        let pb = PathBuilder::new(cs);
+
+        let mut path = pb.build(ortho);
+
+        match self.gv.polygons(None) {
+            None => {
+                console_log!("Failed to get polygons.");
+            }
+            Some(FeatureCollection(fc)) => {
+                if self.performance.mark("computed_polygons").is_err() {
+                    log!("Failed to compute polygons.");
+                }
+
+                self.context.set_stroke_style(&"black".into());
+                for (i, features) in fc.iter().enumerate() {
+                    self.context.set_fill_style(&self.scheme_category10[i % 10]);
+                    self.context.begin_path();
+                    path.object(&features.geometry[0]);
+                    self.context.fill();
+                    self.context.stroke();
+                }
+            }
+        }
+
+        // Render points.
+        self.context.set_fill_style(&"white".into());
+        self.context.set_stroke_style(&"black".into());
+        for p in &self.sites {
+            self.context.begin_path();
+            path.object(&Geometry::Point(*p));
+            self.context.fill();
+            self.context.stroke();
+        }
+    }
 }
 
 #[cfg(not(tarpaulin_include))]
@@ -60,235 +241,4 @@ fn get_document() -> Result<Document, JsValue> {
     } else {
         Err(JsValue::from_str("Unable to get window."))
     }
-}
-
-/// Entry point.
-#[cfg(not(tarpaulin_include))]
-#[wasm_bindgen(start)]
-pub fn run() -> Result<(), JsValue> {
-    console_log!("run() - wasm entry point");
-    let document = get_document()?;
-
-    update_all()?; // call once for initial render before any changes
-
-    attach_listener(&document)?;
-
-    Ok(())
-}
-
-// Draw dot.
-#[cfg(not(tarpaulin_include))]
-fn update_canvas(document: &Document, size: u32) -> Result<(), JsValue> {
-    // Grab canvas.
-    let canvas = match document.get_element_by_id("c") {
-        Some(element) => match element.dyn_into::<HtmlCanvasElement>() {
-            Ok(canvas) => canvas,
-            Err(_) => return Err(JsValue::from_str("#c is not a canvas element.")),
-        },
-        None => {
-            return Err(JsValue::from_str("Did not find #c on the page."));
-        }
-    };
-
-    let context = match canvas.get_context("2d") {
-        Ok(o) => match o {
-            Some(c) => match c.dyn_into::<CanvasRenderingContext2d>() {
-                Ok(c) => c,
-                Err(_) => {
-                    return Err(JsValue::from_str("could not convert context"));
-                }
-            },
-            None => {
-                return Err(JsValue::from_str("did not receive a context"));
-            }
-        },
-        Err(_) => {
-            return Err(JsValue::from_str("unable to get context"));
-        }
-    };
-
-    let scheme_category10: [JsValue; 10] = [
-        JsValue::from_str("#1f77b4"),
-        JsValue::from_str("#ff7f0e"),
-        JsValue::from_str("#2ca02c"),
-        JsValue::from_str("#d62728"),
-        JsValue::from_str("#9467bd"),
-        JsValue::from_str("#8c564b"),
-        JsValue::from_str("#e377c2"),
-        JsValue::from_str("#7f7f7f"),
-        JsValue::from_str("#bcbd22"),
-        JsValue::from_str("#17becf"),
-    ];
-
-    let window = window().expect("should have a window in this context");
-    let performance = window
-        .performance()
-        .expect("performance should be available");
-
-    let width = canvas.width().into();
-    let height = canvas.height().into();
-    context.set_fill_style(&"black".into());
-    context.set_stroke_style(&"black".into());
-    context.fill_rect(0.0, 0.0, width, height);
-
-    let mut ob = Orthographic::builder();
-
-    let sites = MultiPoint(
-        repeat_with(rand::random)
-            .map(|(x, y): (f64, f64)| {
-                Coordinate {
-                    x: 360_f64 * x,
-                    y: 180_f64 * y - 90_f64,
-                }
-                .into()
-            })
-            .take(size as usize)
-            .collect(),
-    );
-
-    // let mut gv: GeoVoronoi<'_, _, _, StreamDrainStub<f64>, _, _, _, _, _> =
-    //     GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())))?;
-    let mut gv: GeoVoronoi<'_, _, _, StreamDrainStub<f64>, _, _, _, _, _>;
-    match GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone()))) {
-        Ok(gv_int) => {
-            gv = gv_int;
-        }
-        Err(_) => {
-            return Err(JsValue::from_str(
-                "Unable to construct voronoi mesh from points",
-            ));
-
-            //         log!("could not construct voronoi mesh");
-        }
-    }
-
-    // let ortho = ortho_builder.rotate(&[0_f64, 0_f64, 0_f64]).build();
-    // let mut path = pb.build(ortho);
-
-    // let mut path;
-    //     // Here we want to call `requestAnimationFrame` in a loop, but only a fixed
-    //     // number of times. After it's done we want all our resources cleaned up. To
-    //     // achieve this we're using an `Rc`. The `Rc` will eventually store the
-    //     // closure we want to execute on each frame, but to start out it contains
-    //     // `None`.
-    //     //
-    //     // After the `Rc` is made we'll actually create the closure, and the closure
-    //     // will reference one of the `Rc` instances. The other `Rc` reference is
-    //     // used to store the closure, request the first frame, and then is dropped
-    //     // by this function.
-    //     //
-    //     // Inside the closure we've got a persistent `Rc` reference, which we use
-    //     // for all future iterations of the loop
-    let f = Rc::new(RefCell::new(None));
-    let g = f.clone();
-
-    *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
-        let cs: Context = Context::new(context.clone());
-        let pb = PathBuilder::new(cs);
-
-        let t0 = performance.now();
-        ob.rotate_set(&[t0 / 150_f64, 0_f64, 0_f64]);
-        let ortho = ob.build();
-        let mut path = pb.build(ortho);
-
-        performance
-            .mark("projection_rebuilt")
-            .expect("Failed projection rebuilt");
-        match gv.polygons(None) {
-            None => {
-                console_log!("failed to get polygons");
-            }
-            Some(FeatureCollection(fc)) => {
-                performance
-                    .mark("computed_polygons")
-                    .expect("Failed computed polygons");
-                context.set_stroke_style(&"black".into());
-                for (i, features) in fc.iter().enumerate() {
-                    context.set_fill_style(&scheme_category10[i % 10]);
-                    context.begin_path();
-                    path.object(&features.geometry[0]);
-                    context.fill();
-                    context.stroke();
-                }
-            }
-        }
-        performance
-            .mark("polygons_rendered")
-            .expect("failed polgons rendered");
-
-        // Render points.
-        context.set_fill_style(&"white".into());
-        context.set_stroke_style(&"black".into());
-        for p in &sites {
-            context.begin_path();
-            path.object(&Geometry::Point(*p));
-            context.fill();
-            context.stroke();
-        }
-
-        // Schedule ourself for another requestAnimationFrame callback.
-        request_animation_frame(f.borrow().as_ref().unwrap());
-    }) as Box<dyn FnMut()>));
-
-    request_animation_frame(g.borrow().as_ref().unwrap());
-    Ok(())
-}
-
-// Update the size-output span.
-#[cfg(not(tarpaulin_include))]
-fn update_span(document: &Document, new_size: u32) -> Result<(), JsValue> {
-    if let Some(span) = document.get_element_by_id("size-output") {
-        span.set_text_content(Some(&format!("{}", new_size)));
-        Ok(())
-    } else {
-        Err(JsValue::from_str("did not find #size-output on the page."))
-    }
-}
-
-// Given a new size, sets all relevant DOM elements.
-#[cfg(not(tarpaulin_include))]
-fn update_all() -> Result<(), JsValue> {
-    // get new size
-
-    let document = get_document()?;
-
-    if let Some(element) = document.get_element_by_id("size-range") {
-        if let Ok(input_element) = element.dyn_into::<HtmlInputElement>() {
-            if let Ok(new_size) = input_element.value().parse::<u32>() {
-                update_canvas(&document, new_size)?;
-                update_span(&document, new_size)?;
-                Ok(())
-            } else {
-                Err(JsValue::from_str("Could not parse input to number."))
-            }
-        } else {
-            Err(JsValue::from_str("Could not find #size-range on page."))
-        }
-    } else {
-        Err(JsValue::from_str("Could not find #size-range on page."))
-    }
-}
-
-#[cfg(not(tarpaulin_include))]
-fn attach_listener(document: &Document) -> Result<(), JsValue> {
-    let callback = Closure::wrap(Box::new(move |_evt: Event| {
-        update_all().expect("Could not update");
-    }) as Box<dyn Fn(_)>);
-
-    match document.get_element_by_id("size-range") {
-        Some(sr) => match sr.dyn_into::<HtmlInputElement>() {
-            Ok(ie) => {
-                ie.set_onchange(Some(callback.as_ref().unchecked_ref()));
-            }
-            _ => return Err(JsValue::from_str("Could not attach onchange")),
-        },
-        None => {
-            return Err(JsValue::from_str(
-                "aborting attach_listener: Could not find element.",
-            ));
-        }
-    }
-
-    callback.forget();
-    Ok(())
 }

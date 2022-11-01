@@ -1,5 +1,5 @@
 [package]
-name = "benchmark"
+name = "benchmark_new"
 description = "rust_d3_geo_voronoi benchmark wasm app"
 license = "MIT"
 version = "0.1.0"
@@ -9,22 +9,17 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
+geo = { workspace = true }
+getrandom = { version = "0.2.3", features = ["js"] }
+js-sys = "0.3.55"
+rand = { version = "0.8.4" }
 rust_d3_geo_voronoi = { path = "../lib" }
 rust_d3_geo = { workspace = true, branch = "main" }
 rust_d3_delaunay = { workspace = true, branch = "main" }
-geo = { workspace = true }
-# The `wasm-bindgen` crate provides the bare minimum functionality needed
-# to interact with JavaScript.
 wasm-bindgen = "~0.2"
-getrandom = { version = "0.2.3", features = ["js"] }
-rand = { version = "0.8.4" }
-js-sys = "0.3.55"
-
 wasm-bindgen-test = "~0.3"
 wasm-bindgen-futures = "~0.4"
 
-# The `web-sys` crate allows you to interact with the various browser APIs,
-# like the DOM.
 [dependencies.web-sys]
 version = "~0.3"
 features = [

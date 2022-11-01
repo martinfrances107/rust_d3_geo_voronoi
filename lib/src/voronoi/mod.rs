@@ -256,6 +256,10 @@ where
         };
     }
     /// Returns polygons in the form of a feature collection.
+    ///
+    /// None when either
+    /// the constructor fails, or
+    /// the delaunay instance is None.
     pub fn polygons(&mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
         if let Some(data) = data {
             match Self::new(Some(data)) {
