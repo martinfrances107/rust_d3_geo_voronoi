@@ -63,7 +63,6 @@ where
         y: T::zero(),
     });
 
-    // let builder: Builder<DRAIN, LineCircle<T>, Stereographic<DRAIN, T>, PV<T>, T> =
     let mut builder = Stereographic::builder();
     builder.translate_set(&Coordinate {
         x: T::zero(),

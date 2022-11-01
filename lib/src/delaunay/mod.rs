@@ -159,7 +159,6 @@ where
         + FromPrimitive,
 {
     /// Creates a GeoDelaunay object from a set of points.
-    /// GeoDelaunay<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
     pub fn delaunay(points: Rc<Vec<Coordinate<T>>>) -> Option<Self> {
         let p = points.clone();
         match geo_delaunay_from::<
@@ -195,9 +194,7 @@ where
                     triangles: tri,
                 });
             }
-            None => {
-                panic!("return none");
-            }
+            None => None,
         }
     }
 }
