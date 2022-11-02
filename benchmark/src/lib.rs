@@ -30,14 +30,11 @@ use rust_d3_geo::projection::builder::types::BuilderCircleResampleNoClip;
 use rust_d3_geo::projection::stereographic::Stereographic;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use wasm_bindgen_test::console_log;
 use web_sys::window;
 use web_sys::CanvasRenderingContext2d;
 use web_sys::Document;
-use web_sys::Performance;
-// use web_sys::Event;
 use web_sys::HtmlCanvasElement;
-// use web_sys::HtmlInputElement;
+use web_sys::Performance;
 
 use rust_d3_geo::data_object::FeatureCollection;
 use rust_d3_geo::path::builder::Builder as PathBuilder;
@@ -64,8 +61,8 @@ type GV = GeoVoronoi<
 #[derive(Debug)]
 /// State associated with render call.
 pub struct Renderer {
-    canvas: HtmlCanvasElement,
-    context: CanvasRenderingContext2d,
+    context2d: CanvasRenderingContext2d,
+    context: Context,
     ob: BuilderCircleResampleNoClip<Context, Orthographic<Context, f64>, f64>,
     performance: Performance,
     scheme_category10: [JsValue; 10],
@@ -73,19 +70,11 @@ pub struct Renderer {
     gv: GV,
 }
 
-// A macro to provide `println!(..)`-style syntax for `console.log` logging.
-macro_rules! log {
-    ( $( $t:tt )* ) => {
-        web_sys::console::log_1(&format!( $( $t )* ).into());
-    }
-}
-
 #[wasm_bindgen]
 impl Renderer {
     /// size is the point of points generated at random.
     pub fn new(size: u32) -> Result<Renderer, JsValue> {
         utils::set_panic_hook();
-        log!("entry: new()");
 
         let document = get_document()?;
         // Grab canvas.
@@ -99,7 +88,7 @@ impl Renderer {
             }
         };
 
-        let context = match canvas.get_context("2d") {
+        let context2d = match canvas.get_context("2d") {
             Ok(o) => match o {
                 Some(c) => match c.dyn_into::<CanvasRenderingContext2d>() {
                     Ok(c) => c,
@@ -115,6 +104,8 @@ impl Renderer {
                 return Err(JsValue::from_str("Unable to get context."));
             }
         };
+
+        let context: Context = Context::new(context2d.clone());
 
         let scheme_category10: [JsValue; 10] = [
             JsValue::from_str("#1f77b4"),
@@ -132,21 +123,53 @@ impl Renderer {
         let w = match window() {
             Some(w) => w,
             None => {
-                return Err(JsValue::from_str("Could not get window."));
+                return Err(JsValue::from_str("new() Could not get window."));
             }
         };
 
         let performance = match w.performance() {
             Some(p) => p,
             None => {
-                return Err(JsValue::from_str("Could not get performance."));
+                return Err(JsValue::from_str("new() Could not get performance."));
             }
         };
 
         let ob = Orthographic::builder();
 
-        console_log!("size {:?}", size);
-        let sites = MultiPoint(
+        // Insert dummy values.
+        let sites = MultiPoint(vec![]);
+        let gp = Geometry::MultiPoint(sites.clone());
+        let gv = match GeoVoronoi::new(Some(gp)) {
+            Ok(gv) => gv,
+            Err(_) => {
+                return Err(JsValue::from_str("new() Could not GeoVoronoi mesh."));
+            }
+        };
+
+        let mut out = Self {
+            context2d,
+            context,
+            gv,
+            ob,
+            performance,
+            sites,
+            scheme_category10,
+        };
+
+        out.update(size)?;
+
+        Ok(out)
+    }
+
+    ///Regenerate mesh points and associated data structures.
+    ///
+    /// This function is designed to be called as part of a
+    /// HTML element onchange event, so I am using a
+    /// update in-place stratergy.
+    pub fn update(&mut self, size: u32) -> Result<(), JsValue> {
+        utils::set_panic_hook();
+        // console_log!("size {:?}", size);
+        self.sites = MultiPoint(
             repeat_with(rand::random)
                 .map(|(x, y): (f64, f64)| {
                     Coordinate {
@@ -159,73 +182,55 @@ impl Renderer {
                 .collect(),
         );
 
-        let gp = Geometry::MultiPoint(sites.clone());
+        let gp = Geometry::MultiPoint(self.sites.clone());
 
-        let gv = match GeoVoronoi::new(Some(gp)) {
+        self.gv = match GeoVoronoi::new(Some(gp)) {
             Ok(gv) => gv,
             Err(_) => {
-                return Err(JsValue::from_str("Could not GeoVoronoi mesh."));
+                return Err(JsValue::from_str(
+                    "update() Could not construct the GeoVoronoi mesh.",
+                ));
             }
         };
 
-        Ok(Self {
-            canvas,
-            context,
-            gv,
-            ob,
-            performance,
-            sites,
-            scheme_category10,
-        })
+        Ok(())
     }
 
     /// Render the next frame.
     pub fn render(&mut self) {
-        utils::set_panic_hook();
-
-        let width = self.canvas.width().into();
-        let height = self.canvas.height().into();
-        self.context.set_fill_style(&"black".into());
-        self.context.set_stroke_style(&"black".into());
-        self.context.fill_rect(0.0, 0.0, width, height);
-
-        let cs: Context = Context::new(self.context.clone());
         let t0 = self.performance.now();
         self.ob.rotate_set(&[t0 / 150_f64, 0_f64, 0_f64]);
         let ortho = self.ob.build();
 
-        let pb = PathBuilder::new(cs);
+        let pb = PathBuilder::new(self.context.clone());
 
         let mut path = pb.build(ortho);
 
         match self.gv.polygons(None) {
             None => {
-                console_log!("Failed to get polygons.");
+                panic!("Failed to get polygons.");
             }
             Some(FeatureCollection(fc)) => {
-                if self.performance.mark("computed_polygons").is_err() {
-                    log!("Failed to compute polygons.");
-                }
-
-                self.context.set_stroke_style(&"black".into());
+                self.context2d.set_stroke_style(&"black".into());
                 for (i, features) in fc.iter().enumerate() {
-                    self.context.set_fill_style(&self.scheme_category10[i % 10]);
-                    self.context.begin_path();
+                    self.context2d
+                        .set_fill_style(&self.scheme_category10[i % 10]);
+                    self.context2d.begin_path();
                     path.object(&features.geometry[0]);
-                    self.context.fill();
-                    self.context.stroke();
+                    self.context2d.fill();
+                    self.context2d.stroke();
                 }
             }
         }
 
         // Render points.
-        self.context.set_fill_style(&"white".into());
-        self.context.set_stroke_style(&"black".into());
+        self.context2d.set_fill_style(&"white".into());
+        self.context2d.set_stroke_style(&"black".into());
         for p in &self.sites {
-            self.context.begin_path();
+            self.context2d.begin_path();
             path.object(&Geometry::Point(*p));
-            self.context.fill();
-            self.context.stroke();
+            self.context2d.fill();
+            self.context2d.stroke();
         }
     }
 }
