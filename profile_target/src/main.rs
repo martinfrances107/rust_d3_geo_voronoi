@@ -40,10 +40,10 @@ type GV<'a> = GeoVoronoi<
         f64,
     >,
     StreamDrainStub<f64>,
-    NoPCNU<StreamDrainStub<f64>>,
+    NoPCNU,
     Stereographic<StreamDrainStub<f64>, f64>,
     ResampleNoPCNC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
-    ResampleNoPCNU<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
+    ResampleNoPCNU<Stereographic<StreamDrainStub<f64>, f64>, f64>,
     f64,
 >;
 

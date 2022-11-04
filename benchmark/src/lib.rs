@@ -52,10 +52,10 @@ type GV = GeoVoronoi<
     ClipCircleC<ResampleNoPCNC<Context, Stereographic<Context, f64>, f64>, f64>,
     ClipCircleU<ResampleNoPCNC<Context, Stereographic<Context, f64>, f64>, f64>,
     Context,
-    NoPCNU<Context>,
+    NoPCNU,
     Stereographic<Context, f64>,
     ResampleNoPCNC<Context, Stereographic<Context, f64>, f64>,
-    ResampleNoPCNU<Context, Stereographic<Context, f64>, f64>,
+    ResampleNoPCNU<Stereographic<Context, f64>, f64>,
     f64,
 >;
 

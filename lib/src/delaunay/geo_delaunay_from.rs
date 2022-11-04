@@ -37,10 +37,10 @@ pub fn geo_delaunay_from<DRAIN, PCNC, PCNU, RC, RU, T>(
 ) -> Option<
     DReturn<
         DRAIN,
-        NoPCNU<DRAIN>,
+        NoPCNU,
         Stereographic<DRAIN, T>,
         ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>,
-        ResampleNoPCNU<DRAIN, Stereographic<DRAIN, T>, T>,
+        ResampleNoPCNU<Stereographic<DRAIN, T>, T>,
         T,
     >,
 >

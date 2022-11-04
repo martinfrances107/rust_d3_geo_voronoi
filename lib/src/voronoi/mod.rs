@@ -58,9 +58,9 @@ type XYReturnDefault<'a, DRAIN, T> = XYReturn<
     ClipCircleC<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
     ClipCircleU<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
     DRAIN,
-    NoPCNU<DRAIN>,
+    NoPCNU,
     ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>,
-    ResampleNoPCNU<DRAIN, Stereographic<DRAIN, T>, T>,
+    ResampleNoPCNU<Stereographic<DRAIN, T>, T>,
     T,
 >;
 
@@ -141,10 +141,10 @@ impl<'a, DRAIN, T>
         ClipCircleC<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
         ClipCircleU<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
         DRAIN,
-        NoPCNU<DRAIN>,
+        NoPCNU,
         Stereographic<DRAIN, T>,
         ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>,
-        ResampleNoPCNU<DRAIN, Stereographic<DRAIN, T>, T>,
+        ResampleNoPCNU<Stereographic<DRAIN, T>, T>,
         T,
     >
 where
