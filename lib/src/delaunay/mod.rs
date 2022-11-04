@@ -52,47 +52,6 @@ use rust_d3_geo::projection::builder::template::ResampleNoPCNU;
 use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::stream::Stream;
 
-// #[derive(Default, Debug)]
-// pub struct Delaunay {
-//     /// The coordinates of the points as an array [x0, y0, x1, y1, ...].
-//     /// TyPIcally, this is a Float64Array, however you can use any array-like type in the constructor.
-//     ///
-//     pub points: Vec<f64>,
-
-//     ///
-//     /// The halfedge indices as an Int32Array [j0, j1, ...].
-//     /// For each index 0 <= i < half_edges.length, there is a halfedge from triangle vertex j = half_edges[i] to triangle vertex i.
-//     ///
-//     pub half_edges: Vec<i32>,
-
-//     ///
-//     /// An arbitrary node on the convex hull.
-//     /// The convex hull is represented as a circular doubly-linked list of nodes.
-//     ///
-//     // hull: Node,
-
-//     /// The triangle vertex indices as an Uint32Array [i0, j0, k0, i1, j1, k1, ...].
-//     /// Each contiguous triplet of indices i, j, k forms a counterclockwise triangle.
-//     /// The coordinates of the triangle's points can be found by going through 'points'.
-//     ///
-//     pub triangles: Vec<usize>,
-
-//     pub centers: Option<Vec<Point>>,
-
-//     /// The incoming halfedge indexes as a Int32Array [e0, e1, e2, ...].
-//     /// For each point i, inedges[i] is the halfedge index e of an incoming halfedge.
-//     /// For coincident points, the halfedge index is -1; for points on the convex hull, the incoming halfedge is on the convex hull; for other points, the choice of incoming halfedge is arbitrary.
-//     ///
-//     pub inedges: Vec<i32>,
-
-//     /// The outgoing halfedge indexes as a Int32Array [e0, e1, e2, ...].
-//     /// For each point i on the convex hull, outedges[i] is the halfedge index e of the corresponding outgoing halfedge; for other points, the halfedge index is -1.
-//     ///
-//     outedges: Vec<i32>,
-
-//     pub projection: Option<ProjectionMutator>,
-// }
-
 type FindReturn<'a, T> = Box<dyn Fn(&Coordinate<T>, Option<usize>) -> Option<usize> + 'a>;
 
 /// A Pair of indicies pointing into a dataset identifying a edge.

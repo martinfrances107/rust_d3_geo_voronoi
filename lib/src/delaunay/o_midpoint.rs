@@ -1,4 +1,3 @@
-// use delaunator::Point;
 use geo::CoordFloat;
 use geo::Coordinate;
 

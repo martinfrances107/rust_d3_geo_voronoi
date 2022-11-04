@@ -1,5 +1,9 @@
 [workspace]
-members = ["./lib", "./benchmark", "./profile_target"]
+members = [
+    "./lib",
+    "./benchmark",      # A webpage with a stress test of the library.
+    "./profile_target", # A binary that output a compelex SVG images, which can be profiled.
+]
 
 [workspace.dependencies]
 geo = "0.23.0"
