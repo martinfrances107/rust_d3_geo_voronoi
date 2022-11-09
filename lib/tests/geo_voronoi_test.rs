@@ -39,13 +39,14 @@ mod geo_voronoi_test {
         match GeoVoronoi::new(Some(Geometry::MultiPoint(sites))) {
             Ok(ok) => gv = ok,
             Err(_) => {
-                assert!(false);
+                // assert!(false);
                 panic!("could not proceed");
             }
         }
         match gv.polygons(None) {
             None => {
-                assert!(false, "Must return a FeatureCollectiont<T>.");
+                // assert!(false, "Must return a FeatureCollectiont<T>.");
+                unreachable!();
             }
             Some(FeatureCollection(mut features)) => {
                 let last_cell = line_string![
@@ -71,7 +72,7 @@ mod geo_voronoi_test {
                         assert_eq!(last_cell, *ls);
                     }
                     _ => {
-                        assert!(false, "expecting a polygon");
+                        panic!("expecting a polygon");
                     }
                 };
 
@@ -101,7 +102,7 @@ mod geo_voronoi_test {
                         assert_eq!(first_cell, *ls);
                     }
                     _ => {
-                        assert!(false, "expecting a polygon");
+                        panic!("expecting a polygon");
                     }
                 };
             }
@@ -130,13 +131,12 @@ mod geo_voronoi_test {
         match GeoVoronoi::new(Some(Geometry::MultiPoint(sites))) {
             Ok(ok) => gv = ok,
             Err(_) => {
-                assert!(false);
                 panic!("could not proceed");
             }
         };
         match gv.polygons(None) {
             None => {
-                assert!(false, "Must return a FeatureCollection<T>.");
+                panic!("Must return a FeatureCollection<T>.");
             }
             Some(FeatureCollection(features)) => {
                 println!("Found a Features Collection.");
@@ -150,7 +150,7 @@ mod geo_voronoi_test {
                         assert!((u.y() - v.y()).abs() < 1e-6f64);
                     }
                     _ => {
-                        assert!(false, "Expected a polygon object.");
+                        panic!("Expected a polygon object.");
                     }
                 }
             }
@@ -185,7 +185,6 @@ mod geo_voronoi_test {
         match GeoVoronoi::new(Some(g)) {
             Ok(ok) => gv = ok,
             Err(_) => {
-                assert!(false);
                 panic!("could not proceed");
             }
         };
@@ -227,7 +226,7 @@ mod geo_voronoi_test {
             Point::new(0f64, 0f64),
         ]);
 
-        let gv: GeoVoronoi<
+        let gv = match GeoVoronoi::<
             ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
             _,
             _,
@@ -236,11 +235,10 @@ mod geo_voronoi_test {
             _,
             _,
             f64,
-        >;
-        match GeoVoronoi::new(None) {
-            Ok(ok) => gv = ok,
+        >::new(None)
+        {
+            Ok(gv) => gv,
             Err(_) => {
-                assert!(false);
                 panic!("could not proceed");
             }
         };
@@ -273,7 +271,7 @@ mod geo_voronoi_test {
             Point::new(0f64, 0f64),
         ]);
 
-        let gv: GeoVoronoi<
+        let gv = match GeoVoronoi::<
             ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
             _,
             _,
@@ -282,11 +280,10 @@ mod geo_voronoi_test {
             _,
             _,
             f64,
-        >;
-        match GeoVoronoi::new(Some(Geometry::MultiPoint(sites))) {
-            Ok(ok) => gv = ok,
+        >::new(Some(Geometry::MultiPoint(sites)))
+        {
+            Ok(gv) => gv,
             Err(_) => {
-                assert!(false);
                 panic!("could not proceed");
             }
         };
@@ -313,7 +310,7 @@ mod geo_voronoi_test {
                 }
             }
             None => {
-                assert!(false, "Expected the mesh as a MultiLineString.");
+                panic!("Expected the mesh as a MultiLineString.");
             }
         }
     }
@@ -340,7 +337,17 @@ mod geo_voronoi_test {
             "5 0/8 5".into(),
         ];
 
-        let gv: GeoVoronoi<
+        // let gv: GeoVoronoi<
+        //     ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+        //     _,
+        //     _,
+        //     _,
+        //     _,
+        //     _,
+        //     _,
+        //     f64,
+        // >;
+        let gv = match GeoVoronoi::<
             ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
             _,
             _,
@@ -349,11 +356,10 @@ mod geo_voronoi_test {
             _,
             _,
             f64,
-        >;
-        match GeoVoronoi::new(Some(Geometry::MultiPoint(sites))) {
-            Ok(ok) => gv = ok,
+        >::new(Some(Geometry::MultiPoint(sites)))
+        {
+            Ok(gv) => gv,
             Err(_) => {
-                assert!(false);
                 panic!("could not proceed");
             }
         };
@@ -402,7 +408,6 @@ mod geo_voronoi_test {
         match GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone()))) {
             Ok(ok) => voro = ok,
             Err(_) => {
-                assert!(false);
                 panic!("cannot proceed");
             }
         };
@@ -431,7 +436,6 @@ mod geo_voronoi_test {
         match GeoVoronoi::new(Some(Geometry::MultiPoint(sites))) {
             Ok(ok) => voro2 = ok,
             Err(_) => {
-                assert!(false);
                 panic!("cannot proceed");
             }
         };
@@ -469,7 +473,6 @@ mod geo_voronoi_test {
         match GeoVoronoi::new(None) {
             Ok(ok) => gv = ok,
             Err(_) => {
-                assert!(false);
                 panic!("could not proceed");
             }
         };
@@ -504,8 +507,8 @@ mod geo_voronoi_test {
             Point::new(10f64, 0f64),
             Point::new(0f64, 10f64),
         ]));
-        // let gv: GV = GeoVoronoi::new(None);
-        let gv: GeoVoronoi<
+
+        let gv = match GeoVoronoi::<
             ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
             _,
             _,
@@ -514,11 +517,10 @@ mod geo_voronoi_test {
             _,
             _,
             f64,
-        >;
-        match GeoVoronoi::new(None) {
-            Ok(ok) => gv = ok,
+        >::new(None)
+        {
+            Ok(gv) => gv,
             Err(_) => {
-                assert!(false);
                 panic!("cannot proceed");
             }
         };
@@ -554,7 +556,6 @@ mod geo_voronoi_test {
         match GeoVoronoi::new(None) {
             Ok(ok) => gv = ok,
             Err(_) => {
-                assert!(false);
                 panic!("could not proceed");
             }
         };
@@ -598,7 +599,7 @@ mod geo_voronoi_test {
             Point::new(0f64, 10f64),
         ]));
 
-        let gv: GeoVoronoi<
+        let gv = match GeoVoronoi::<
             ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
             _,
             _,
@@ -607,11 +608,10 @@ mod geo_voronoi_test {
             _,
             _,
             f64,
-        >;
-        match GeoVoronoi::new(None) {
-            Ok(ok) => gv = ok,
+        >::new(None)
+        {
+            Ok(gv) => gv,
             Err(_) => {
-                assert!(false);
                 panic!("could not proceed");
             }
         };
@@ -658,8 +658,7 @@ mod geo_voronoi_test {
             Point::new(0f64, 10f64),
         ];
 
-        // let u: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(MultiPoint(sites.clone()))));
-        let u: GeoVoronoi<
+        let u = match GeoVoronoi::<
             ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
             _,
             _,
@@ -668,11 +667,10 @@ mod geo_voronoi_test {
             _,
             _,
             f64,
-        >;
-        match GeoVoronoi::new(Some(Geometry::MultiPoint(MultiPoint(sites.clone())))) {
-            Ok(ok) => u = ok,
+        >::new(Some(Geometry::MultiPoint(MultiPoint(sites.clone()))))
+        {
+            Ok(u) => u,
             Err(_) => {
-                assert!(false);
                 panic!("could not proceed");
             }
         };
