@@ -23,10 +23,7 @@ pub fn geo_find<'a, T: CoordFloat + 'static>(
 ) -> FindReturn<'a, T> {
     Box::new(
         move |p: &Coordinate<T>, next_p: Option<usize>| -> Option<usize> {
-            let next_or_none = match next_p {
-                Some(n) => Some(n),
-                None => Some(0usize),
-            };
+            let next_or_none = next_p.map_or(Some(0usize), Some);
             let mut dist: T;
             let mut found = next_or_none;
             let xyz = cartesian(&Coordinate { x: p.x, y: p.y });

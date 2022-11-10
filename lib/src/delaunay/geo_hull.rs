@@ -30,14 +30,11 @@ where
         for i in 0usize..3usize {
             let e = [tri[i], tri[(i + 1) % 3]];
             let code = (e[1], e[0]);
-            match h_hull.get(&code) {
-                Some(_) => {
-                    h_hull.remove(&code);
-                }
-                None => {
-                    let code = (e[0], e[1]);
-                    h_hull.insert(code);
-                }
+            if h_hull.get(&code).is_some() {
+                h_hull.remove(&code);
+            } else {
+                let code = (e[0], e[1]);
+                h_hull.insert(code);
             }
         }
     }

@@ -48,7 +48,7 @@ where
             .enumerate()
             .for_each(|(i, p)| {
                 if p == point {
-                    f = Some(i + self.triangles.len())
+                    f = Some(i + self.triangles.len());
                 }
             });
         match f {
@@ -108,10 +108,8 @@ where
                 let a = tri[j];
                 let b = tri[(j + 1) % 3];
                 let c = tri[(j + 2) % 3];
-                let mut tuple_vec: TupleVec = match polygons_map.get(&a) {
-                    Some(t) => (*t).clone(),
-                    None => Vec::new(),
-                };
+                let mut tuple_vec: TupleVec =
+                    polygons_map.get(&a).map_or_else(Vec::new, |t| (*t).clone());
                 tuple_vec.push((b, c, t, (a, b, c)));
                 polygons_map.insert(a, tuple_vec);
             }

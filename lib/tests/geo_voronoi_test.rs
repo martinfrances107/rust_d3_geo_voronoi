@@ -18,7 +18,7 @@ mod geo_voronoi_test {
     use rust_d3_geo::data_object::FeatureCollection;
     use rust_d3_geo::data_object::FeatureProperty;
     use rust_d3_geo::projection::builder::template::ResampleNoPCNC;
-    use rust_d3_geo::stream::StreamDrainStub;
+    use rust_d3_geo::stream::DrainStub;
     use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 
     #[test]
@@ -27,7 +27,7 @@ mod geo_voronoi_test {
         let sites = MultiPoint(vec![Point::new(-20f64, -20f64), Point::new(20f64, 20f64)]);
 
         let mut gv: GeoVoronoi<
-            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
             _,
             _,
             _,
@@ -119,7 +119,7 @@ mod geo_voronoi_test {
         ]);
 
         let mut gv: GeoVoronoi<
-            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
             _,
             _,
             _,
@@ -173,7 +173,7 @@ mod geo_voronoi_test {
         let g = Geometry::MultiPoint(sites);
 
         let mut gv: GeoVoronoi<
-            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
             _,
             _,
             _,
@@ -227,7 +227,7 @@ mod geo_voronoi_test {
         ]);
 
         let gv = match GeoVoronoi::<
-            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
             _,
             _,
             _,
@@ -272,7 +272,7 @@ mod geo_voronoi_test {
         ]);
 
         let gv = match GeoVoronoi::<
-            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
             _,
             _,
             _,
@@ -337,18 +337,8 @@ mod geo_voronoi_test {
             "5 0/8 5".into(),
         ];
 
-        // let gv: GeoVoronoi<
-        //     ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
-        //     _,
-        //     _,
-        //     _,
-        //     _,
-        //     _,
-        //     _,
-        //     f64,
-        // >;
         let gv = match GeoVoronoi::<
-            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
             _,
             _,
             _,
@@ -396,7 +386,7 @@ mod geo_voronoi_test {
         ]);
 
         let mut voro: GeoVoronoi<
-            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
             _,
             _,
             _,
@@ -424,7 +414,7 @@ mod geo_voronoi_test {
         );
         // TODO bug ... strange bug/hang ... unless I define voro twice.
         let mut voro2: GeoVoronoi<
-            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
             _,
             _,
             _,
@@ -461,7 +451,7 @@ mod geo_voronoi_test {
         ]));
         // let mut gv: GV = GeoVoronoi::new(None);
         let mut gv: GeoVoronoi<
-            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
             _,
             _,
             _,
@@ -509,7 +499,7 @@ mod geo_voronoi_test {
         ]));
 
         let gv = match GeoVoronoi::<
-            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
             _,
             _,
             _,
@@ -544,7 +534,7 @@ mod geo_voronoi_test {
 
         // let mut gv: GV = GeoVoronoi::new(None);
         let mut gv: GeoVoronoi<
-            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
             _,
             _,
             _,
@@ -600,7 +590,7 @@ mod geo_voronoi_test {
         ]));
 
         let gv = match GeoVoronoi::<
-            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
             _,
             _,
             _,
@@ -659,7 +649,7 @@ mod geo_voronoi_test {
         ];
 
         let u = match GeoVoronoi::<
-            ClipCircleC<ResampleNoPCNC<StreamDrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
             _,
             _,
             _,

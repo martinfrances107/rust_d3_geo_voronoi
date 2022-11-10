@@ -5,7 +5,7 @@ use std::ops::AddAssign;
 use std::rc::Rc;
 
 use approx::AbsDiffEq;
-use derivative::*;
+use derivative::Derivative;
 use float_next_after::NextAfter;
 use geo::centroid::Centroid;
 use geo::kernels::HasKernel;
@@ -78,7 +78,7 @@ pub type VTransform<T> = Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>;
 
 #[derive(Derivative)]
 #[derivative(Debug)]
-/// Holds data centered on a GeoDelauany instance.
+/// Holds data centered on a `GeoDelauany` instance.
 pub struct GeoVoronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
 where
     CLIPC: Clone,
@@ -164,6 +164,9 @@ where
 {
     /// If the input is a collection we act only on the first element in the collection.
     /// by copying over the data into a new single element before proceeding.
+    ///
+    /// # Errors
+    ///  A `Geometry::Multipoint` object must be input.
     pub fn new(data: Option<Geometry<T>>) -> Result<Self, ConstructionError> {
         // let delaunay_return: Option<GeoDelaunay> = None;
 
@@ -277,15 +280,15 @@ where
 
                 let mut features: Vec<Features<T>> = Vec::new();
                 for (i, poly) in dr.polygons.iter().enumerate() {
-                    let mut poly_closed: Vec<usize> = poly.to_vec();
+                    let mut poly_closed: Vec<usize> = poly.clone();
                     poly_closed.push(poly[0]);
                     let exterior: LineString<T> =
-                        LineString::from_iter(poly_closed.iter().map(|&i| (dr.centers[i])));
+                        poly_closed.iter().map(|&i| (dr.centers[i])).collect();
 
                     let geometry = Geometry::Polygon(Polygon::new(exterior, vec![]));
                     // TODO why does this need to be borrow_mut
                     let neighbors = dr.neighbors.borrow_mut();
-                    let n = neighbors.get(&i).unwrap().to_vec();
+                    let n = neighbors.get(&i).unwrap().clone();
                     let properties: Vec<FeatureProperty<T>> = vec![
                         FeatureProperty::Site(self.valid[i]),
                         FeatureProperty::Sitecoordinates(self.points[i]),
@@ -400,19 +403,19 @@ where
             }
         }
 
-        match &self.geo_delaunay {
-            None => None,
-            Some(delaunay_return) => {
-                let le = delaunay_return
-                    .edges
-                    .iter()
-                    .map(|e| line_string![(self.points)[e[0]], (self.points)[e[1]]]);
-                Some(MultiLineString::from_iter(le))
-            }
-        }
+        self.geo_delaunay.as_ref().map(|delaunay_return| {
+            delaunay_return
+                .edges
+                .iter()
+                .map(|e| line_string![(self.points)[e[0]], (self.points)[e[1]]])
+                .collect()
+        })
     }
 
     /// Returns a Multiline string assoicated with the input geometry.
+    ///
+    /// # Panics
+    ///  The delauanay object must be valid when this function is called.
     pub fn cell_mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
         if let Some(data) = data {
             match Self::new(Some(data)) {
@@ -484,16 +487,17 @@ where
 
         match self.geo_delaunay {
             None => None,
-            Some(ref delaunay_return) => match delaunay_return.hull.len() {
-                0usize => None,
-                _ => {
+            Some(ref delaunay_return) => {
+                if delaunay_return.hull.is_empty() {
+                    None
+                } else {
                     let hull = &delaunay_return.hull;
                     let mut coordinates: Vec<Coordinate<T>> =
                         hull.iter().map(|i| self.points[*i]).collect();
                     coordinates.push(self.points[hull[0]]);
                     Some(Polygon::new(coordinates.into(), vec![]))
                 }
-            },
+            }
         }
     }
 }

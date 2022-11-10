@@ -26,24 +26,18 @@ use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::projection::Build;
 use rust_d3_geo::projection::ProjectionRawBase;
 use rust_d3_geo::projection::RotateSet;
-use rust_d3_geo::stream::StreamDrainStub;
+use rust_d3_geo::stream::DrainStub;
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 
 type GV<'a> = GeoVoronoi<
     'a,
-    ClipCircleC<
-        ResampleNoPCNC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
-        f64,
-    >,
-    ClipCircleU<
-        ResampleNoPCNC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
-        f64,
-    >,
-    StreamDrainStub<f64>,
+    ClipCircleC<ResampleNoPCNC<DrainStub<f64>, Stereographic<DrainStub<f64>, f64>, f64>, f64>,
+    ClipCircleU<ResampleNoPCNC<DrainStub<f64>, Stereographic<DrainStub<f64>, f64>, f64>, f64>,
+    DrainStub<f64>,
     NoPCNU,
-    Stereographic<StreamDrainStub<f64>, f64>,
-    ResampleNoPCNC<StreamDrainStub<f64>, Stereographic<StreamDrainStub<f64>, f64>, f64>,
-    ResampleNoPCNU<Stereographic<StreamDrainStub<f64>, f64>, f64>,
+    Stereographic<DrainStub<f64>, f64>,
+    ResampleNoPCNC<DrainStub<f64>, Stereographic<DrainStub<f64>, f64>, f64>,
+    ResampleNoPCNU<Stereographic<DrainStub<f64>, f64>, f64>,
     f64,
 >;
 

@@ -31,9 +31,13 @@ type DReturn<DRAIN, PCNU, PR, RC, RU, T> =
     Delaunay<ClipCircleC<RC, T>, ClipCircleU<RC, T>, DRAIN, PCNU, PR, RC, RU, T>;
 
 /// Creates a delaunay object from a set of points.
+///
+/// # Panics
+///  Will never happen as constants will always be converted into T.
 #[allow(clippy::type_complexity)]
+#[must_use]
 pub fn geo_delaunay_from<DRAIN, PCNC, PCNU, RC, RU, T>(
-    points: Rc<Vec<Coordinate<T>>>,
+    points: &Rc<Vec<Coordinate<T>>>,
 ) -> Option<
     DReturn<
         DRAIN,
@@ -87,12 +91,12 @@ where
     }
     let far = T::from(1e6_f64).unwrap() * (max2).sqrt();
 
-    zeros.iter().for_each(|i| {
-        points[*i] = Coordinate {
+    for i in zeros {
+        points[i] = Coordinate {
             x: far,
             y: T::zero(),
         }
-    });
+    }
 
     // Add infinite horizon points
     points.push(Coordinate {
@@ -119,14 +123,8 @@ where
 
     'he_loop: loop {
         if delaunay.half_edges[i] == EMPTY {
-            let j = match i % 3 == 2 {
-                true => i - 2,
-                false => i + 1,
-            };
-            let k = match i % 3 == 0 {
-                true => i + 2,
-                false => i - 1,
-            };
+            let j = if i % 3 == 2 { i - 2 } else { i + 1 };
+            let k = if i % 3 == 0 { i + 2 } else { i - 1 };
             let a = delaunay.half_edges[j];
             let b = delaunay.half_edges[k];
             delaunay.half_edges[a] = b;
@@ -136,15 +134,8 @@ where
             delaunay.triangles[i] = pivot;
             delaunay.triangles[j] = pivot;
             delaunay.triangles[k] = pivot;
-            delaunay.inedges[delaunay.triangles[a]] = match a % 3 == 0 {
-                true => a + 2,
-                false => a - 1,
-            };
-
-            delaunay.inedges[delaunay.triangles[b]] = match b % 3 == 0 {
-                true => b + 2,
-                false => b - 1,
-            };
+            delaunay.inedges[delaunay.triangles[a]] = if a % 3 == 0 { a + 2 } else { a - 1 };
+            delaunay.inedges[delaunay.triangles[b]] = if b % 3 == 0 { b + 2 } else { b - 1 };
 
             let mut m = cmp::min(i, j);
             m = cmp::min(m, k);

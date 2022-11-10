@@ -24,7 +24,7 @@ use std::ops::AddAssign;
 use std::rc::Rc;
 
 use approx::AbsDiffEq;
-use derivative::*;
+use derivative::Derivative;
 use geo::CoordFloat;
 use geo::Coordinate;
 use num_traits::AsPrimitive;
@@ -117,7 +117,8 @@ where
         + FloatConst
         + FromPrimitive,
 {
-    /// Creates a GeoDelaunay object from a set of points.
+    /// Creates a `GeoDelaunay` object from a set of points.
+    #[must_use]
     pub fn delaunay(points: Rc<Vec<Coordinate<T>>>) -> Option<Self> {
         let p = points.clone();
         match geo_delaunay_from::<
@@ -127,7 +128,7 @@ where
             ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>,
             ResampleNoPCNU<Stereographic<DRAIN, T>, T>,
             T,
-        >(p)
+        >(&p)
         {
             Some(delaunay) => {
                 // RC is needed here as tri and e are both closed over in the urquhart function an is part of the Delaunay return.
