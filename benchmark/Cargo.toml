@@ -1,11 +1,15 @@
 [package]
 authors = ["martin <martinfrances107@hotmail.com>"]
-description = "rust_d3_geo_voronoi benchmark wasm app"
+readme = "README.md"
+categories = ["graphics"]
+description = " benchmark for rust_d3_geo_voronoi"
 edition = "2021"
+keywords = ["benchmarking", "graphics", "d3-geo-voronoi"]
 name = "benchmark"
 license = "MIT"
 repository = "https://github.com/martinfrances107/rust_d3_geo_voronoi.git"
 version = "0.1.0"
+
 [lib]
 crate-type = ["cdylib"]
 

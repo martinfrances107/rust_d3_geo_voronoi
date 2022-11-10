@@ -1,11 +1,13 @@
 [package]
-readme = "readme.md"
+readme = "./README.md"
 authors = ["martin frances <martinfrances107@hotmail.com"]
 categories = ["graphics"]
+keywords = ["d3-geo"]
 name = "rust_d3_geo_voronoi"
 description = "A port into rustlang of the javascript library d3-geo-voronoi"
 repository = "https://github.com/martinfrances107/rust_d3_geo_voronoi.git"
 edition = "2021"
+metadata = []
 license = "MIT"
 version = "0.1.0"
 
