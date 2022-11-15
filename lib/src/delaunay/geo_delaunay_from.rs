@@ -19,7 +19,7 @@ use rust_d3_geo::projection::builder::template::ResampleNoPCNC;
 use rust_d3_geo::projection::builder::template::ResampleNoPCNU;
 use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::projection::Build;
-use rust_d3_geo::projection::ProjectionRawBase;
+use rust_d3_geo::projection::RawBase as ProjectionRawBase;
 use rust_d3_geo::projection::RotateSet;
 use rust_d3_geo::projection::ScaleSet;
 use rust_d3_geo::projection::TranslateSet;
