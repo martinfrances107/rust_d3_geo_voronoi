@@ -15,9 +15,9 @@ crate-type = ["cdylib"]
 
 [dependencies]
 geo = { workspace = true }
-getrandom = { version = "0.2.3", features = ["js"] }
-js-sys = "0.3.55"
-rand = { version = "0.8.4" }
+getrandom = { version = "~0.2", features = ["js"] }
+js-sys = "~0.3"
+rand = { version = "~0.8" }
 rust_d3_geo_voronoi = { path = "../lib" }
 rust_d3_geo = { workspace = true, branch = "main" }
 rust_d3_delaunay = { workspace = true, branch = "main" }

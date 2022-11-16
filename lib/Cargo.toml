@@ -7,7 +7,6 @@ name = "rust_d3_geo_voronoi"
 description = "A port into rustlang of the javascript library d3-geo-voronoi"
 repository = "https://github.com/martinfrances107/rust_d3_geo_voronoi.git"
 edition = "2021"
-metadata = []
 license = "MIT"
 version = "0.1.0"
 
@@ -18,10 +17,10 @@ crate-type = ["cdylib", "rlib"]
 default = ["console_error_panic_hook"]
 
 [dependencies]
-approx = "0.5.0"
-num-traits = "0.2.14"
-derivative = "2.2.0"
-float_next_after = "0.1.5"
+approx = "~0.5"
+num-traits = "~0.2"
+derivative = "~2"
+float_next_after = "~0.1"
 geo = { workspace = true }
 delaunator = { git = "https://github.com/mourner/delaunator-rs.git" }
 rust_d3_array = { git = "https://github.com/martinfrances107/rust_d3_array.git" }
@@ -31,9 +30,9 @@ rust_d3_delaunay = { workspace = true, branch = "main" }
 # logging them with `console.error`. This is great for development, but requires
 # all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
 # code size when deploying.
-console_error_panic_hook = { version = "0.1.6", optional = true }
+console_error_panic_hook = { version = "~0.1", optional = true }
 
 [dev-dependencies]
-measureme = "10.0.0"
-pretty_assertions = "1.0.0"
-wasm-bindgen-test = "0.3.13"
+measureme = "~10"
+pretty_assertions = "~1"
+wasm-bindgen-test = "~0.3"
