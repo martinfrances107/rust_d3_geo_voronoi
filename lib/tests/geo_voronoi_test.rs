@@ -27,14 +27,14 @@ mod geo_voronoi_test {
         let sites = MultiPoint(vec![Point::new(-20f64, -20f64), Point::new(20f64, 20f64)]);
 
         let mut gv: GeoVoronoi<
-            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
             _,
             _,
             _,
             _,
-            f64,
+            _,
         >;
         match GeoVoronoi::new(Some(Geometry::MultiPoint(sites))) {
             Ok(ok) => gv = ok,
@@ -119,14 +119,14 @@ mod geo_voronoi_test {
         ]);
 
         let mut gv: GeoVoronoi<
-            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
             _,
             _,
             _,
             _,
-            f64,
+            _,
         >;
         match GeoVoronoi::new(Some(Geometry::MultiPoint(sites))) {
             Ok(ok) => gv = ok,
@@ -173,14 +173,14 @@ mod geo_voronoi_test {
         let g = Geometry::MultiPoint(sites);
 
         let mut gv: GeoVoronoi<
-            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
             _,
             _,
             _,
             _,
-            f64,
+            _,
         >;
         match GeoVoronoi::new(Some(g)) {
             Ok(ok) => gv = ok,
@@ -227,14 +227,14 @@ mod geo_voronoi_test {
         ]);
 
         let gv = match GeoVoronoi::<
-            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
             _,
             _,
             _,
             _,
-            f64,
+            _,
         >::new(None)
         {
             Ok(gv) => gv,
@@ -272,14 +272,14 @@ mod geo_voronoi_test {
         ]);
 
         let gv = match GeoVoronoi::<
-            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
             _,
             _,
             _,
             _,
-            f64,
+            _,
         >::new(Some(Geometry::MultiPoint(sites)))
         {
             Ok(gv) => gv,
@@ -338,14 +338,14 @@ mod geo_voronoi_test {
         ];
 
         let gv = match GeoVoronoi::<
-            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
             _,
             _,
             _,
             _,
-            f64,
+            _,
         >::new(Some(Geometry::MultiPoint(sites)))
         {
             Ok(gv) => gv,
@@ -386,14 +386,14 @@ mod geo_voronoi_test {
         ]);
 
         let mut voro: GeoVoronoi<
-            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
             _,
             _,
             _,
             _,
-            f64,
+            _,
         >;
         match GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone()))) {
             Ok(ok) => voro = ok,
@@ -414,14 +414,14 @@ mod geo_voronoi_test {
         );
         // TODO bug ... strange bug/hang ... unless I define voro twice.
         let mut voro2: GeoVoronoi<
-            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
             _,
             _,
             _,
             _,
-            f64,
+            _,
         >;
         match GeoVoronoi::new(Some(Geometry::MultiPoint(sites))) {
             Ok(ok) => voro2 = ok,
@@ -451,14 +451,14 @@ mod geo_voronoi_test {
         ]));
         // let mut gv: GV = GeoVoronoi::new(None);
         let mut gv: GeoVoronoi<
-            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
             _,
             _,
             _,
             _,
-            f64,
+            _,
         >;
         match GeoVoronoi::new(None) {
             Ok(ok) => gv = ok,
@@ -499,14 +499,14 @@ mod geo_voronoi_test {
         ]));
 
         let gv = match GeoVoronoi::<
-            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
             _,
             _,
             _,
             _,
-            f64,
+            _,
         >::new(None)
         {
             Ok(gv) => gv,
@@ -534,14 +534,14 @@ mod geo_voronoi_test {
 
         // let mut gv: GV = GeoVoronoi::new(None);
         let mut gv: GeoVoronoi<
-            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
             _,
             _,
             _,
             _,
-            f64,
+            _,
         >;
         match GeoVoronoi::new(None) {
             Ok(ok) => gv = ok,
@@ -590,14 +590,14 @@ mod geo_voronoi_test {
         ]));
 
         let gv = match GeoVoronoi::<
-            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, _>, _>,
             _,
             _,
             _,
             _,
             _,
             _,
-            f64,
+            _,
         >::new(None)
         {
             Ok(gv) => gv,
@@ -649,14 +649,14 @@ mod geo_voronoi_test {
         ];
 
         let u = match GeoVoronoi::<
-            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, f64>, f64>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, _>, _>,
             _,
             _,
             _,
             _,
             _,
             _,
-            f64,
+            _,
         >::new(Some(Geometry::MultiPoint(MultiPoint(sites.clone()))))
         {
             Ok(u) => u,
