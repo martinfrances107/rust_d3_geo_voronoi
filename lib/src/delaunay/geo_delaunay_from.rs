@@ -7,7 +7,7 @@ use std::rc::Rc;
 use approx::AbsDiffEq;
 use delaunator::EMPTY;
 use geo::CoordFloat;
-use geo::Coordinate;
+use geo_types::Coord;
 use num_traits::float::FloatConst;
 use num_traits::FromPrimitive;
 
@@ -37,7 +37,7 @@ type DReturn<DRAIN, PCNU, PR, RC, RU, T> =
 #[allow(clippy::type_complexity)]
 #[must_use]
 pub fn geo_delaunay_from<DRAIN, PCNC, PCNU, RC, RU, T>(
-    points: &Rc<Vec<Coordinate<T>>>,
+    points: &Rc<Vec<Coord<T>>>,
 ) -> Option<
     DReturn<
         DRAIN,
@@ -62,13 +62,13 @@ where
     let pivot: usize = points.iter().position(|p| (p.x + p.y).is_finite()).unwrap();
 
     let r = Rotation::new(points[pivot].x, points[pivot].y, T::zero());
-    let r_invert = r.invert(&Coordinate {
+    let r_invert = r.invert(&Coord {
         x: T::from(180_f64).unwrap(),
         y: T::zero(),
     });
 
     let mut builder = Stereographic::builder();
-    builder.translate_set(&Coordinate {
+    builder.translate_set(&Coord {
         x: T::zero(),
         y: T::zero(),
     });
@@ -76,7 +76,7 @@ where
     builder.rotate_set(&[r_invert.x, r_invert.y, T::zero()]);
     let projection = builder.build();
 
-    let mut points: Vec<Coordinate<T>> = points.iter().map(|p| projection.transform(p)).collect();
+    let mut points: Vec<Coord<T>> = points.iter().map(|p| projection.transform(p)).collect();
 
     let mut zeros = Vec::new();
     let mut max2 = T::one();
@@ -92,22 +92,22 @@ where
     let far = T::from(1e6_f64).unwrap() * (max2).sqrt();
 
     for i in zeros {
-        points[i] = Coordinate {
+        points[i] = Coord {
             x: far,
             y: T::zero(),
         }
     }
 
     // Add infinite horizon points
-    points.push(Coordinate {
+    points.push(Coord {
         x: T::zero(),
         y: far,
     });
-    points.push(Coordinate {
+    points.push(Coord {
         x: -far,
         y: T::zero(),
     });
-    points.push(Coordinate {
+    points.push(Coord {
         x: T::zero(),
         y: -far,
     });

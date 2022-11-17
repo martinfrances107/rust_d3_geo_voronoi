@@ -11,12 +11,12 @@ use geo::centroid::Centroid;
 use geo::kernels::HasKernel;
 use geo::line_string;
 use geo::CoordFloat;
-use geo::Coordinate;
 use geo::Geometry;
 use geo::LineString;
 use geo::MultiLineString;
 use geo::Point;
 use geo::Polygon;
+use geo_types::Coord;
 use num_traits::AsPrimitive;
 use num_traits::Bounded;
 use num_traits::FloatConst;
@@ -69,8 +69,8 @@ struct TriStruct<T>
 where
     T: CoordFloat,
 {
-    tri_points: Vec<Coordinate<T>>,
-    center: Coordinate<T>,
+    tri_points: Vec<Coord<T>>,
+    center: Coord<T>,
 }
 
 /// Velocity Transform.
@@ -91,9 +91,9 @@ where
     data: Option<Geometry<T>>,
     found: Option<usize>,
     //Points: Rc needed here as the egdes, triangles, neigbours etc all index into thts vec.
-    points: Rc<Vec<Coordinate<T>>>,
-    valid: Vec<Coordinate<T>>,
-    // Option<Box<impl Fn(&dyn Centroid<Output = Coordinate<T>>) -> T>>
+    points: Rc<Vec<Coord<T>>>,
+    valid: Vec<Coord<T>>,
+    // Option<Box<impl Fn(&dyn Centroid<Output = Coord<T>>) -> T>>
     #[derivative(Debug = "ignore")]
     vx: VTransform<T>,
     #[derivative(Debug = "ignore")]
@@ -208,14 +208,14 @@ where
                     .map(|d| ((Self::default().vx)(d), (Self::default().vy)(d), *d))
                     .filter(|(d0, d1, _)| (*d0 + *d1).is_finite())
                     .collect();
-                let points: Vec<Coordinate<T>> = temp
+                let points: Vec<Coord<T>> = temp
                     .iter()
-                    .map(|(d0, d1, _)| Coordinate { x: *d0, y: *d1 })
+                    .map(|(d0, d1, _)| Coord { x: *d0, y: *d1 })
                     .collect();
                 v.points = Rc::new(points);
                 v.valid = temp
                     .iter()
-                    .map(|d| Coordinate {
+                    .map(|d| Coord {
                         x: d.2.x(),
                         y: d.2.y(),
                     })
@@ -326,8 +326,7 @@ where
                     .iter()
                     .enumerate()
                     .map(|(index, tri)| {
-                        let tri_points: Vec<Coordinate<T>> =
-                            tri.iter().map(|i| (points[*i])).collect();
+                        let tri_points: Vec<Coord<T>> = tri.iter().map(|i| (points[*i])).collect();
                         TriStruct {
                             tri_points,
                             center: (delaunay_return.centers[index]),
@@ -336,7 +335,7 @@ where
                     .filter(|tri_struct| excess(&tri_struct.tri_points) > T::zero())
                     .map(|tri_struct| {
                         let first = tri_struct.tri_points[0];
-                        let mut coordinates: Vec<Coordinate<T>> = tri_struct.tri_points;
+                        let mut coordinates: Vec<Coord<T>> = tri_struct.tri_points;
                         coordinates.push(first);
                         Features {
                             properties: vec![FeatureProperty::Circumecenter(tri_struct.center)],
@@ -365,7 +364,7 @@ where
         return match &self.geo_delaunay {
             None => None,
             Some(delaunay_return) => {
-                let points: &Vec<Coordinate<T>> = self.points.borrow();
+                let points: &Vec<Coord<T>> = self.points.borrow();
                 let distances: Vec<T> = delaunay_return
                     .edges
                     .iter()
@@ -452,7 +451,7 @@ where
     }
 
     /// Returns the index associated with the given point.
-    pub fn find(&mut self, p: &Coordinate<T>, radius: Option<T>) -> Option<usize> {
+    pub fn find(&mut self, p: &Coord<T>, radius: Option<T>) -> Option<usize> {
         match &self.geo_delaunay {
             None => None,
             Some(delaunay_return) => {
@@ -492,7 +491,7 @@ where
                     None
                 } else {
                     let hull = &delaunay_return.hull;
-                    let mut coordinates: Vec<Coordinate<T>> =
+                    let mut coordinates: Vec<Coord<T>> =
                         hull.iter().map(|i| self.points[*i]).collect();
                     coordinates.push(self.points[hull[0]]);
                     Some(Polygon::new(coordinates.into(), vec![]))

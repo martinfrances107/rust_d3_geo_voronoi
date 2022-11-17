@@ -7,11 +7,11 @@ mod geo_voronoi_test {
     use geo::algorithm::cyclic_match::CyclicMatch;
     use geo::coords_iter::CoordsIter;
     use geo::line_string;
-    use geo::Coordinate;
     use geo::Geometry;
     use geo::LineString;
     use geo::MultiPoint;
     use geo::Point;
+    use geo_types::Coord;
     use pretty_assertions::assert_eq;
 
     use rust_d3_geo::clip::circle::ClipCircleC;
@@ -50,17 +50,17 @@ mod geo_voronoi_test {
             }
             Some(FeatureCollection(mut features)) => {
                 let last_cell = line_string![
-                    Coordinate {
+                    Coord {
                         x: -90.0,
                         y: 43.21917889371418
                     },
-                    Coordinate { x: 180.0, y: -0. },
-                    Coordinate {
+                    Coord { x: 180.0, y: -0. },
+                    Coord {
                         x: 90.0,
                         y: -43.21917889371418
                     },
-                    Coordinate { x: 0., y: 0. },
-                    Coordinate {
+                    Coord { x: 0., y: 0. },
+                    Coord {
                         x: -90.,
                         y: 43.21917889371418
                     }
@@ -77,23 +77,23 @@ mod geo_voronoi_test {
                 };
 
                 let first_cell = line_string![
-                    Coordinate {
+                    Coord {
                         x: 0.0_f64,
                         y: 0.0_f64
                     },
-                    Coordinate {
+                    Coord {
                         x: 90.0_f64,
                         y: -43.21917889371418_f64
                     },
-                    Coordinate {
+                    Coord {
                         x: 180.0_f64,
                         y: -0.0_f64
                     },
-                    Coordinate {
+                    Coord {
                         x: -90_f64,
                         y: 43.21917889371418_f64
                     },
-                    Coordinate { x: 0_f64, y: 0_f64 },
+                    Coord { x: 0_f64, y: 0_f64 },
                 ];
                 let g: Geometry<f64> = features.pop().unwrap().geometry.pop().unwrap();
                 match g {
@@ -404,7 +404,7 @@ mod geo_voronoi_test {
 
         assert_eq!(
             voro.find(
-                &Coordinate {
+                &Coord {
                     x: 1.0_f64,
                     y: 1.0_f64
                 },
@@ -432,7 +432,7 @@ mod geo_voronoi_test {
 
         assert_eq!(
             voro2.find(
-                &Coordinate {
+                &Coord {
                     x: 1.0_f64,
                     y: 1.0_f64
                 },
@@ -612,11 +612,11 @@ mod geo_voronoi_test {
                 match &features[0].properties[0] {
                     FeatureProperty::Circumecenter(u) => {
                         println!("c {:?}", u);
-                        let v = Coordinate {
+                        let v = Coord {
                             x: 5.0_f64,
                             y: 4.981069_f64,
                         };
-                        let w = Coordinate {
+                        let w = Coord {
                             x: -180.0_f64 + v.x,
                             y: -1.0_f64 * v.y,
                         };

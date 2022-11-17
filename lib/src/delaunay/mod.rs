@@ -26,7 +26,7 @@ use std::rc::Rc;
 use approx::AbsDiffEq;
 use derivative::Derivative;
 use geo::CoordFloat;
-use geo::Coordinate;
+use geo_types::Coord;
 use num_traits::AsPrimitive;
 use num_traits::FloatConst;
 use num_traits::FromPrimitive;
@@ -52,7 +52,7 @@ use rust_d3_geo::projection::builder::template::ResampleNoPCNU;
 use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::stream::Stream;
 
-type FindReturn<'a, T> = Box<dyn Fn(&Coordinate<T>, Option<usize>) -> Option<usize> + 'a>;
+type FindReturn<'a, T> = Box<dyn Fn(&Coord<T>, Option<usize>) -> Option<usize> + 'a>;
 
 /// A Pair of indicies pointing into a dataset identifying a edge.
 type EdgeIndex = [usize; 2];
@@ -78,7 +78,7 @@ where
     /// A set of triangles as defined by set of indicies.
     pub triangles: Rc<Vec<[usize; 3]>>,
     /// A list of centers associated with the cells.
-    pub centers: Vec<Coordinate<T>>,
+    pub centers: Vec<Coord<T>>,
     /// Passes to Voronoi::polygon() where it is consumed.
     pub neighbors: Rc<RefCell<HashMap<usize, Vec<usize>>>>,
     /// A set pf polygons as defined by a set of indicies.
@@ -119,7 +119,7 @@ where
 {
     /// Creates a `GeoDelaunay` object from a set of points.
     #[must_use]
-    pub fn delaunay(points: Rc<Vec<Coordinate<T>>>) -> Option<Self> {
+    pub fn delaunay(points: Rc<Vec<Coord<T>>>) -> Option<Self> {
         let p = points.clone();
         match geo_delaunay_from::<
             DRAIN,

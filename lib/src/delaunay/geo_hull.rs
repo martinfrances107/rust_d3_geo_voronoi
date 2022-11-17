@@ -3,11 +3,11 @@ use std::collections::HashSet;
 
 use delaunator::EMPTY;
 use geo::CoordFloat;
-use geo::Coordinate;
+use geo_types::Coord;
 
 use super::excess::excess;
 
-pub fn geo_hull<T>(triangles: &[[usize; 3]], points: &[Coordinate<T>]) -> Vec<usize>
+pub fn geo_hull<T>(triangles: &[[usize; 3]], points: &[Coord<T>]) -> Vec<usize>
 where
     T: CoordFloat,
 {
@@ -15,7 +15,7 @@ where
     let mut hull = Vec::new();
 
     for tri in triangles {
-        let ex_in: Vec<Coordinate<T>> = tri
+        let ex_in: Vec<Coord<T>> = tri
             .iter()
             .map(|i: &usize| {
                 let index: usize = if i > &points.len() { 0 } else { *i };

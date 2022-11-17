@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use geo::CoordFloat;
-use geo::Coordinate;
+use geo_types::Coord;
 use num_traits::Float;
 
 use super::cartesian::cartesian;
@@ -17,16 +17,17 @@ fn distance2<T: Float>(a: &[T; 3], b: &[T; 3]) -> T {
     x * x + y * y + z * z
 }
 
+#[allow(clippy::similar_names)]
 pub fn geo_find<'a, T: CoordFloat + 'static>(
     neighbors: Rc<RefCell<HashMap<usize, Vec<usize>>>>,
-    points: Rc<Vec<Coordinate<T>>>,
+    points: Rc<Vec<Coord<T>>>,
 ) -> FindReturn<'a, T> {
     Box::new(
-        move |p: &Coordinate<T>, next_p: Option<usize>| -> Option<usize> {
+        move |p: &Coord<T>, next_p: Option<usize>| -> Option<usize> {
             let next_or_none = next_p.map_or(Some(0usize), Some);
             let mut dist: T;
             let mut found = next_or_none;
-            let xyz = cartesian(&Coordinate { x: p.x, y: p.y });
+            let xyz = cartesian(&Coord { x: p.x, y: p.y });
             'outer: loop {
                 let cell = next_or_none.unwrap();
                 let mut next_or_no = None;

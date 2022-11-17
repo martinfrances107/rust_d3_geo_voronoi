@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use geo::CoordFloat;
-use geo::Coordinate;
+use geo_types::Coord;
 use num_traits::FloatConst;
 
 use rust_d3_geo::cartesian::add;
@@ -21,7 +21,7 @@ pub struct GeoPolygons<T>
 where
     T: CoordFloat,
 {
-    centers: Vec<Coordinate<T>>,
+    centers: Vec<Coord<T>>,
     triangles: Rc<Vec<[usize; 3]>>,
 }
 
@@ -41,7 +41,7 @@ impl<T> GeoPolygons<T>
 where
     T: CoordFloat + FloatConst,
 {
-    fn supplement(&mut self, point: &Coordinate<T>) -> usize {
+    fn supplement(&mut self, point: &Coord<T>) -> usize {
         let mut f = None;
         self.centers[self.triangles.len()..]
             .iter()
@@ -63,10 +63,10 @@ where
 
     pub fn gen(
         mut self,
-        circumcenter: Vec<Coordinate<T>>,
+        circumcenter: Vec<Coord<T>>,
         triangles_p: Rc<Vec<[usize; 3]>>,
-        points: &[Coordinate<T>],
-    ) -> (Vec<Vec<usize>>, Vec<Coordinate<T>>) {
+        points: &[Coord<T>],
+    ) -> (Vec<Vec<usize>>, Vec<Coord<T>>) {
         let mut polygons: Vec<Vec<usize>> = Vec::new();
         self.centers = circumcenter;
         self.triangles = triangles_p;

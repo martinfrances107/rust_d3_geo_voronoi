@@ -20,9 +20,9 @@ mod utils;
 
 use std::iter::repeat_with;
 
-use geo::Coordinate;
 use geo::Geometry;
 use geo::MultiPoint;
+use geo_types::Coord;
 use rust_d3_geo::clip::circle::ClipCircleC;
 use rust_d3_geo::clip::circle::ClipCircleU;
 use rust_d3_geo::projection::builder::template::NoPCNU;
@@ -174,7 +174,7 @@ impl Renderer {
         self.sites = MultiPoint(
             repeat_with(rand::random)
                 .map(|(x, y): (f64, f64)| {
-                    Coordinate {
+                    Coord {
                         x: 360_f64 * x,
                         y: 180_f64 * y - 90_f64,
                     }

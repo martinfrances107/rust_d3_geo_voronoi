@@ -1,5 +1,5 @@
 use geo::CoordFloat;
-use geo::Coordinate;
+use geo_types::Coord;
 
 use num_traits::FloatConst;
 use rust_d3_geo::cartesian::add;
@@ -11,7 +11,7 @@ use rust_d3_geo::cartesian::spherical;
 
 use super::cartesian::cartesian;
 
-pub fn o_midpoint<T>(a: &Coordinate<T>, b: &Coordinate<T>, c: &Coordinate<T>) -> Coordinate<T>
+pub fn o_midpoint<T>(a: &Coord<T>, b: &Coord<T>, c: &Coord<T>) -> Coord<T>
 where
     T: CoordFloat + FloatConst,
 {

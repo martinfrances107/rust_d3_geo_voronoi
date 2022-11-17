@@ -1,17 +1,14 @@
 use std::collections::HashSet;
 
 use geo::CoordFloat;
-use geo::Coordinate;
+use geo_types::Coord;
 use rust_d3_array::extent::extent;
 
 use super::excess::excess;
 use super::EdgeIndex;
 use super::TriIndex;
 
-pub fn geo_edges<T: CoordFloat>(
-    triangles: &[TriIndex],
-    point: &[Coordinate<T>],
-) -> HashSet<EdgeIndex> {
+pub fn geo_edges<T: CoordFloat>(triangles: &[TriIndex], point: &[Coord<T>]) -> HashSet<EdgeIndex> {
     if point.len() == 1 {
         return HashSet::from([[0usize, 1usize]]);
     }
@@ -24,7 +21,7 @@ pub fn geo_edges<T: CoordFloat>(
             continue;
         }
 
-        let ex_in: Vec<Coordinate<T>> = tri.iter().map(|i| point[*i]).collect();
+        let ex_in: Vec<Coord<T>> = tri.iter().map(|i| point[*i]).collect();
         if excess(&ex_in) < zero {
             continue;
         }

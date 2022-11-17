@@ -1,5 +1,5 @@
 use geo::CoordFloat;
-use geo::Coordinate;
+use geo_types::Coord;
 use num_traits::FloatConst;
 use rust_d3_geo::cartesian::add;
 use rust_d3_geo::cartesian::cross;
@@ -10,8 +10,8 @@ use super::cartesian::cartesian;
 
 pub fn geo_circumcenters<'a, T>(
     triangles: &'a [[usize; 3]],
-    points: &'a [Coordinate<T>],
-) -> impl Iterator<Item = Coordinate<T>> + 'a
+    points: &'a [Coord<T>],
+) -> impl Iterator<Item = Coord<T>> + 'a
 where
     T: CoordFloat + FloatConst,
 {
