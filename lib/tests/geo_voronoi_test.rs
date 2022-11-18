@@ -590,7 +590,7 @@ mod geo_voronoi_test {
         ]));
 
         let gv = match GeoVoronoi::<
-            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, _>, _>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
             _,
@@ -649,7 +649,7 @@ mod geo_voronoi_test {
         ];
 
         let u = match GeoVoronoi::<
-            ClipCircleC<ResampleNoPCNC<DrainStub<f64>, _, _>, _>,
+            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
             _,

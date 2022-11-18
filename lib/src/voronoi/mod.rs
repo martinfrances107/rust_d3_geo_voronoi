@@ -1,4 +1,3 @@
-use std::borrow::Borrow;
 use std::fmt::Debug;
 use std::fmt::Display;
 use std::ops::AddAssign;
@@ -9,13 +8,9 @@ use derivative::Derivative;
 use float_next_after::NextAfter;
 use geo::centroid::Centroid;
 use geo::kernels::HasKernel;
-use geo::line_string;
 use geo::CoordFloat;
 use geo::Geometry;
-use geo::LineString;
-use geo::MultiLineString;
 use geo::Point;
-use geo::Polygon;
 use geo_types::Coord;
 use num_traits::AsPrimitive;
 use num_traits::Bounded;
@@ -25,19 +20,21 @@ use num_traits::Signed;
 
 use rust_d3_geo::clip::circle::ClipCircleC;
 use rust_d3_geo::clip::circle::ClipCircleU;
-use rust_d3_geo::data_object::FeatureCollection;
-use rust_d3_geo::data_object::FeatureProperty;
-use rust_d3_geo::data_object::Features;
-use rust_d3_geo::distance::distance;
 use rust_d3_geo::projection::builder::template::NoPCNU;
 use rust_d3_geo::projection::builder::template::ResampleNoPCNC;
 use rust_d3_geo::projection::builder::template::ResampleNoPCNU;
 use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::stream::Stream;
 
-use crate::delaunay::excess::excess;
-
 use super::delaunay::GeoDelaunay;
+
+mod cell_mesh;
+mod find;
+mod hull;
+mod links;
+mod mesh;
+mod polygons;
+mod triangles;
 
 /// Returns type used by .x() and .y()
 #[allow(missing_debug_implementations)]
@@ -257,246 +254,5 @@ where
                 return XYReturn::Voronoi(self);
             }
         };
-    }
-    /// Returns polygons in the form of a feature collection.
-    ///
-    /// None when either
-    /// the constructor fails, or
-    /// the delaunay instance is None.
-    pub fn polygons(&mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
-        if let Some(data) = data {
-            match Self::new(Some(data)) {
-                Ok(s) => *self = s,
-                Err(_) => return None,
-            }
-        };
-
-        match &self.geo_delaunay {
-            None => None,
-            Some(dr) => {
-                if self.valid.is_empty() {
-                    return Some(FeatureCollection(Vec::new()));
-                }
-
-                let mut features: Vec<Features<T>> = Vec::new();
-                for (i, poly) in dr.polygons.iter().enumerate() {
-                    let mut poly_closed: Vec<usize> = poly.clone();
-                    poly_closed.push(poly[0]);
-                    let exterior: LineString<T> =
-                        poly_closed.iter().map(|&i| (dr.centers[i])).collect();
-
-                    let geometry = Geometry::Polygon(Polygon::new(exterior, vec![]));
-                    // TODO why does this need to be borrow_mut
-                    let neighbors = dr.neighbors.borrow_mut();
-                    let n = neighbors.get(&i).unwrap().clone();
-                    let properties: Vec<FeatureProperty<T>> = vec![
-                        FeatureProperty::Site(self.valid[i]),
-                        FeatureProperty::Sitecoordinates(self.points[i]),
-                        FeatureProperty::Neighbors(n),
-                    ];
-                    let fs = Features {
-                        geometry: vec![geometry],
-                        properties,
-                    };
-                    features.push(fs);
-                }
-                Some(FeatureCollection(features))
-            }
-        }
-    }
-
-    /// Returns a freature collection representing the triangularization of the input object.
-    pub fn triangles(mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
-        if let Some(data) = data {
-            match Self::new(Some(data)) {
-                Ok(s) => {
-                    self = s;
-                }
-                Err(_) => return None,
-            }
-        }
-
-        match self.geo_delaunay {
-            None => None,
-
-            Some(delaunay_return) => {
-                let points = self.points.clone();
-                let features: Vec<Features<T>> = delaunay_return
-                    .triangles
-                    .iter()
-                    .enumerate()
-                    .map(|(index, tri)| {
-                        let tri_points: Vec<Coord<T>> = tri.iter().map(|i| (points[*i])).collect();
-                        TriStruct {
-                            tri_points,
-                            center: (delaunay_return.centers[index]),
-                        }
-                    })
-                    .filter(|tri_struct| excess(&tri_struct.tri_points) > T::zero())
-                    .map(|tri_struct| {
-                        let first = tri_struct.tri_points[0];
-                        let mut coordinates: Vec<Coord<T>> = tri_struct.tri_points;
-                        coordinates.push(first);
-                        Features {
-                            properties: vec![FeatureProperty::Circumecenter(tri_struct.center)],
-                            geometry: vec![Geometry::Polygon(Polygon::new(
-                                coordinates.into(),
-                                vec![],
-                            ))],
-                        }
-                    })
-                    .collect();
-
-                Some(FeatureCollection(features))
-            }
-        }
-    }
-
-    /// Returns an annotated Feature collection labelled with distance urquhart etc.
-    pub fn links(&mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
-        if let Some(data) = data {
-            match Self::new(Some(data)) {
-                Ok(s) => *self = s,
-                Err(_) => return None,
-            }
-        }
-
-        return match &self.geo_delaunay {
-            None => None,
-            Some(delaunay_return) => {
-                let points: &Vec<Coord<T>> = self.points.borrow();
-                let distances: Vec<T> = delaunay_return
-                    .edges
-                    .iter()
-                    .map(|e| distance(&points[e[0]], &points[e[1]]))
-                    .collect();
-                let urquhart = (delaunay_return.urquhart)(&distances);
-                let features: Vec<Features<T>> = delaunay_return
-                    .edges
-                    .iter()
-                    .enumerate()
-                    .map(|(i, e)| {
-                        let ls: LineString<T> = vec![points[0], points[e[1]]].into();
-                        Features {
-                            properties: vec![
-                                FeatureProperty::Source(self.valid[e[0]]),
-                                FeatureProperty::Target(self.valid[e[1]]),
-                                FeatureProperty::Length(distances[i]),
-                                FeatureProperty::Urquhart(urquhart[i]),
-                            ],
-                            geometry: vec![Geometry::LineString(ls)],
-                        }
-                    })
-                    .collect();
-                return Some(FeatureCollection(features));
-            }
-        };
-    }
-
-    /// Returns the mesh in the form of a mutliline string.
-    pub fn mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
-        if let Some(data) = data {
-            match Self::new(Some(data)) {
-                Ok(s) => self = s,
-                Err(_) => return None,
-            }
-        }
-
-        self.geo_delaunay.as_ref().map(|delaunay_return| {
-            delaunay_return
-                .edges
-                .iter()
-                .map(|e| line_string![(self.points)[e[0]], (self.points)[e[1]]])
-                .collect()
-        })
-    }
-
-    /// Returns a Multiline string assoicated with the input geometry.
-    ///
-    /// # Panics
-    ///  The delauanay object must be valid when this function is called.
-    pub fn cell_mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
-        if let Some(data) = data {
-            match Self::new(Some(data)) {
-                Ok(s) => self = s,
-                Err(_) => {
-                    return None;
-                }
-            }
-        }
-
-        // Return early maybe?
-        self.geo_delaunay.as_ref()?;
-
-        let delaunay = self.geo_delaunay.unwrap();
-        let polygons = delaunay.polygons;
-        let centers = delaunay.centers;
-        // Here can only supply an underestimate of the capacity
-        // but if the number of polygons is large it will provide
-        // some relief from constant rellocation.
-        let mut coordinates: Vec<LineString<T>> = Vec::with_capacity(polygons.len());
-        for p in polygons {
-            let mut p0 = *p.last().unwrap();
-            let mut p1 = p[0];
-            for pi in p {
-                if p1 > p0 {
-                    coordinates.push(line_string![centers[p0], centers[p1]]);
-                }
-                p0 = p1;
-                p1 = pi;
-            }
-        }
-
-        Some(MultiLineString(coordinates))
-    }
-
-    /// Returns the index associated with the given point.
-    pub fn find(&mut self, p: &Coord<T>, radius: Option<T>) -> Option<usize> {
-        match &self.geo_delaunay {
-            None => None,
-            Some(delaunay_return) => {
-                self.found = (delaunay_return.find)(p, self.found);
-                match radius {
-                    Some(radius) => match self.found {
-                        Some(found) => {
-                            if distance(p, &self.points[found]) < radius {
-                                Some(found)
-                            } else {
-                                None
-                            }
-                        }
-                        None => None,
-                    },
-                    None => self.found,
-                }
-            }
-        }
-    }
-
-    /// Returns the hull for a given geometry.
-    pub fn hull(mut self, data: Option<Geometry<T>>) -> Option<Polygon<T>> {
-        if let Some(data) = data {
-            match Self::new(Some(data)) {
-                Ok(s) => self = s,
-                Err(_) => {
-                    return None;
-                }
-            }
-        }
-
-        match self.geo_delaunay {
-            None => None,
-            Some(ref delaunay_return) => {
-                if delaunay_return.hull.is_empty() {
-                    None
-                } else {
-                    let hull = &delaunay_return.hull;
-                    let mut coordinates: Vec<Coord<T>> =
-                        hull.iter().map(|i| self.points[*i]).collect();
-                    coordinates.push(self.points[hull[0]]);
-                    Some(Polygon::new(coordinates.into(), vec![]))
-                }
-            }
-        }
     }
 }
