@@ -68,7 +68,7 @@ where
             }
         };
 
-        match &self.geo_delaunay {
+        match &self.delaunay {
             None => None,
             Some(dr) => {
                 if self.valid.is_empty() {

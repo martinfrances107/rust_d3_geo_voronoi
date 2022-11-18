@@ -66,7 +66,7 @@ where
             }
         }
 
-        return match &self.geo_delaunay {
+        return match &self.delaunay {
             None => None,
             Some(delaunay_return) => {
                 let points: &Vec<Coord<T>> = self.points.borrow();

@@ -69,7 +69,7 @@ where
             }
         }
 
-        match self.geo_delaunay {
+        match self.delaunay {
             None => None,
 
             Some(delaunay_return) => {

@@ -84,7 +84,7 @@ where
 {
     /// The wrapped GeoDelaunay instance.
     #[allow(clippy::type_complexity)]
-    pub geo_delaunay: Option<GeoDelaunay<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>>,
+    pub delaunay: Option<GeoDelaunay<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>>,
     data: Option<Geometry<T>>,
     found: Option<usize>,
     //Points: Rc needed here as the egdes, triangles, neigbours etc all index into thts vec.
@@ -107,7 +107,7 @@ where
     fn default() -> Self {
         GeoVoronoi {
             data: None,
-            geo_delaunay: None,
+            delaunay: None,
             found: None,
             points: Rc::new(Vec::new()),
             valid: Vec::new(),
@@ -217,7 +217,7 @@ where
                         y: d.2.y(),
                     })
                     .collect();
-                v.geo_delaunay = GeoDelaunay::delaunay(v.points.clone());
+                v.delaunay = GeoDelaunay::delaunay(v.points.clone());
             }
             None => {
                 v = Self::default();

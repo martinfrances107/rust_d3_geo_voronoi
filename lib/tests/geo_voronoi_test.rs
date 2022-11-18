@@ -376,7 +376,7 @@ mod geo_voronoi_test {
     }
 
     #[test]
-    fn geo_voronoi_finds_p() {
+    fn voronoi_finds_p() {
         let sites = MultiPoint(vec![
             Point::new(10f64, 0f64),
             Point::new(10f64, 10f64),
@@ -443,7 +443,7 @@ mod geo_voronoi_test {
     }
 
     #[test]
-    fn geo_voronoi_link() {
+    fn voronoi_link() {
         let sites = Geometry::MultiPoint(MultiPoint(vec![
             Point::new(0f64, 0f64),
             Point::new(10f64, 0f64),
@@ -491,7 +491,7 @@ mod geo_voronoi_test {
     }
 
     #[test]
-    fn geo_voronoi_triangles_returns_geojson() {
+    fn voronoi_triangles_returns_geojson() {
         let sites = Geometry::MultiPoint(MultiPoint(vec![
             Point::new(0f64, 0f64),
             Point::new(10f64, 0f64),
@@ -525,7 +525,7 @@ mod geo_voronoi_test {
     }
 
     #[test]
-    fn geo_voronoi_links_returns_urquhart_graph() {
+    fn voronoi_links_returns_urquhart_graph() {
         let sites = Geometry::MultiPoint(MultiPoint(vec![
             Point::new(0f64, 0f64),
             Point::new(10f64, 0f64),
@@ -620,12 +620,13 @@ mod geo_voronoi_test {
                             x: -180.0_f64 + v.x,
                             y: -1.0_f64 * v.y,
                         };
+                        #[allow(clippy::assertions_on_constants)]
                         if ((u.x - v.x).abs() < 1e-6 && (u.y - v.y).abs() < 1e-6)
                             || ((u.x - w.x).abs() < 1e-6 && (u.y - w.y).abs() < 1e-6)
                         {
-                            assert!(true);
+                            debug_assert!(true);
                         } else {
-                            assert!(false);
+                            debug_assert!(false);
                         }
                     }
                     _ => {
@@ -665,7 +666,7 @@ mod geo_voronoi_test {
             }
         };
         assert_eq!(
-            u.geo_delaunay.unwrap().delaunay.triangles.iter().max(),
+            u.delaunay.unwrap().delaunay.triangles.iter().max(),
             Some(&(sites.len() - 1usize))
         );
     }

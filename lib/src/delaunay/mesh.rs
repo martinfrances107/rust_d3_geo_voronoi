@@ -1,4 +1,4 @@
-pub fn geo_mesh(polygons: &[Vec<usize>]) -> Vec<[usize; 2]> {
+pub fn mesh(polygons: &[Vec<usize>]) -> Vec<[usize; 2]> {
     // Provide an underestimate for capacity
     // For large polygons this will provide some relief
     // from constant rellocation.

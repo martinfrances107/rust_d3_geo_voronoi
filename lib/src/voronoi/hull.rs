@@ -63,7 +63,7 @@ where
             }
         }
 
-        match self.geo_delaunay {
+        match self.delaunay {
             None => None,
             Some(ref delaunay_return) => {
                 if delaunay_return.hull.is_empty() {

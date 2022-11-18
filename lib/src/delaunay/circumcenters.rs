@@ -8,7 +8,7 @@ use rust_d3_geo::cartesian::spherical;
 
 use super::cartesian::cartesian;
 
-pub fn geo_circumcenters<'a, T>(
+pub fn circumcenters<'a, T>(
     triangles: &'a [[usize; 3]],
     points: &'a [Coord<T>],
 ) -> impl Iterator<Item = Coord<T>> + 'a

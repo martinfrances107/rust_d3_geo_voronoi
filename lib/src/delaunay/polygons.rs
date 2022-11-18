@@ -17,7 +17,7 @@ use super::o_midpoint::o_midpoint;
 type TupleVec = Vec<(usize, usize, usize, (usize, usize, usize))>;
 
 #[derive(Debug)]
-pub struct GeoPolygons<T>
+pub struct Polygons<T>
 where
     T: CoordFloat,
 {
@@ -25,7 +25,7 @@ where
     triangles: Rc<Vec<[usize; 3]>>,
 }
 
-impl<T> Default for GeoPolygons<T>
+impl<T> Default for Polygons<T>
 where
     T: CoordFloat,
 {
@@ -37,7 +37,7 @@ where
     }
 }
 
-impl<T> GeoPolygons<T>
+impl<T> Polygons<T>
 where
     T: CoordFloat + FloatConst,
 {

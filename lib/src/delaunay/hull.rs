@@ -7,7 +7,7 @@ use geo_types::Coord;
 
 use super::excess::excess;
 
-pub fn geo_hull<T>(triangles: &[[usize; 3]], points: &[Coord<T>]) -> Vec<usize>
+pub fn hull<T>(triangles: &[[usize; 3]], points: &[Coord<T>]) -> Vec<usize>
 where
     T: CoordFloat,
 {

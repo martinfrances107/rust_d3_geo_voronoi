@@ -61,7 +61,7 @@ where
             }
         }
 
-        self.geo_delaunay.as_ref().map(|delaunay_return| {
+        self.delaunay.as_ref().map(|delaunay_return| {
             delaunay_return
                 .edges
                 .iter()

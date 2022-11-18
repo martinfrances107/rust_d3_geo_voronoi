@@ -36,7 +36,7 @@ type DReturn<DRAIN, PCNU, PR, RC, RU, T> =
 ///  Will never happen as constants will always be converted into T.
 #[allow(clippy::type_complexity)]
 #[must_use]
-pub fn geo_delaunay_from<DRAIN, PCNC, PCNU, RC, RU, T>(
+pub fn delaunay_from<DRAIN, PCNC, PCNU, RC, RU, T>(
     points: &Rc<Vec<Coord<T>>>,
 ) -> Option<
     DReturn<

@@ -27,6 +27,7 @@ use rust_d3_geo::projection::Build;
 use rust_d3_geo::projection::RawBase as ProjectionRawBase;
 use rust_d3_geo::projection::RotateSet;
 use rust_d3_geo::stream::DrainStub;
+use rust_d3_geo_voronoi::voronoi::ConstructionError;
 use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
 
 type GV<'a> = GeoVoronoi<
@@ -57,7 +58,6 @@ lazy_static! {
     ];
 }
 
-use rust_d3_geo_voronoi::voronoi::ConstructionError;
 #[cfg(not(tarpaulin_include))]
 fn draw() -> Result<String, ConstructionError> {
     // size is the number of voronoi

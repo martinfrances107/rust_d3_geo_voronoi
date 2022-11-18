@@ -53,7 +53,7 @@ where
 {
     /// Returns the index associated with the given point.
     pub fn find(&mut self, p: &Coord<T>, radius: Option<T>) -> Option<usize> {
-        match &self.geo_delaunay {
+        match &self.delaunay {
             None => None,
             Some(delaunay_return) => {
                 self.found = (delaunay_return.find)(p, self.found);

@@ -68,9 +68,9 @@ where
         }
 
         // Return early maybe?
-        self.geo_delaunay.as_ref()?;
+        self.delaunay.as_ref()?;
 
-        let delaunay = self.geo_delaunay.unwrap();
+        let delaunay = self.delaunay.unwrap();
         let polygons = delaunay.polygons;
         let centers = delaunay.centers;
         // Here can only supply an underestimate of the capacity

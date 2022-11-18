@@ -1,20 +1,20 @@
 #![allow(clippy::many_single_char_names)]
 mod cartesian;
 
+mod circumcenters;
+/// Helper function.
+pub mod delaunay_from;
+mod edges;
 /// A helper function.
 pub mod excess;
-mod geo_circumcenters;
-/// Helper function.
-pub mod geo_delaunay_from;
-mod geo_edges;
-mod geo_find;
-mod geo_hull;
-mod geo_mesh;
-mod geo_neighbors;
-mod geo_polygons;
-mod geo_triangles;
-mod geo_urquhart;
+mod find;
+mod hull;
+mod mesh;
+mod neighbors;
 mod o_midpoint;
+mod polygons;
+mod triangles;
+mod urquhart;
 
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -31,16 +31,16 @@ use num_traits::AsPrimitive;
 use num_traits::FloatConst;
 use num_traits::FromPrimitive;
 
-use geo_circumcenters::geo_circumcenters;
-use geo_delaunay_from::geo_delaunay_from;
-use geo_edges::geo_edges;
-use geo_find::geo_find;
-use geo_hull::geo_hull;
-use geo_mesh::geo_mesh;
-use geo_neighbors::geo_neighbors;
-use geo_polygons::GeoPolygons;
-use geo_triangles::geo_triangles;
-use geo_urquhart::geo_urquhart;
+use circumcenters::circumcenters;
+use delaunay_from::delaunay_from;
+use edges::edges;
+use find::find;
+use hull::hull;
+use mesh::mesh;
+use neighbors::neighbors;
+use polygons::Polygons;
+use triangles::triangles;
+use urquhart::geo_urquhart;
 
 use rust_d3_delaunay::delaunay::Delaunay;
 use rust_d3_geo::clip::circle::ClipCircleC;
@@ -121,7 +121,7 @@ where
     #[must_use]
     pub fn delaunay(points: Rc<Vec<Coord<T>>>) -> Option<Self> {
         let p = points.clone();
-        match geo_delaunay_from::<
+        match delaunay_from::<
             DRAIN,
             NoPCNC<DRAIN>,
             NoPCNC<DRAIN>,
@@ -132,23 +132,23 @@ where
         {
             Some(delaunay) => {
                 // RC is needed here as tri and e are both closed over in the urquhart function an is part of the Delaunay return.
-                let tri = Rc::new(geo_triangles(&delaunay));
-                let e = Rc::new(geo_edges(&tri, &points));
-                let circumcenters = geo_circumcenters(&tri, &points);
+                let tri = Rc::new(triangles(&delaunay));
+                let e = Rc::new(edges(&tri, &points));
+                let circumcenters = circumcenters(&tri, &points);
                 let (polys, centers) =
-                    GeoPolygons::default().gen(circumcenters.collect(), tri.clone(), &points);
+                    Polygons::default().gen(circumcenters.collect(), tri.clone(), &points);
 
                 // RC is needed here as it is both closed over in the find function an is part of the Delaunay return.
-                let n = Rc::new(RefCell::new(geo_neighbors(&tri, points.len())));
+                let n = Rc::new(RefCell::new(neighbors(&tri, points.len())));
 
                 return Some(Self {
                     delaunay,
                     edges: e.clone(),
                     centers,
-                    hull: geo_hull(&tri, &points),
-                    find: geo_find(n.clone(), points),
+                    hull: hull(&tri, &points),
+                    find: find(n.clone(), points),
                     neighbors: n,
-                    mesh: geo_mesh(&polys),
+                    mesh: mesh(&polys),
                     polygons: polys,
                     urquhart: geo_urquhart(e, tri.clone()),
                     triangles: tri,

@@ -18,7 +18,7 @@ fn distance2<T: Float>(a: &[T; 3], b: &[T; 3]) -> T {
 }
 
 #[allow(clippy::similar_names)]
-pub fn geo_find<'a, T: CoordFloat + 'static>(
+pub fn find<'a, T: CoordFloat + 'static>(
     neighbors: Rc<RefCell<HashMap<usize, Vec<usize>>>>,
     points: Rc<Vec<Coord<T>>>,
 ) -> FindReturn<'a, T> {

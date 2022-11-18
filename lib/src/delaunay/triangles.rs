@@ -4,7 +4,7 @@ use num_traits::FloatConst;
 
 use rust_d3_delaunay::delaunay::Delaunay;
 
-pub fn geo_triangles<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>(
+pub fn triangles<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>(
     delaunay: &Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>,
 ) -> Vec<[usize; 3]>
 where
@@ -17,7 +17,7 @@ where
         return Vec::new();
     }
 
-    let mut geo_triangles: Vec<[usize; 3]> = Vec::new();
+    let mut t: Vec<[usize; 3]> = Vec::new();
     let n: usize = triangles.len() / 3usize;
 
     for i in 0..n {
@@ -25,8 +25,8 @@ where
         let b = triangles[3 * i + 1];
         let c = triangles[3 * i + 2];
         if a != b && b != c {
-            geo_triangles.push([a, c, b]);
+            t.push([a, c, b]);
         }
     }
-    geo_triangles
+    t
 }
