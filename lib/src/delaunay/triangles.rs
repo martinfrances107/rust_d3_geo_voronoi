@@ -17,8 +17,8 @@ where
         return Vec::new();
     }
 
-    let mut t: Vec<[usize; 3]> = Vec::new();
     let n: usize = triangles.len() / 3usize;
+    let mut t: Vec<[usize; 3]> = Vec::with_capacity(n);
 
     for i in 0..n {
         let a = triangles[3 * i];
