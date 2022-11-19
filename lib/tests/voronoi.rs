@@ -1,7 +1,7 @@
 #![allow(clippy::pedantic)]
 #[cfg(not(tarpaulin_include))]
 #[cfg(test)]
-mod geo_voronoi_test {
+mod voronoi {
     extern crate pretty_assertions;
 
     use geo::algorithm::cyclic_match::CyclicMatch;
@@ -582,7 +582,7 @@ mod geo_voronoi_test {
     }
 
     #[test]
-    fn geo_voronoi_links_returns_circumcenters() {
+    fn voronoi_links_returns_circumcenters() {
         let sites = Geometry::MultiPoint(MultiPoint(vec![
             Point::new(0f64, 0f64),
             Point::new(10f64, 0f64),
