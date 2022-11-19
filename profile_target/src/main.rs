@@ -28,9 +28,9 @@ use rust_d3_geo::projection::RawBase as ProjectionRawBase;
 use rust_d3_geo::projection::RotateSet;
 use rust_d3_geo::stream::DrainStub;
 use rust_d3_geo_voronoi::voronoi::ConstructionError;
-use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
+use rust_d3_geo_voronoi::voronoi::Voronoi;
 
-type GV<'a> = GeoVoronoi<
+type GV<'a> = Voronoi<
     'a,
     ClipCircleC<ResampleNoPCNC<DrainStub<f64>, Stereographic<DrainStub<f64>, f64>, f64>, f64>,
     ClipCircleU<ResampleNoPCNC<DrainStub<f64>, Stereographic<DrainStub<f64>, f64>, f64>, f64>,
@@ -78,7 +78,7 @@ fn draw() -> Result<String, ConstructionError> {
             .collect(),
     );
 
-    let mut gv: GV = GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone())))?;
+    let mut gv: GV = Voronoi::new(Some(Geometry::MultiPoint(sites.clone())))?;
 
     ortho_builder.rotate_set(&[0_f64, 0_f64, 0_f64]);
     let ortho = ortho_builder.build();

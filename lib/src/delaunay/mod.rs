@@ -42,7 +42,7 @@ use polygons::Polygons;
 use triangles::triangles;
 use urquhart::geo_urquhart;
 
-use rust_d3_delaunay::delaunay::Delaunay;
+use rust_d3_delaunay::delaunay::Delaunay as DelaunayInner;
 use rust_d3_geo::clip::circle::ClipCircleC;
 use rust_d3_geo::clip::circle::ClipCircleU;
 use rust_d3_geo::projection::builder::template::NoPCNC;
@@ -64,7 +64,7 @@ type UTransform<T> = Box<dyn Fn(&Vec<T>) -> Vec<bool>>;
 /// Wraps data associated with a delaunay object.
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct GeoDelaunay<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
+pub struct Delaunay<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
 where
     CLIPC: Clone,
     CLIPU: Clone,
@@ -72,7 +72,7 @@ where
 {
     /// The wrapped delaunay object.
     #[derivative(Debug = "ignore")]
-    pub delaunay: Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>,
+    pub delaunay: DelaunayInner<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>,
     /// The edges and triangles properties need RC because the values are close over in the urquhart function.
     pub edges: Rc<HashSet<EdgeIndex>>,
     /// A set of triangles as defined by set of indicies.
@@ -96,7 +96,7 @@ where
 }
 
 impl<'a, DRAIN, T>
-    GeoDelaunay<
+    Delaunay<
         'a,
         ClipCircleC<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
         ClipCircleU<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
@@ -119,7 +119,7 @@ where
 {
     /// Creates a `GeoDelaunay` object from a set of points.
     #[must_use]
-    pub fn delaunay(points: Rc<Vec<Coord<T>>>) -> Option<Self> {
+    pub fn new(points: Rc<Vec<Coord<T>>>) -> Option<Self> {
         let p = points.clone();
         match delaunay_from::<
             DRAIN,

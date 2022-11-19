@@ -28,11 +28,11 @@ use rust_d3_geo::stream::Stream;
 
 use crate::delaunay::excess::excess;
 
-use super::GeoVoronoi;
 use super::TriStruct;
+use super::Voronoi;
 
 impl<'a, DRAIN, T>
-    GeoVoronoi<
+    Voronoi<
         'a,
         ClipCircleC<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
         ClipCircleU<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,

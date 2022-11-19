@@ -26,7 +26,7 @@ use rust_d3_geo::projection::builder::template::ResampleNoPCNU;
 use rust_d3_geo::projection::stereographic::Stereographic;
 use rust_d3_geo::stream::Stream;
 
-use super::delaunay::GeoDelaunay;
+use super::delaunay::Delaunay;
 
 mod cell_mesh;
 mod find;
@@ -45,7 +45,7 @@ where
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + Display + CoordFloat + FloatConst,
 {
     /// Voronoi
-    Voronoi(GeoVoronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, Stereographic<DRAIN, T>, RC, RU, T>),
+    Voronoi(Voronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, Stereographic<DRAIN, T>, RC, RU, T>),
     /// Function
     Func(VTransform<T>),
 }
@@ -76,7 +76,7 @@ pub type VTransform<T> = Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>;
 #[derive(Derivative)]
 #[derivative(Debug)]
 /// Holds data centered on a `GeoDelauany` instance.
-pub struct GeoVoronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
+pub struct Voronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
 where
     CLIPC: Clone,
     CLIPU: Clone,
@@ -84,7 +84,7 @@ where
 {
     /// The wrapped GeoDelaunay instance.
     #[allow(clippy::type_complexity)]
-    pub delaunay: Option<GeoDelaunay<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>>,
+    pub delaunay: Option<Delaunay<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>>,
     data: Option<Geometry<T>>,
     found: Option<usize>,
     //Points: Rc needed here as the egdes, triangles, neigbours etc all index into thts vec.
@@ -98,14 +98,14 @@ where
 }
 
 impl<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T> Default
-    for GeoVoronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
+    for Voronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
 where
     CLIPC: Clone,
     CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
     fn default() -> Self {
-        GeoVoronoi {
+        Voronoi {
             data: None,
             delaunay: None,
             found: None,
@@ -133,7 +133,7 @@ impl std::fmt::Display for ConstructionError {
 }
 
 impl<'a, DRAIN, T>
-    GeoVoronoi<
+    Voronoi<
         'a,
         ClipCircleC<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
         ClipCircleU<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
@@ -184,9 +184,9 @@ where
         //     }
         // };
 
-        let mut v = GeoVoronoi {
+        let mut v = Voronoi {
             data,
-            ..GeoVoronoi::default()
+            ..Voronoi::default()
         };
 
         // Data sanitization:-
@@ -217,7 +217,7 @@ where
                         y: d.2.y(),
                     })
                     .collect();
-                v.delaunay = GeoDelaunay::delaunay(v.points.clone());
+                v.delaunay = Delaunay::new(v.points.clone());
             }
             None => {
                 v = Self::default();

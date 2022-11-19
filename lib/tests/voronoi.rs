@@ -19,14 +19,14 @@ mod voronoi {
     use rust_d3_geo::data_object::FeatureProperty;
     use rust_d3_geo::projection::builder::template::ResampleNoPCNC;
     use rust_d3_geo::stream::DrainStub;
-    use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
+    use rust_d3_geo_voronoi::voronoi::Voronoi;
 
     #[test]
     fn two_hemispheres() {
         println!("two points leads to two hemispheres.");
         let sites = MultiPoint(vec![Point::new(-20f64, -20f64), Point::new(20f64, 20f64)]);
 
-        let mut gv: GeoVoronoi<
+        let mut gv: Voronoi<
             ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
@@ -36,7 +36,7 @@ mod voronoi {
             _,
             _,
         >;
-        match GeoVoronoi::new(Some(Geometry::MultiPoint(sites))) {
+        match Voronoi::new(Some(Geometry::MultiPoint(sites))) {
             Ok(ok) => gv = ok,
             Err(_) => {
                 // assert!(false);
@@ -118,7 +118,7 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]);
 
-        let mut gv: GeoVoronoi<
+        let mut gv: Voronoi<
             ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
@@ -128,7 +128,7 @@ mod voronoi {
             _,
             _,
         >;
-        match GeoVoronoi::new(Some(Geometry::MultiPoint(sites))) {
+        match Voronoi::new(Some(Geometry::MultiPoint(sites))) {
             Ok(ok) => gv = ok,
             Err(_) => {
                 panic!("could not proceed");
@@ -172,7 +172,7 @@ mod voronoi {
         // This should be tightened up.
         let g = Geometry::MultiPoint(sites);
 
-        let mut gv: GeoVoronoi<
+        let mut gv: Voronoi<
             ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
@@ -182,7 +182,7 @@ mod voronoi {
             _,
             _,
         >;
-        match GeoVoronoi::new(Some(g)) {
+        match Voronoi::new(Some(g)) {
             Ok(ok) => gv = ok,
             Err(_) => {
                 panic!("could not proceed");
@@ -226,7 +226,7 @@ mod voronoi {
             Point::new(0f64, 0f64),
         ]);
 
-        let gv = match GeoVoronoi::<
+        let gv = match Voronoi::<
             ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
@@ -271,7 +271,7 @@ mod voronoi {
             Point::new(0f64, 0f64),
         ]);
 
-        let gv = match GeoVoronoi::<
+        let gv = match Voronoi::<
             ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
@@ -337,7 +337,7 @@ mod voronoi {
             "5 0/8 5".into(),
         ];
 
-        let gv = match GeoVoronoi::<
+        let gv = match Voronoi::<
             ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
@@ -385,7 +385,7 @@ mod voronoi {
             Point::new(0f64, 0f64),
         ]);
 
-        let mut voro: GeoVoronoi<
+        let mut voro: Voronoi<
             ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
@@ -395,7 +395,7 @@ mod voronoi {
             _,
             _,
         >;
-        match GeoVoronoi::new(Some(Geometry::MultiPoint(sites.clone()))) {
+        match Voronoi::new(Some(Geometry::MultiPoint(sites.clone()))) {
             Ok(ok) => voro = ok,
             Err(_) => {
                 panic!("cannot proceed");
@@ -413,7 +413,7 @@ mod voronoi {
             Some(4)
         );
         // TODO bug ... strange bug/hang ... unless I define voro twice.
-        let mut voro2: GeoVoronoi<
+        let mut voro2: Voronoi<
             ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
@@ -423,7 +423,7 @@ mod voronoi {
             _,
             _,
         >;
-        match GeoVoronoi::new(Some(Geometry::MultiPoint(sites))) {
+        match Voronoi::new(Some(Geometry::MultiPoint(sites))) {
             Ok(ok) => voro2 = ok,
             Err(_) => {
                 panic!("cannot proceed");
@@ -450,7 +450,7 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]));
         // let mut gv: GV = GeoVoronoi::new(None);
-        let mut gv: GeoVoronoi<
+        let mut gv: Voronoi<
             ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
@@ -460,7 +460,7 @@ mod voronoi {
             _,
             _,
         >;
-        match GeoVoronoi::new(None) {
+        match Voronoi::new(None) {
             Ok(ok) => gv = ok,
             Err(_) => {
                 panic!("could not proceed");
@@ -498,7 +498,7 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]));
 
-        let gv = match GeoVoronoi::<
+        let gv = match Voronoi::<
             ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
@@ -533,7 +533,7 @@ mod voronoi {
         ]));
 
         // let mut gv: GV = GeoVoronoi::new(None);
-        let mut gv: GeoVoronoi<
+        let mut gv: Voronoi<
             ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
@@ -543,7 +543,7 @@ mod voronoi {
             _,
             _,
         >;
-        match GeoVoronoi::new(None) {
+        match Voronoi::new(None) {
             Ok(ok) => gv = ok,
             Err(_) => {
                 panic!("could not proceed");
@@ -589,7 +589,7 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]));
 
-        let gv = match GeoVoronoi::<
+        let gv = match Voronoi::<
             ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,
@@ -649,7 +649,7 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ];
 
-        let u = match GeoVoronoi::<
+        let u = match Voronoi::<
             ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
             _,
             _,

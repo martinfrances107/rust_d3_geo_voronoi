@@ -45,9 +45,9 @@ use rust_d3_geo::projection::orthographic::Orthographic;
 use rust_d3_geo::projection::Build;
 use rust_d3_geo::projection::RawBase as ProjectionRawBase;
 use rust_d3_geo::projection::RotateSet;
-use rust_d3_geo_voronoi::voronoi::GeoVoronoi;
+use rust_d3_geo_voronoi::voronoi::Voronoi;
 
-type GV = GeoVoronoi<
+type GV = Voronoi<
     'static,
     ClipCircleC<ResampleNoPCNC<Context, Stereographic<Context, f64>, f64>, f64>,
     ClipCircleU<ResampleNoPCNC<Context, Stereographic<Context, f64>, f64>, f64>,
@@ -141,7 +141,7 @@ impl Renderer {
         // Insert dummy values.
         let sites = MultiPoint(vec![]);
         let gp = Geometry::MultiPoint(sites.clone());
-        let gv = match GeoVoronoi::new(Some(gp)) {
+        let gv = match Voronoi::new(Some(gp)) {
             Ok(gv) => gv,
             Err(_) => {
                 return Err(JsValue::from_str("new() Could not GeoVoronoi mesh."));
@@ -186,7 +186,7 @@ impl Renderer {
 
         let gp = Geometry::MultiPoint(self.sites.clone());
 
-        self.gv = match GeoVoronoi::new(Some(gp)) {
+        self.gv = match Voronoi::new(Some(gp)) {
             Ok(gv) => gv,
             Err(_) => {
                 return Err(JsValue::from_str(
