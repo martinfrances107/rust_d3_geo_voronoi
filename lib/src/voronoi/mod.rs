@@ -36,7 +36,7 @@ mod mesh;
 mod polygons;
 mod triangles;
 
-/// Returns type used by .x() and .y()
+/// Return type used by .x() and .y()
 #[allow(missing_debug_implementations)]
 pub enum XYReturn<'a, CLIPC, CLIPU, DRAIN, PCNU, RC, RU, T>
 where
