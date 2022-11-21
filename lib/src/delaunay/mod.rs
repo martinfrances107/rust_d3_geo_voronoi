@@ -40,7 +40,7 @@ use mesh::mesh;
 use neighbors::neighbors;
 use polygons::Polygons;
 use triangles::triangles;
-use urquhart::geo_urquhart;
+use urquhart::urquhart;
 
 use rust_d3_delaunay::delaunay::Delaunay as DelaunayInner;
 use rust_d3_geo::clip::circle::ClipCircleC;
@@ -150,7 +150,7 @@ where
                     neighbors: n,
                     mesh: mesh(&polys),
                     polygons: polys,
-                    urquhart: geo_urquhart(e, tri.clone()),
+                    urquhart: urquhart(e, tri.clone()),
                     triangles: tri,
                 });
             }

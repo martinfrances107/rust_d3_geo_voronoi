@@ -9,7 +9,7 @@ use super::EdgeIndex;
 use super::TriIndex;
 use super::UTransform;
 
-pub fn geo_urquhart<T: Float>(
+pub fn urquhart<T: Float>(
     edges: Rc<HashSet<EdgeIndex>>,
     triangles: Rc<Vec<TriIndex>>,
 ) -> UTransform<T> {
