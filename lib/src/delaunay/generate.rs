@@ -36,7 +36,7 @@ type DReturn<DRAIN, PCNU, PR, RC, RU, T> =
 ///  Will never happen as constants will always be converted into T.
 #[allow(clippy::type_complexity)]
 #[must_use]
-pub fn delaunay_from<DRAIN, PCNC, PCNU, RC, RU, T>(
+pub fn from_points<DRAIN, PCNC, PCNU, RC, RU, T>(
     points: &Rc<Vec<Coord<T>>>,
 ) -> Option<
     DReturn<
@@ -73,7 +73,7 @@ where
         y: T::zero(),
     });
     builder.scale_set(T::one());
-    builder.rotate_set(&[r_invert.x, r_invert.y, T::zero()]);
+    builder.rotate2_set(&[r_invert.x, r_invert.y]);
     let projection = builder.build();
 
     let mut points: Vec<Coord<T>> = points.iter().map(|p| projection.transform(p)).collect();

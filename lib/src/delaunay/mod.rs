@@ -2,12 +2,12 @@
 mod cartesian;
 
 mod circumcenters;
-/// Helper function.
-pub mod delaunay_from;
 mod edges;
 /// A helper function.
 pub mod excess;
 mod find;
+/// Helper function.
+pub mod generate;
 mod hull;
 mod mesh;
 mod neighbors;
@@ -32,9 +32,9 @@ use num_traits::FloatConst;
 use num_traits::FromPrimitive;
 
 use circumcenters::circumcenters;
-use delaunay_from::delaunay_from;
 use edges::edges;
 use find::find;
+use generate::from_points;
 use hull::hull;
 use mesh::mesh;
 use neighbors::neighbors;
@@ -121,7 +121,7 @@ where
     #[must_use]
     pub fn new(points: Rc<Vec<Coord<T>>>) -> Option<Self> {
         let p = points.clone();
-        match delaunay_from::<
+        match from_points::<
             DRAIN,
             NoPCNC<DRAIN>,
             NoPCNC<DRAIN>,

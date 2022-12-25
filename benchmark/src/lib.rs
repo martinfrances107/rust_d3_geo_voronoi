@@ -201,7 +201,7 @@ impl Renderer {
     /// Render the next frame.
     pub fn render(&mut self) {
         let t0 = self.performance.now();
-        self.ob.rotate_set(&[t0 / 150_f64, 0_f64, 0_f64]);
+        self.ob.rotate2_set(&[t0 / 150_f64, 0_f64]);
         let ortho = self.ob.build();
 
         let pb = PathBuilder::new(self.context.clone());

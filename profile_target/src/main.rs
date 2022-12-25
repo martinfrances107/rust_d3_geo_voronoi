@@ -80,7 +80,7 @@ fn draw() -> Result<String, ConstructionError> {
 
     let mut gv: GV = Voronoi::new(Some(Geometry::MultiPoint(sites.clone())))?;
 
-    ortho_builder.rotate_set(&[0_f64, 0_f64, 0_f64]);
+    ortho_builder.rotate2_set(&[0_f64, 0_f64]);
     let ortho = ortho_builder.build();
     let mut path = PathBuilder::context_pathstring().build(ortho);
 
