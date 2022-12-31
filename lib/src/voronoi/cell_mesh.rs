@@ -16,13 +16,13 @@ use num_traits::FloatConst;
 use num_traits::FromPrimitive;
 use num_traits::Signed;
 
-use rust_d3_geo::clip::circle::ClipCircleC;
-use rust_d3_geo::clip::circle::ClipCircleU;
-use rust_d3_geo::projection::builder::template::NoPCNU;
-use rust_d3_geo::projection::builder::template::ResampleNoPCNC;
-use rust_d3_geo::projection::builder::template::ResampleNoPCNU;
-use rust_d3_geo::projection::stereographic::Stereographic;
-use rust_d3_geo::stream::Stream;
+use d3_geo_rs::clip::circle::ClipCircleC;
+use d3_geo_rs::clip::circle::ClipCircleU;
+use d3_geo_rs::projection::builder::template::NoPCNU;
+use d3_geo_rs::projection::builder::template::ResampleNoPCNC;
+use d3_geo_rs::projection::builder::template::ResampleNoPCNU;
+use d3_geo_rs::projection::stereographic::Stereographic;
+use d3_geo_rs::stream::Stream;
 
 use super::Voronoi;
 

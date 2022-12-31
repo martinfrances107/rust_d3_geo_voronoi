@@ -2,7 +2,8 @@ use std::collections::HashSet;
 
 use geo::CoordFloat;
 use geo_types::Coord;
-use rust_d3_array::extent::extent;
+
+use crate::extent::extent;
 
 use super::excess::excess;
 use super::EdgeIndex;
@@ -28,7 +29,7 @@ pub fn edges<T: CoordFloat>(triangles: &[TriIndex], point: &[Coord<T>]) -> HashS
 
         for i in 0..3 {
             let j = (i + 1) % 3;
-            let code = extent(vec![tri[i], tri[j]], None);
+            let code = extent(vec![tri[i], tri[j]], &None);
             h_index.insert(code);
         }
     }

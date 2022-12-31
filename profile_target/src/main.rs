@@ -9,26 +9,25 @@ use std::iter::repeat_with;
 extern crate lazy_static;
 extern crate rand;
 
+use d3_geo_rs::clip::circle::ClipCircleC;
+use d3_geo_rs::clip::circle::ClipCircleU;
+use d3_geo_rs::data_object::FeatureCollection;
+use d3_geo_rs::path::builder::Builder as PathBuilder;
+use d3_geo_rs::projection::builder::template::NoPCNU;
+use d3_geo_rs::projection::builder::template::ResampleNoPCNC;
+use d3_geo_rs::projection::builder::template::ResampleNoPCNU;
+use d3_geo_rs::projection::orthographic::Orthographic;
+use d3_geo_rs::projection::stereographic::Stereographic;
+use d3_geo_rs::projection::Build;
+use d3_geo_rs::projection::RawBase as ProjectionRawBase;
+use d3_geo_rs::projection::RotateSet;
+use d3_geo_rs::stream::DrainStub;
+use d3_geo_voronoi_rs::voronoi::ConstructionError;
+use d3_geo_voronoi_rs::voronoi::Voronoi;
 use geo::Geometry;
 use geo::Geometry::Polygon;
 use geo::MultiPoint;
 use geo_types::Coord;
-
-use rust_d3_geo::clip::circle::ClipCircleC;
-use rust_d3_geo::clip::circle::ClipCircleU;
-use rust_d3_geo::data_object::FeatureCollection;
-use rust_d3_geo::path::builder::Builder as PathBuilder;
-use rust_d3_geo::projection::builder::template::NoPCNU;
-use rust_d3_geo::projection::builder::template::ResampleNoPCNC;
-use rust_d3_geo::projection::builder::template::ResampleNoPCNU;
-use rust_d3_geo::projection::orthographic::Orthographic;
-use rust_d3_geo::projection::stereographic::Stereographic;
-use rust_d3_geo::projection::Build;
-use rust_d3_geo::projection::RawBase as ProjectionRawBase;
-use rust_d3_geo::projection::RotateSet;
-use rust_d3_geo::stream::DrainStub;
-use rust_d3_geo_voronoi::voronoi::ConstructionError;
-use rust_d3_geo_voronoi::voronoi::Voronoi;
 
 type GV<'a> = Voronoi<
     'a,

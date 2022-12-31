@@ -3,7 +3,7 @@ readme = "./README.md"
 authors = ["martin frances <martinfrances107@hotmail.com"]
 categories = ["graphics"]
 keywords = ["d3-geo"]
-name = "rust_d3_geo_voronoi"
+name = "d3_geo_voronoi_rs"
 description = "A port into rustlang of the javascript library d3-geo-voronoi"
 repository = "https://github.com/martinfrances107/rust_d3_geo_voronoi.git"
 edition = "2021"
@@ -23,10 +23,9 @@ derivative = "~2"
 float_next_after = "~0.1"
 geo = { workspace = true }
 geo-types = { workspace = true }
-delaunator = { git = "https://github.com/mourner/delaunator-rs.git" }
-rust_d3_array = { git = "https://github.com/martinfrances107/rust_d3_array.git" }
-rust_d3_geo = { workspace = true, branch = "main" }
-rust_d3_delaunay = { workspace = true, branch = "main" }
+delaunator = "1.0.1"
+d3_geo_rs = { workspace = true }
+d3_delaunay_rs = { workspace = true }
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
 # all the `std::fmt` and `std::panicking` infrastructure, so isn't great for

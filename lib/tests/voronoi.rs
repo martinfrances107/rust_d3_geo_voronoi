@@ -14,12 +14,12 @@ mod voronoi {
     use geo_types::Coord;
     use pretty_assertions::assert_eq;
 
-    use rust_d3_geo::clip::circle::ClipCircleC;
-    use rust_d3_geo::data_object::FeatureCollection;
-    use rust_d3_geo::data_object::FeatureProperty;
-    use rust_d3_geo::projection::builder::template::ResampleNoPCNC;
-    use rust_d3_geo::stream::DrainStub;
-    use rust_d3_geo_voronoi::voronoi::Voronoi;
+    use d3_geo_rs::clip::circle::ClipCircleC;
+    use d3_geo_rs::data_object::FeatureCollection;
+    use d3_geo_rs::data_object::FeatureProperty;
+    use d3_geo_rs::projection::builder::template::ResampleNoPCNC;
+    use d3_geo_rs::stream::DrainStub;
+    use d3_geo_voronoi_rs::voronoi::Voronoi;
 
     #[test]
     fn two_hemispheres() {

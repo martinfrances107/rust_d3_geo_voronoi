@@ -20,16 +20,25 @@ mod utils;
 
 use std::iter::repeat_with;
 
+use d3_geo_rs::clip::circle::ClipCircleC;
+use d3_geo_rs::clip::circle::ClipCircleU;
+use d3_geo_rs::data_object::FeatureCollection;
+use d3_geo_rs::path::builder::Builder as PathBuilder;
+use d3_geo_rs::path::context::Context;
+use d3_geo_rs::projection::builder::template::NoPCNU;
+use d3_geo_rs::projection::builder::template::ResampleNoPCNC;
+use d3_geo_rs::projection::builder::template::ResampleNoPCNU;
+use d3_geo_rs::projection::builder::types::BuilderCircleResampleNoClip;
+use d3_geo_rs::projection::orthographic::Orthographic;
+use d3_geo_rs::projection::stereographic::Stereographic;
+use d3_geo_rs::projection::Build;
+use d3_geo_rs::projection::RawBase as ProjectionRawBase;
+use d3_geo_rs::projection::RotateSet;
+use d3_geo_voronoi_rs::voronoi::Voronoi;
+
 use geo::Geometry;
 use geo::MultiPoint;
 use geo_types::Coord;
-use rust_d3_geo::clip::circle::ClipCircleC;
-use rust_d3_geo::clip::circle::ClipCircleU;
-use rust_d3_geo::projection::builder::template::NoPCNU;
-use rust_d3_geo::projection::builder::template::ResampleNoPCNC;
-use rust_d3_geo::projection::builder::template::ResampleNoPCNU;
-use rust_d3_geo::projection::builder::types::BuilderCircleResampleNoClip;
-use rust_d3_geo::projection::stereographic::Stereographic;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::window;
@@ -37,15 +46,6 @@ use web_sys::CanvasRenderingContext2d;
 use web_sys::Document;
 use web_sys::HtmlCanvasElement;
 use web_sys::Performance;
-
-use rust_d3_geo::data_object::FeatureCollection;
-use rust_d3_geo::path::builder::Builder as PathBuilder;
-use rust_d3_geo::path::context::Context;
-use rust_d3_geo::projection::orthographic::Orthographic;
-use rust_d3_geo::projection::Build;
-use rust_d3_geo::projection::RawBase as ProjectionRawBase;
-use rust_d3_geo::projection::RotateSet;
-use rust_d3_geo_voronoi::voronoi::Voronoi;
 
 type GV = Voronoi<
     'static,

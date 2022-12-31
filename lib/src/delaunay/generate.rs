@@ -11,21 +11,21 @@ use geo_types::Coord;
 use num_traits::float::FloatConst;
 use num_traits::FromPrimitive;
 
-use rust_d3_delaunay::delaunay::Delaunay;
-use rust_d3_geo::clip::circle::ClipCircleC;
-use rust_d3_geo::clip::circle::ClipCircleU;
-use rust_d3_geo::projection::builder::template::NoPCNU;
-use rust_d3_geo::projection::builder::template::ResampleNoPCNC;
-use rust_d3_geo::projection::builder::template::ResampleNoPCNU;
-use rust_d3_geo::projection::stereographic::Stereographic;
-use rust_d3_geo::projection::Build;
-use rust_d3_geo::projection::RawBase as ProjectionRawBase;
-use rust_d3_geo::projection::RotateSet;
-use rust_d3_geo::projection::ScaleSet;
-use rust_d3_geo::projection::TranslateSet;
-use rust_d3_geo::rot::rotation::Rotation;
-use rust_d3_geo::stream::Stream;
-use rust_d3_geo::Transform;
+use d3_delaunay_rs::delaunay::Delaunay;
+use d3_geo_rs::clip::circle::ClipCircleC;
+use d3_geo_rs::clip::circle::ClipCircleU;
+use d3_geo_rs::projection::builder::template::NoPCNU;
+use d3_geo_rs::projection::builder::template::ResampleNoPCNC;
+use d3_geo_rs::projection::builder::template::ResampleNoPCNU;
+use d3_geo_rs::projection::stereographic::Stereographic;
+use d3_geo_rs::projection::Build;
+use d3_geo_rs::projection::RawBase as ProjectionRawBase;
+use d3_geo_rs::projection::RotateSet;
+use d3_geo_rs::projection::ScaleSet;
+use d3_geo_rs::projection::TranslateSet;
+use d3_geo_rs::rot::rotation::Rotation;
+use d3_geo_rs::stream::Stream;
+use d3_geo_rs::Transform;
 
 type DReturn<DRAIN, PCNU, PR, RC, RU, T> =
     Delaunay<ClipCircleC<RC, T>, ClipCircleU<RC, T>, DRAIN, PCNU, PR, RC, RU, T>;

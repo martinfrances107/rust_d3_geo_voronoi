@@ -3,11 +3,12 @@ use std::collections::HashSet;
 use std::rc::Rc;
 
 use num_traits::Float;
-use rust_d3_array::extent::extent;
 
 use super::EdgeIndex;
 use super::TriIndex;
 use super::UTransform;
+
+use crate::extent::extent;
 
 pub fn urquhart<T: Float>(
     edges: Rc<HashSet<EdgeIndex>>,
@@ -29,7 +30,7 @@ pub fn urquhart<T: Float>(
             let mut remove: Option<(usize, usize)> = None;
             for j in 0..3 {
                 // extent is used to order the two tri values  smallest to largest.
-                let e = extent(vec![tri[j], tri[(j + 1usize) % 3usize]], None);
+                let e = extent(vec![tri[j], tri[(j + 1usize) % 3usize]], &None);
 
                 let u = (e[0], e[1]);
                 if let Some(l_found) = h_lengths.get(&u) {

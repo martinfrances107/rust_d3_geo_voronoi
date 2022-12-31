@@ -1,4 +1,4 @@
-# [Rust D3 geo voronoi](<https://github.com/martinfrances107/rust_d3_geo_voronoi>)
+# [d3_geo_voronoi_rs](<https://github.com/martinfrances107/rust_d3_geo_voronoi>)
 
 ( rust 2021 edition.)
 
@@ -13,9 +13,9 @@ Currently we have 84% test coverage ( as reported by cargo tarpaulin -o Html )
 
 A collection of d3 sub packages is being ported to rust.
 
-* [rust_d3_geo](https://github.com/martinfrances107/rust_d3_geo)
-* [rust_d3_delaunay](https://github.com/martinfrances107/rust_d3_delaunay)
-* rust_d3_geo_voronoi
+* [d3_geo_rs](https://github.com/martinfrances107/rust_d3_geo)
+* [d3_delaunay_rs](https://github.com/martinfrances107/rust_d3_delaunay)
+* d3_geo_voronoi_rs
 
 ## Performance Profiling
 
@@ -100,12 +100,3 @@ For benchmarking, to obtain best performance
 
 and then host rust_d3_geo_voronoi/benchmark/dist directory before viewing in a browser.
 Timing specific information is output to the console.
-
-## Module Dependencies
-
-- [`delaunator`]("https://github.com/mourner/delaunator-rs.git") for generation
-   of the delaunay mesh.
-- [`rust_d3_array`]("https://github.com/martinfrances107/rust_d3_array.git")
-   for a common set of helpers.
-- [`rust_d3_delaunay`]("https://github.com/martinfrances107/rust_d3_delaunay.git")
-- [`rust_d3_geo`]("https://github.com/martinfrances107/rust_d3_geo.git")

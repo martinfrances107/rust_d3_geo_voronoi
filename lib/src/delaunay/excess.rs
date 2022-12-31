@@ -1,8 +1,8 @@
 use geo::CoordFloat;
 use geo_types::Coord;
 
-use rust_d3_geo::cartesian::cross;
-use rust_d3_geo::cartesian::dot;
+use d3_geo_rs::cartesian::cross;
+use d3_geo_rs::cartesian::dot;
 
 use super::cartesian::cartesian;
 

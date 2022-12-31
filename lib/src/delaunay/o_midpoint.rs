@@ -1,13 +1,13 @@
 use geo::CoordFloat;
 use geo_types::Coord;
 
+use d3_geo_rs::cartesian::add;
+use d3_geo_rs::cartesian::cross;
+use d3_geo_rs::cartesian::dot;
+use d3_geo_rs::cartesian::normalize;
+use d3_geo_rs::cartesian::scale;
+use d3_geo_rs::cartesian::spherical;
 use num_traits::FloatConst;
-use rust_d3_geo::cartesian::add;
-use rust_d3_geo::cartesian::cross;
-use rust_d3_geo::cartesian::dot;
-use rust_d3_geo::cartesian::normalize;
-use rust_d3_geo::cartesian::scale;
-use rust_d3_geo::cartesian::spherical;
 
 use super::cartesian::cartesian;
 

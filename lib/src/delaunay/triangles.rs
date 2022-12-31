@@ -2,7 +2,7 @@ use approx::AbsDiffEq;
 use geo::CoordFloat;
 use num_traits::FloatConst;
 
-use rust_d3_delaunay::delaunay::Delaunay;
+use d3_delaunay_rs::delaunay::Delaunay;
 
 pub fn triangles<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>(
     delaunay: &Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>,

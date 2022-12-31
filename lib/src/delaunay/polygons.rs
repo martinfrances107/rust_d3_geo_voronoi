@@ -2,14 +2,13 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 
+use d3_geo_rs::cartesian::add;
+use d3_geo_rs::cartesian::cross;
+use d3_geo_rs::cartesian::normalize;
+use d3_geo_rs::cartesian::spherical;
 use geo::CoordFloat;
 use geo_types::Coord;
 use num_traits::FloatConst;
-
-use rust_d3_geo::cartesian::add;
-use rust_d3_geo::cartesian::cross;
-use rust_d3_geo::cartesian::normalize;
-use rust_d3_geo::cartesian::spherical;
 
 use super::cartesian::cartesian;
 use super::o_midpoint::o_midpoint;
