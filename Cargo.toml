@@ -11,15 +11,15 @@ categories = ["graphics"]
 edition = "2021"
 keywords = ["graphics", "d3-geo-voronoi"]
 license = "MIT"
-readme = "README.md"
+readme = "../README.md"
 version = "0.1.0"
 
 
 [workspace.dependencies]
-geo = "~0.23"
-geo-types = "~0.7"
 d3_geo_rs = "~0.1"
 d3_delaunay_rs = "~0.1"
+geo = "~0.23"
+geo-types = "~0.7"
 
 [profile.release]
 # This makes the compiled code faster and smaller, but it makes compiling slower,

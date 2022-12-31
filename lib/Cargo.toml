@@ -1,5 +1,5 @@
 [package]
-readme = "./README.md"
+readme = "../README.md"
 authors = ["martin frances <martinfrances107@hotmail.com"]
 categories = ["graphics"]
 keywords = ["d3-geo"]
