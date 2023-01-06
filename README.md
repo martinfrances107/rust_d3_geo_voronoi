@@ -1,10 +1,11 @@
 # [d3_geo_voronoi_rs](<https://github.com/martinfrances107/rust_d3_geo_voronoi>)
 
-( rust 2021 edition.)
+rust 2021 edition.
 
 <div align="center">
 
 <a href="https://crates.io/crates/d3_geo_voronoi_rs"><img alt="crates.io" src="https://img.shields.io/crates/v/d3_geo_voronoi_rs.svg"/></a>
+<a href="https://crates.io/crates/d3_geo_voronoi_rs"><img src="https://img.shields.io/crates/d/d3_geo_voronoi_rs.svg" alt="Download" />
 
 <a href="https://docs.rs/d3_geo_voronoi_rs/0.1.0/d3_geo_voronoi_rs/">Docs</a>
 </div>
