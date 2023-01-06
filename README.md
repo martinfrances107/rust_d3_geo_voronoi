@@ -2,6 +2,14 @@
 
 ( rust 2021 edition.)
 
+<div align="center">
+
+<a href="https://crates.io/crates/d3_geo_voronoi_rs"><img alt="crates.io" src="https://img.shields.io/crates/v/d3_geo_voronoi_rs.svg"/></a>
+
+<a href="https://docs.rs/d3_geo_voronoi_rs/0.1.0/d3_geo_voronoi_rs/">Docs</a>
+</div>
+
+## About
 This is a port of the [d3-geo-voronoi](<https://github.com/Fil/d3-geo-voronoi>) library into a [RUST](<https://www.rust-lang.org/>) library.
 
  As a example the library can be used to compute the following delaunay mesh.
