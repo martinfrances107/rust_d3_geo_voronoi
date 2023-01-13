@@ -15,8 +15,8 @@
 extern crate d3_geo_rs;
 /// Allows debug to be autoderived from complex structs.
 extern crate derivative;
+extern crate float_next_after;
 extern crate geo;
-
 /// delaunay helper functions.
 pub mod delaunay;
 

@@ -4,7 +4,6 @@ edition = "2021"
 description = "Generates a SVG file for profiling."
 categories = ["graphics"]
 name = "profile_target"
-metadata = ["profile"]
 keywords = ["benchmark"]
 license = "MIT"
 repository = "https://github.com/martinfrances107/rust_d3_geo_voronoi.git"

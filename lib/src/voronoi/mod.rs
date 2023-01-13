@@ -12,6 +12,7 @@ use d3_geo_rs::projection::builder::template::ResampleNoPCNU;
 use d3_geo_rs::projection::stereographic::Stereographic;
 use d3_geo_rs::stream::Stream;
 use derivative::Derivative;
+use float_next_after::NextAfter;
 use geo::centroid::Centroid;
 use geo::kernels::HasKernel;
 use geo::CoordFloat;
@@ -155,7 +156,7 @@ where
         + FromPrimitive
         + HasKernel
         + Signed
-        + float_next_after::NextAfter,
+        + NextAfter,
 {
     /// If the input is a collection we act only on the first element in the collection.
     /// by copying over the data into a new single element before proceeding.
