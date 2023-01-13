@@ -55,7 +55,7 @@ where
         + FromPrimitive
         + HasKernel
         + Signed
-        + NextAfter<T>,
+        + NextAfter,
 {
     /// Returns an annotated Feature collection labelled with distance urquhart etc.
     pub fn links(&mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {

@@ -155,7 +155,7 @@ where
         + FromPrimitive
         + HasKernel
         + Signed
-        + float_next_after::NextAfter<T>,
+        + float_next_after::NextAfter,
 {
     /// If the input is a collection we act only on the first element in the collection.
     /// by copying over the data into a new single element before proceeding.

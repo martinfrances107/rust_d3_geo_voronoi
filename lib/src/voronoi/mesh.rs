@@ -50,7 +50,7 @@ where
         + FromPrimitive
         + HasKernel
         + Signed
-        + NextAfter<T>,
+        + NextAfter,
 {
     /// Returns the mesh in the form of a mutliline string.
     pub fn mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {

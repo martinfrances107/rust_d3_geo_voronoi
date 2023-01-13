@@ -53,7 +53,7 @@ where
         + FromPrimitive
         + HasKernel
         + Signed
-        + NextAfter<T>,
+        + NextAfter,
 {
     /// Returns polygons in the form of a feature collection.
     ///

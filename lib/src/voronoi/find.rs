@@ -49,7 +49,7 @@ where
         + FromPrimitive
         + HasKernel
         + Signed
-        + NextAfter<T>,
+        + NextAfter,
 {
     /// Returns the index associated with the given point.
     pub fn find(&mut self, p: &Coord<T>, radius: Option<T>) -> Option<usize> {

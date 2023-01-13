@@ -56,7 +56,7 @@ where
         + FromPrimitive
         + HasKernel
         + Signed
-        + NextAfter<T>,
+        + NextAfter,
 {
     /// Returns a freature collection representing the triangularization of the input object.
     pub fn triangles(mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {

@@ -50,7 +50,7 @@ where
         + FromPrimitive
         + HasKernel
         + Signed
-        + NextAfter<T>,
+        + NextAfter,
 {
     /// Returns the hull for a given geometry.
     pub fn hull(mut self, data: Option<Geometry<T>>) -> Option<Polygon<T>> {

@@ -20,7 +20,7 @@ default = ["console_error_panic_hook"]
 approx = "~0.5"
 num-traits = "~0.2"
 derivative = "~2"
-float_next_after = "~0.1"
+float_next_after = "1.0"
 geo = { workspace = true }
 geo-types = { workspace = true }
 delaunator = "1.0.1"

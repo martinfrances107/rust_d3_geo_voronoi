@@ -51,7 +51,7 @@ where
         + FromPrimitive
         + HasKernel
         + Signed
-        + NextAfter<T>,
+        + NextAfter,
 {
     /// Returns a Multiline string assoicated with the input geometry.
     ///
