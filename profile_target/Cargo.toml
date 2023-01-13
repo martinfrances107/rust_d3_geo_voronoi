@@ -8,7 +8,7 @@ metadata = ["profile"]
 keywords = ["benchmark"]
 license = "MIT"
 repository = "https://github.com/martinfrances107/rust_d3_geo_voronoi.git"
-version = "0.1.0"
+version = "0.1.1"
 readme = "../README.md"
 
 [dependencies]
