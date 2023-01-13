@@ -109,7 +109,7 @@ fn draw() -> Result<String, ConstructionError> {
 
     for p in sites {
         let d = path.object(&Geometry::Point(p));
-        let line = format!("<path d={:?} fill=\"white\" stroke=\"black\" />", d,);
+        let line = format!("<path d={d:?} fill=\"white\" stroke=\"black\" />");
         out.push_str(&line);
     }
     Ok(out)
