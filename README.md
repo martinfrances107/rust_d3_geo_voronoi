@@ -5,9 +5,9 @@ rust 2021 edition.
 <div align="center">
 
 <a href="https://crates.io/crates/d3_geo_voronoi_rs"><img alt="crates.io" src="https://img.shields.io/crates/v/d3_geo_voronoi_rs.svg"/></a>
+<a href="https://docs.rs/d3_geo_voronoi_rs" rel="nofollow noopener noreferrer"><img src="https://docs.rs/d3_geo_voronoi_rs/badge.svg" alt="Documentation"></a>
 <a href="https://crates.io/crates/d3_geo_voronoi_rs"><img src="https://img.shields.io/crates/d/d3_geo_voronoi_rs.svg" alt="Download" />
 
-<a href="https://docs.rs/d3_geo_voronoi_rs/0.1.0/d3_geo_voronoi_rs/">Docs</a>
 </div>
 
 ## About
@@ -22,8 +22,8 @@ Currently we have 84% test coverage ( as reported by cargo tarpaulin -o Html )
 
 A collection of d3 sub packages is being ported to rust.
 
-* [d3_geo_rs](https://github.com/martinfrances107/rust_d3_geo)
-* [d3_delaunay_rs](https://github.com/martinfrances107/rust_d3_delaunay)
+* [d3_geo_rs](https://crates.io/crates/d3_geo_rs)
+* [d3_delaunay_rs](https://crates.io/crates/d3_delaunay_rs)
 * d3_geo_voronoi_rs
 
 ## Performance Profiling
@@ -98,7 +98,7 @@ The application displays a delaunay mesh of a large number of cells onto a spher
 
 For benchmarking, to obtain best performance
 
-```console         
+```console
          cd benchmark
          wasm-pack build --release
          cd www
