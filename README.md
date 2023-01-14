@@ -60,7 +60,7 @@ This workspace contain a binary "profie_target" which outputs the result of a co
 from rust_d3_geo_voronoi
 ```
 cargo install  flamegraph
- cargo flamegraph -- profile_target
+cargo flamegraph -- profile_target
 ```
 
 ## Further Development
@@ -87,11 +87,11 @@ The application displays a delaunay mesh of a large number of cells onto a spher
 - To build and start the web server:-
 
 ```console
-        cd benchmark
-        wasm-pack build
-        cd www
-        npm install
-        npm run start
+cd benchmark
+wasm-pack build
+cd www
+npm install
+npm run start
 ```
 
    The last command automatically starts your web browser.
@@ -99,12 +99,12 @@ The application displays a delaunay mesh of a large number of cells onto a spher
 For benchmarking, to obtain best performance
 
 ```console
-         cd benchmark
-         wasm-pack build --release
-         cd www
-         npm install
-         npm run build
-         serve dist/
+cd benchmark
+wasm-pack build --release
+cd www
+npm install
+npm run build
+serve dist/
 ```
 
 and then host rust_d3_geo_voronoi/benchmark/dist directory before viewing in a browser.
