@@ -155,8 +155,8 @@ where
         + FloatConst
         + FromPrimitive
         + HasKernel
-        + Signed
-        + NextAfter,
+        + NextAfter
+        + Signed,
 {
     /// If the input is a collection we act only on the first element in the collection.
     /// by copying over the data into a new single element before proceeding.
