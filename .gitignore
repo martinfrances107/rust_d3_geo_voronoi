@@ -1,6 +1,5 @@
 dist
 target
-Cargo.lock
 node_modules
 package-lock.json
 profile_target/perf.data
