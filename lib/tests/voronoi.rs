@@ -608,10 +608,10 @@ mod voronoi {
 
         match gv.triangles(Some(sites)) {
             Some(FeatureCollection(features)) => {
-                println!("features {:?}", features);
+                println!("features {features:?}");
                 match &features[0].properties[0] {
                     FeatureProperty::Circumecenter(u) => {
-                        println!("c {:?}", u);
+                        println!("c {u:?}");
                         let v = Coord {
                             x: 5.0_f64,
                             y: 4.981069_f64,

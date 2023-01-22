@@ -7,7 +7,7 @@ name = "profile_target"
 keywords = ["benchmark"]
 license = "MIT"
 repository = "https://github.com/martinfrances107/rust_d3_geo_voronoi.git"
-version = "0.1.1"
+version = { workspace = true }
 readme = "../README.md"
 
 [dependencies]
