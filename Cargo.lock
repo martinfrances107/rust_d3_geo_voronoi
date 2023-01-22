@@ -289,7 +289,7 @@ dependencies = [
 
 [[package]]
 name = "d3_geo_voronoi_rs"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "approx",
  "console_error_panic_hook",
