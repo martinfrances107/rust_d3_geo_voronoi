@@ -69,6 +69,8 @@ pub struct Renderer {
     performance: Performance,
     scheme_category10: [JsValue; 10],
     sites: MultiPoint<f64>,
+    black: JsValue,
+    white: JsValue,
     gv: GV,
 }
 
@@ -151,11 +153,13 @@ impl Renderer {
         let mut out = Self {
             context2d,
             context,
+            black: JsValue::from_str(&"black"),
             gv,
             ob,
             performance,
             sites,
             scheme_category10,
+            white: JsValue::from_str(&"white"),
         };
 
         out.update(size)?;
@@ -226,8 +230,8 @@ impl Renderer {
         }
 
         // Render points.
-        self.context2d.set_fill_style(&"white".into());
-        self.context2d.set_stroke_style(&"black".into());
+        self.context2d.set_fill_style(&self.white);
+        self.context2d.set_stroke_style(&self.black);
         for p in &self.sites {
             self.context2d.begin_path();
             path.object(&Geometry::Point(*p));
