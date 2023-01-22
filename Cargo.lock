@@ -63,7 +63,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
 name = "benchmark"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "d3_delaunay_rs",
  "d3_geo_rs",
@@ -850,7 +850,7 @@ dependencies = [
 
 [[package]]
 name = "profile_target"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "d3_delaunay_rs",
  "d3_geo_rs",

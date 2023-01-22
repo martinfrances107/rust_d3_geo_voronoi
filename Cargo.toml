@@ -1,8 +1,8 @@
 [workspace]
 members = [
-    "./lib",
-    "./benchmark",      # A webpage with a stress test of the library.
-    "./profile_target", # A binary that output a compelex SVG images, which can be profiled.
+  "./lib",
+  "./benchmark",      # A webpage with a stress test of the library.
+  "./profile_target", # A binary that output a compelex SVG images, which can be profiled.
 ]
 
 [workspace.package]
@@ -12,7 +12,7 @@ edition = "2021"
 keywords = ["graphics", "d3-geo-voronoi"]
 license = "MIT"
 readme = "../README.md"
-version = "0.1.1"
+version = "0.1.2"
 
 
 [workspace.dependencies]
