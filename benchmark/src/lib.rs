@@ -153,13 +153,13 @@ impl Renderer {
         let mut out = Self {
             context2d,
             context,
-            black: JsValue::from_str(&"black"),
+            black: JsValue::from_str("black"),
             gv,
             ob,
             performance,
             sites,
             scheme_category10,
-            white: JsValue::from_str(&"white"),
+            white: JsValue::from_str("white"),
         };
 
         out.update(size)?;
