@@ -15,9 +15,5 @@ geo = { workspace = true }
 geo-types = { workspace = true }
 d3_geo_voronoi_rs = { path = "../lib" }
 d3_geo_rs = { workspace = true }
-d3_delaunay_rs = { workspace = true }
-
-getrandom = { version = "~0.2", features = ["js"] }
 rand = { version = "~0.8" }
 lazy_static = "~1"
-flamegraph = "~0.6"
