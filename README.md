@@ -84,28 +84,20 @@ I'm using [wasm pack](<https://github.com/rustwasm/wasm-pack>) to package the
 
 The application displays a delaunay mesh of a large number of cells onto a sphere.
 
-- To build and start the web server:-
+To build and start the web server:-
 
 ```console
-cd benchmark
-wasm-pack build
-cd www
+cd benchmark\www
 npm install
 npm run start
 ```
 
-   The last command automatically starts your web browser.
+The last command automatically starts your web browser.
 
 For benchmarking, to obtain best performance
 
 ```console
-cd benchmark
-wasm-pack build --release
-cd www
-npm install
+cd benchmark\www
 npm run build
-serve dist/
+npm run serve
 ```
-
-and then host rust_d3_geo_voronoi/benchmark/dist directory before viewing in a browser.
-Timing specific information is output to the console.
