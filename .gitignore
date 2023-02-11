@@ -4,6 +4,8 @@ node_modules
 package-lock.json
 profile_target/perf.data
 .*
+**/flamegraph.svg
+**/perf.data
 !.github
 !.gitattributes
 !.gitignore

@@ -25,11 +25,7 @@ geo-types = "~0.7"
 # This makes the compiled code faster and smaller, but it makes compiling slower,
 # so it's only enabled in release mode.
 lto = true
-debug = true
 codegen-units = 1
-
-[profile.dev]
-debug = true
 
 # patch over the latest release with a version that adds
 # cyclic_match for test builds.

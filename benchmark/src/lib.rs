@@ -174,7 +174,6 @@ impl Renderer {
     /// update in-place stratergy.
     pub fn update(&mut self, size: u32) -> Result<(), JsValue> {
         utils::set_panic_hook();
-        // console_log!("size {:?}", size);
         self.sites = MultiPoint(
             repeat_with(rand::random)
                 .map(|(x, y): (f64, f64)| {
