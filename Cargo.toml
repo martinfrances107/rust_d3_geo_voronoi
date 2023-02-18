@@ -16,7 +16,7 @@ version = "0.1.3"
 
 
 [workspace.dependencies]
-d3_geo_rs = "~0.1"
+d3_geo_rs = "~0.2"
 d3_delaunay_rs = "~0.1"
 geo = "~0.23"
 geo-types = "~0.7"
@@ -33,3 +33,6 @@ codegen-units = 1
 # Only "./lib" needs this extra functionality.
 [patch.crates-io]
 geo = { git = "https://github.com/martinfrances107/geo.git", branch = "cyclic_match", package = "geo" }
+
+[profile.bench]
+debug = true
