@@ -6,11 +6,12 @@ rust 2021 edition.
 
 <a href="https://crates.io/crates/d3_geo_voronoi_rs"><img alt="crates.io" src="https://img.shields.io/crates/v/d3_geo_voronoi_rs.svg"/></a>
 <a href="https://docs.rs/d3_geo_voronoi_rs" rel="nofollow noopener noreferrer"><img src="https://docs.rs/d3_geo_voronoi_rs/badge.svg" alt="Documentation"></a>
-<a href="https://crates.io/crates/d3_geo_voronoi_rs"><img src="https://img.shields.io/crates/d/d3_geo_voronoi_rs.svg" alt="Download" />
+<a href="https://crates.io/crates/d3_geo_voronoi_rs"><img src="https://img.shields.io/crates/d/d3_geo_voronoi_rs.svg" alt="Download" /></a>
 
 </div>
 
 ## About
+
 This is a port of the [d3-geo-voronoi](<https://github.com/Fil/d3-geo-voronoi>) library into a [RUST](<https://www.rust-lang.org/>) library.
 
  As a example the library can be used to compute the following delaunay mesh.
@@ -32,8 +33,8 @@ A collection of d3 sub packages is being ported to rust.
 
 The original javascript library has a benchmark in the form of web page which records the number of frames displayed per second. For comparison the benchmark has been ported.
 
-- javascript -  d3-geo_voronoi/src/benchmark/sphereCanvas.html
-- rust -  rust_d3_geo_vornoi/benchmark.
+* javascript -  d3-geo_voronoi/src/benchmark/sphereCanvas.html
+* rust -  rust_d3_geo_vornoi/benchmark.
 
 Measuring the performance of a library is compilcated, as different applications employing the library may see different results. Desktop and mobile perfomance may differ.
 
@@ -58,6 +59,7 @@ I am currently looking to add more benchmarks, a diverse collection of example a
 This workspace contain a binary "profie_target" which outputs the result of a computation similar to that of the demo_page. Before API finialization - I am currently  using cargo flamegraph to identify any obvious optimizations.
 
 from rust_d3_geo_voronoi
+
 ```
 cargo install  flamegraph
 cargo flamegraph -- profile_target
