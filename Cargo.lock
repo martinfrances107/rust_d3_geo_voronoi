@@ -28,7 +28,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
 name = "benchmark"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "d3_geo_rs",
  "d3_geo_voronoi_rs",
@@ -124,7 +124,7 @@ dependencies = [
 
 [[package]]
 name = "d3_geo_voronoi_rs"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "approx",
  "console_error_panic_hook",
@@ -414,7 +414,7 @@ dependencies = [
 
 [[package]]
 name = "profile_target"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "d3_geo_rs",
  "d3_geo_voronoi_rs",
