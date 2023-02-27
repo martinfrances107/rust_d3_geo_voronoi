@@ -60,7 +60,7 @@ This workspace contain a binary "profie_target" which outputs the result of a co
 
 from rust_d3_geo_voronoi
 
-```
+```console
 cargo install  flamegraph
 cargo flamegraph -- profile_target
 ```

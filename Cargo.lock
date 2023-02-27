@@ -109,9 +109,9 @@ dependencies = [
 
 [[package]]
 name = "d3_geo_rs"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3436a3239225a5f6732fc72f891c7771a716776cc55146d27314c227be4f3867"
+checksum = "5e5c5a30ec2bcc5453d24e57d292d2c8174cba71cd57d279695d25e13af2e32e"
 dependencies = [
  "approx",
  "derivative",
@@ -568,9 +568,9 @@ checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
 
 [[package]]
 name = "syn"
-version = "1.0.107"
+version = "1.0.109"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1f4064b5b16e03ae50984a5a8ed5d4f8803e6bc1fd170a3cda91a1be4b18e3f5"
+checksum = "72b64191b275b66ffe2469e8af2c1cfe3bafa67b529ead792a6d0160888b4237"
 dependencies = [
  "proc-macro2",
  "quote",
