@@ -12,7 +12,7 @@ edition = "2021"
 keywords = ["graphics", "d3-geo-voronoi"]
 license = "MIT"
 readme = "../README.md"
-version = "0.1.5"
+version = "0.1.6"
 
 
 [workspace.dependencies]
