@@ -28,7 +28,7 @@ use d3_geo_rs::stream::Stream;
 use d3_geo_rs::Transform;
 
 type DReturn<DRAIN, PCNU, PR, RC, RU, T> =
-    Delaunay<ClipCircleC<RC, T>, ClipCircleU<RC, T>, DRAIN, PCNU, PR, RC, RU, T>;
+    Delaunay<ClipCircleC<RC, T>, ClipCircleU<RC, T>, DRAIN, PCNU, PR, RU, T>;
 
 /// Creates a delaunay object from a set of points.
 ///

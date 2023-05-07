@@ -37,14 +37,14 @@ mod triangles;
 
 /// Return type used by .x() and .y()
 #[allow(missing_debug_implementations)]
-pub enum XYReturn<'a, CLIPC, CLIPU, DRAIN, PCNU, RC, RU, T>
+pub enum XYReturn<'a, CLIPC, CLIPU, DRAIN, PCNU, RU, T>
 where
     CLIPC: Clone,
     CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + Display + CoordFloat + FloatConst,
 {
     /// Voronoi
-    Voronoi(Voronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, Stereographic<DRAIN, T>, RC, RU, T>),
+    Voronoi(Voronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, Stereographic<DRAIN, T>, RU, T>),
     /// Function
     Func(VTransform<T>),
 }
@@ -55,7 +55,6 @@ type XYReturnDefault<'a, DRAIN, T> = XYReturn<
     ClipCircleU<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
     DRAIN,
     NoPCNU,
-    ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>,
     ResampleNoPCNU<Stereographic<DRAIN, T>, T>,
     T,
 >;
@@ -75,7 +74,7 @@ pub type VTransform<T> = Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>;
 #[derive(Derivative)]
 #[derivative(Debug)]
 /// Holds data centered on a `GeoDelauany` instance.
-pub struct Voronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
+pub struct Voronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>
 where
     CLIPC: Clone,
     CLIPU: Clone,
@@ -83,7 +82,7 @@ where
 {
     /// The wrapped GeoDelaunay instance.
     #[allow(clippy::type_complexity)]
-    pub delaunay: Option<Delaunay<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>>,
+    pub delaunay: Option<Delaunay<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>>,
     data: Option<Geometry<T>>,
     found: Option<usize>,
     //Points: Rc needed here as the egdes, triangles, neigbours etc all index into thts vec.
@@ -96,8 +95,8 @@ where
     vy: VTransform<T>,
 }
 
-impl<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T> Default
-    for Voronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
+impl<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T> Default
+    for Voronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>
 where
     CLIPC: Clone,
     CLIPU: Clone,
@@ -139,7 +138,6 @@ impl<'a, DRAIN, T>
         DRAIN,
         NoPCNU,
         Stereographic<DRAIN, T>,
-        ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>,
         ResampleNoPCNU<Stereographic<DRAIN, T>, T>,
         T,
     >

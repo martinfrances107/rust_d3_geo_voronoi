@@ -64,7 +64,7 @@ type UTransform<T> = Box<dyn Fn(&Vec<T>) -> Vec<bool>>;
 /// Wraps data associated with a delaunay object.
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct Delaunay<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
+pub struct Delaunay<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>
 where
     CLIPC: Clone,
     CLIPU: Clone,
@@ -72,7 +72,7 @@ where
 {
     /// The wrapped delaunay object.
     #[derivative(Debug = "ignore")]
-    pub delaunay: DelaunayInner<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>,
+    pub delaunay: DelaunayInner<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>,
     /// The edges and triangles properties need RC because the values are close over in the urquhart function.
     pub edges: Rc<HashSet<EdgeIndex>>,
     /// A set of triangles as defined by set of indicies.
@@ -103,7 +103,6 @@ impl<'a, DRAIN, T>
         DRAIN,
         NoPCNU,
         Stereographic<DRAIN, T>,
-        ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>,
         ResampleNoPCNU<Stereographic<DRAIN, T>, T>,
         T,
     >

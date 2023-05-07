@@ -26,16 +26,7 @@ mod voronoi {
         println!("two points leads to two hemispheres.");
         let sites = MultiPoint(vec![Point::new(-20f64, -20f64), Point::new(20f64, 20f64)]);
 
-        let mut gv: Voronoi<
-            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-        >;
+        let mut gv: Voronoi<ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>, _, _, _, _, _, _>;
         match Voronoi::new(Some(Geometry::MultiPoint(sites))) {
             Ok(ok) => gv = ok,
             Err(_) => {
@@ -118,16 +109,7 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]);
 
-        let mut gv: Voronoi<
-            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-        >;
+        let mut gv: Voronoi<ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>, _, _, _, _, _, _>;
         match Voronoi::new(Some(Geometry::MultiPoint(sites))) {
             Ok(ok) => gv = ok,
             Err(_) => {
@@ -172,16 +154,7 @@ mod voronoi {
         // This should be tightened up.
         let g = Geometry::MultiPoint(sites);
 
-        let mut gv: Voronoi<
-            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-        >;
+        let mut gv: Voronoi<ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>, _, _, _, _, _, _>;
         match Voronoi::new(Some(g)) {
             Ok(ok) => gv = ok,
             Err(_) => {
@@ -234,7 +207,6 @@ mod voronoi {
             _,
             _,
             _,
-            _,
         >::new(None)
         {
             Ok(gv) => gv,
@@ -273,7 +245,6 @@ mod voronoi {
 
         let gv = match Voronoi::<
             ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
-            _,
             _,
             _,
             _,
@@ -345,7 +316,6 @@ mod voronoi {
             _,
             _,
             _,
-            _,
         >::new(Some(Geometry::MultiPoint(sites)))
         {
             Ok(gv) => gv,
@@ -393,7 +363,6 @@ mod voronoi {
             _,
             _,
             _,
-            _,
         >;
         match Voronoi::new(Some(Geometry::MultiPoint(sites.clone()))) {
             Ok(ok) => voro = ok,
@@ -415,7 +384,6 @@ mod voronoi {
         // TODO bug ... strange bug/hang ... unless I define voro twice.
         let mut voro2: Voronoi<
             ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
-            _,
             _,
             _,
             _,
@@ -450,16 +418,7 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]));
         // let mut gv: GV = GeoVoronoi::new(None);
-        let mut gv: Voronoi<
-            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-        >;
+        let mut gv: Voronoi<ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>, _, _, _, _, _, _>;
         match Voronoi::new(None) {
             Ok(ok) => gv = ok,
             Err(_) => {
@@ -506,7 +465,6 @@ mod voronoi {
             _,
             _,
             _,
-            _,
         >::new(None)
         {
             Ok(gv) => gv,
@@ -533,16 +491,7 @@ mod voronoi {
         ]));
 
         // let mut gv: GV = GeoVoronoi::new(None);
-        let mut gv: Voronoi<
-            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-        >;
+        let mut gv: Voronoi<ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>, _, _, _, _, _, _>;
         match Voronoi::new(None) {
             Ok(ok) => gv = ok,
             Err(_) => {
@@ -591,7 +540,6 @@ mod voronoi {
 
         let gv = match Voronoi::<
             ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
-            _,
             _,
             _,
             _,
@@ -651,7 +599,6 @@ mod voronoi {
 
         let u = match Voronoi::<
             ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
-            _,
             _,
             _,
             _,

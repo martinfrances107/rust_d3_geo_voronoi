@@ -4,8 +4,8 @@ use num_traits::FloatConst;
 
 use d3_delaunay_rs::delaunay::Delaunay;
 
-pub fn triangles<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>(
-    delaunay: &Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>,
+pub fn triangles<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>(
+    delaunay: &Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>,
 ) -> Vec<[usize; 3]>
 where
     CLIPC: Clone,

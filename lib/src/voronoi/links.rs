@@ -38,7 +38,6 @@ impl<'a, DRAIN, T>
         DRAIN,
         NoPCNU,
         Stereographic<DRAIN, T>,
-        ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>,
         ResampleNoPCNU<Stereographic<DRAIN, T>, T>,
         T,
     >
