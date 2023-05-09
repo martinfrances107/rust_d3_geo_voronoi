@@ -36,7 +36,6 @@ type GV<'a> = Voronoi<
     DrainStub<f64>,
     NoPCNU,
     Stereographic<DrainStub<f64>, f64>,
-    ResampleNoPCNC<DrainStub<f64>, Stereographic<DrainStub<f64>, f64>, f64>,
     ResampleNoPCNU<Stereographic<DrainStub<f64>, f64>, f64>,
     f64,
 >;

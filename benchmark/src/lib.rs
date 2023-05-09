@@ -54,7 +54,6 @@ type GV = Voronoi<
     Context,
     NoPCNU,
     Stereographic<Context, f64>,
-    ResampleNoPCNC<Context, Stereographic<Context, f64>, f64>,
     ResampleNoPCNU<Stereographic<Context, f64>, f64>,
     f64,
 >;
