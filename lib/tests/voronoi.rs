@@ -490,7 +490,6 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]));
 
-        // let mut gv: GV = GeoVoronoi::new(None);
         let mut gv: Voronoi<ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>, _, _, _, _, _, _>;
         match Voronoi::new(None) {
             Ok(ok) => gv = ok,

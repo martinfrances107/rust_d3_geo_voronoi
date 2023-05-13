@@ -31,12 +31,12 @@ use geo_types::Coord;
 
 type GV<'a> = Voronoi<
     'a,
-    ClipCircleC<ResampleNoPCNC<DrainStub<f64>, Stereographic<DrainStub<f64>, f64>, f64>, f64>,
-    ClipCircleU<ResampleNoPCNC<DrainStub<f64>, Stereographic<DrainStub<f64>, f64>, f64>, f64>,
+    ClipCircleC<ResampleNoPCNC<DrainStub<f64>, Stereographic<f64>, f64>, f64>,
+    ClipCircleU<ResampleNoPCNC<DrainStub<f64>, Stereographic<f64>, f64>, f64>,
     DrainStub<f64>,
     NoPCNU,
-    Stereographic<DrainStub<f64>, f64>,
-    ResampleNoPCNU<Stereographic<DrainStub<f64>, f64>, f64>,
+    Stereographic<f64>,
+    ResampleNoPCNU<Stereographic<f64>, f64>,
     f64,
 >;
 

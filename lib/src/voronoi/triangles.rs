@@ -34,12 +34,12 @@ use super::Voronoi;
 impl<'a, DRAIN, T>
     Voronoi<
         'a,
-        ClipCircleC<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
-        ClipCircleU<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
+        ClipCircleC<ResampleNoPCNC<DRAIN, Stereographic<T>, T>, T>,
+        ClipCircleU<ResampleNoPCNC<DRAIN, Stereographic<T>, T>, T>,
         DRAIN,
         NoPCNU,
-        Stereographic<DRAIN, T>,
-        ResampleNoPCNU<Stereographic<DRAIN, T>, T>,
+        Stereographic<T>,
+        ResampleNoPCNU<Stereographic<T>, T>,
         T,
     >
 where

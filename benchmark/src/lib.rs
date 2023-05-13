@@ -49,12 +49,12 @@ use web_sys::Performance;
 
 type GV = Voronoi<
     'static,
-    ClipCircleC<ResampleNoPCNC<Context, Stereographic<Context, f64>, f64>, f64>,
-    ClipCircleU<ResampleNoPCNC<Context, Stereographic<Context, f64>, f64>, f64>,
+    ClipCircleC<ResampleNoPCNC<Context, Stereographic<f64>, f64>, f64>,
+    ClipCircleU<ResampleNoPCNC<Context, Stereographic<f64>, f64>, f64>,
     Context,
     NoPCNU,
-    Stereographic<Context, f64>,
-    ResampleNoPCNU<Stereographic<Context, f64>, f64>,
+    Stereographic<f64>,
+    ResampleNoPCNU<Stereographic<f64>, f64>,
     f64,
 >;
 
@@ -64,7 +64,7 @@ type GV = Voronoi<
 pub struct Renderer {
     context2d: CanvasRenderingContext2d,
     context: Context,
-    ob: BuilderCircleResampleNoClip<Context, Orthographic<Context, f64>, f64>,
+    ob: BuilderCircleResampleNoClip<Context, Orthographic<f64>, f64>,
     performance: Performance,
     scheme_category10: [JsValue; 10],
     sites: MultiPoint<f64>,

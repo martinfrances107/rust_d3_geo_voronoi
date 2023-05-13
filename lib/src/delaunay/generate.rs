@@ -42,9 +42,9 @@ pub fn from_points<DRAIN, PCNC, PCNU, RC, RU, T>(
     DReturn<
         DRAIN,
         NoPCNU,
-        Stereographic<DRAIN, T>,
-        ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>,
-        ResampleNoPCNU<Stereographic<DRAIN, T>, T>,
+        Stereographic<T>,
+        ResampleNoPCNC<DRAIN, Stereographic<T>, T>,
+        ResampleNoPCNU<Stereographic<T>, T>,
         T,
     >,
 >

@@ -44,18 +44,18 @@ where
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + Display + CoordFloat + FloatConst,
 {
     /// Voronoi
-    Voronoi(Voronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, Stereographic<DRAIN, T>, RU, T>),
+    Voronoi(Voronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, Stereographic<T>, RU, T>),
     /// Function
     Func(VTransform<T>),
 }
 
 type XYReturnDefault<'a, DRAIN, T> = XYReturn<
     'a,
-    ClipCircleC<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
-    ClipCircleU<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
+    ClipCircleC<ResampleNoPCNC<DRAIN, Stereographic<T>, T>, T>,
+    ClipCircleU<ResampleNoPCNC<DRAIN, Stereographic<T>, T>, T>,
     DRAIN,
     NoPCNU,
-    ResampleNoPCNU<Stereographic<DRAIN, T>, T>,
+    ResampleNoPCNU<Stereographic<T>, T>,
     T,
 >;
 
@@ -133,12 +133,12 @@ impl std::fmt::Display for ConstructionError {
 impl<'a, DRAIN, T>
     Voronoi<
         'a,
-        ClipCircleC<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
-        ClipCircleU<ResampleNoPCNC<DRAIN, Stereographic<DRAIN, T>, T>, T>,
+        ClipCircleC<ResampleNoPCNC<DRAIN, Stereographic<T>, T>, T>,
+        ClipCircleU<ResampleNoPCNC<DRAIN, Stereographic<T>, T>, T>,
         DRAIN,
         NoPCNU,
-        Stereographic<DRAIN, T>,
-        ResampleNoPCNU<Stereographic<DRAIN, T>, T>,
+        Stereographic<T>,
+        ResampleNoPCNU<Stereographic<T>, T>,
         T,
     >
 where
