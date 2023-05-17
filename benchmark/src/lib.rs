@@ -20,6 +20,18 @@ mod utils;
 
 use std::iter::repeat_with;
 
+use geo::Geometry;
+use geo::MultiPoint;
+use geo_types::Coord;
+use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
+use web_sys::window;
+use web_sys::CanvasRenderingContext2d;
+use web_sys::Document;
+use web_sys::HtmlCanvasElement;
+use web_sys::Path2d;
+use web_sys::Performance;
+
 use d3_geo_rs::clip::circle::ClipCircleC;
 use d3_geo_rs::clip::circle::ClipCircleU;
 use d3_geo_rs::data_object::FeatureCollection;
@@ -35,17 +47,6 @@ use d3_geo_rs::projection::Build;
 use d3_geo_rs::projection::RawBase as ProjectionRawBase;
 use d3_geo_rs::projection::RotateSet;
 use d3_geo_voronoi_rs::voronoi::Voronoi;
-
-use geo::Geometry;
-use geo::MultiPoint;
-use geo_types::Coord;
-use wasm_bindgen::prelude::*;
-use wasm_bindgen::JsCast;
-use web_sys::window;
-use web_sys::CanvasRenderingContext2d;
-use web_sys::Document;
-use web_sys::HtmlCanvasElement;
-use web_sys::Performance;
 
 type GV = Voronoi<
     'static,
@@ -108,7 +109,8 @@ impl Renderer {
             }
         };
 
-        let context: Context = Context::new(context2d.clone());
+        let path2d = Path2d::new().unwrap();
+        let context: Context = Context::new(path2d);
 
         let scheme_category10: [JsValue; 10] = [
             JsValue::from_str("#1f77b4"),
