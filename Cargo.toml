@@ -12,8 +12,7 @@ edition = "2021"
 keywords = ["graphics", "d3-geo-voronoi"]
 license = "MIT"
 readme = "../README.md"
-version = "0.4.0"
-
+version = "0.4.1"
 
 [workspace.dependencies]
 d3_geo_rs = "~0.7"
