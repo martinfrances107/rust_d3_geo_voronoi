@@ -9,14 +9,10 @@ use std::iter::repeat_with;
 extern crate lazy_static;
 extern crate rand;
 
-use d3_geo_rs::clip::circle::ClipCircleC;
-use d3_geo_rs::clip::circle::ClipCircleU;
 use d3_geo_rs::data_object::FeatureCollection;
 use d3_geo_rs::path::builder::Builder as PathBuilder;
-use d3_geo_rs::projection::builder::template::NoPCNU;
-use d3_geo_rs::projection::builder::template::ResampleNoPCNC;
-use d3_geo_rs::projection::builder::template::ResampleNoPCNU;
 use d3_geo_rs::projection::orthographic::Orthographic;
+use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
 use d3_geo_rs::projection::stereographic::Stereographic;
 use d3_geo_rs::projection::Build;
 use d3_geo_rs::projection::RawBase as ProjectionRawBase;
@@ -29,16 +25,9 @@ use geo::Geometry::Polygon;
 use geo::MultiPoint;
 use geo_types::Coord;
 
-type GV<'a> = Voronoi<
-    'a,
-    ClipCircleC<ResampleNoPCNC<DrainStub<f64>, Stereographic<f64>, f64>, f64>,
-    ClipCircleU<ResampleNoPCNC<DrainStub<f64>, Stereographic<f64>, f64>, f64>,
-    DrainStub<f64>,
-    NoPCNU,
-    Stereographic<f64>,
-    ResampleNoPCNU<Stereographic<f64>, f64>,
-    f64,
->;
+type ProjectorSterographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
+
+type GV<'a> = Voronoi<'a, ProjectorSterographic<DrainStub<f64>, f64>, f64>;
 
 #[cfg(not(tarpaulin_include))]
 lazy_static! {
@@ -80,7 +69,7 @@ fn draw() -> Result<String, ConstructionError> {
 
     ortho_builder.rotate2_set(&[0_f64, 0_f64]);
     let ortho = ortho_builder.build();
-    let mut path = PathBuilder::context_pathstring().build(ortho);
+    let mut path = PathBuilder::pathstring().build(ortho);
 
     let mut out = match gv.polygons(None) {
         None => {

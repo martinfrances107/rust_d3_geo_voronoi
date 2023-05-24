@@ -4,12 +4,8 @@ use num_traits::FloatConst;
 
 use d3_delaunay_rs::delaunay::Delaunay;
 
-pub fn triangles<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>(
-    delaunay: &Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>,
-) -> Vec<[usize; 3]>
+pub fn triangles<PROJECTOR, T>(delaunay: &Delaunay<PROJECTOR, T>) -> Vec<[usize; 3]>
 where
-    CLIPC: Clone,
-    CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
 {
     let Delaunay { triangles, .. } = delaunay;

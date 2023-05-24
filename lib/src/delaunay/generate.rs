@@ -5,6 +5,7 @@ use std::fmt::Debug;
 use std::rc::Rc;
 
 use approx::AbsDiffEq;
+
 use delaunator::EMPTY;
 use geo::CoordFloat;
 use geo_types::Coord;
@@ -12,11 +13,7 @@ use num_traits::float::FloatConst;
 use num_traits::FromPrimitive;
 
 use d3_delaunay_rs::delaunay::Delaunay;
-use d3_geo_rs::clip::circle::ClipCircleC;
-use d3_geo_rs::clip::circle::ClipCircleU;
-use d3_geo_rs::projection::builder::template::NoPCNU;
-use d3_geo_rs::projection::builder::template::ResampleNoPCNC;
-use d3_geo_rs::projection::builder::template::ResampleNoPCNU;
+use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
 use d3_geo_rs::projection::stereographic::Stereographic;
 use d3_geo_rs::projection::Build;
 use d3_geo_rs::projection::RawBase as ProjectionRawBase;
@@ -27,8 +24,9 @@ use d3_geo_rs::rot::rotation::Rotation;
 use d3_geo_rs::stream::Stream;
 use d3_geo_rs::Transform;
 
-type DReturn<DRAIN, PCNU, PR, RC, RU, T> =
-    Delaunay<ClipCircleC<RC, T>, ClipCircleU<RC, T>, DRAIN, PCNU, PR, RU, T>;
+type DReturn<PROJECTOR, T> = Delaunay<PROJECTOR, T>;
+
+type ProjectorSterographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
 
 /// Creates a delaunay object from a set of points.
 ///
@@ -38,16 +36,7 @@ type DReturn<DRAIN, PCNU, PR, RC, RU, T> =
 #[must_use]
 pub fn from_points<DRAIN, PCNC, PCNU, RC, RU, T>(
     points: &Rc<Vec<Coord<T>>>,
-) -> Option<
-    DReturn<
-        DRAIN,
-        NoPCNU,
-        Stereographic<T>,
-        ResampleNoPCNC<DRAIN, Stereographic<T>, T>,
-        ResampleNoPCNU<Stereographic<T>, T>,
-        T,
-    >,
->
+) -> Option<DReturn<ProjectorSterographic<DRAIN, T>, T>>
 where
     DRAIN: Clone + Debug + Default + Stream<EP = DRAIN, T = T>,
     T: AbsDiffEq<Epsilon = T> + CoordFloat + Default + FloatConst + FromPrimitive,

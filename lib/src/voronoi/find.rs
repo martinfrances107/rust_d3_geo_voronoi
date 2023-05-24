@@ -13,28 +13,16 @@ use num_traits::FloatConst;
 use num_traits::FromPrimitive;
 use num_traits::Signed;
 
-use d3_geo_rs::clip::circle::ClipCircleC;
-use d3_geo_rs::clip::circle::ClipCircleU;
 use d3_geo_rs::distance::distance;
-use d3_geo_rs::projection::builder::template::NoPCNU;
-use d3_geo_rs::projection::builder::template::ResampleNoPCNC;
-use d3_geo_rs::projection::builder::template::ResampleNoPCNU;
+use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
 use d3_geo_rs::projection::stereographic::Stereographic;
 use d3_geo_rs::stream::Stream;
 
 use super::Voronoi;
 
-impl<'a, DRAIN, T>
-    Voronoi<
-        'a,
-        ClipCircleC<ResampleNoPCNC<DRAIN, Stereographic<T>, T>, T>,
-        ClipCircleU<ResampleNoPCNC<DRAIN, Stereographic<T>, T>, T>,
-        DRAIN,
-        NoPCNU,
-        Stereographic<T>,
-        ResampleNoPCNU<Stereographic<T>, T>,
-        T,
-    >
+type ProjectorSterographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
+
+impl<'a, DRAIN, T> Voronoi<'a, ProjectorSterographic<DRAIN, T>, T>
 where
     DRAIN: Clone + Debug + Stream<EP = DRAIN, T = T> + Default,
     T: AbsDiffEq<Epsilon = T>

@@ -4,6 +4,7 @@
 mod voronoi {
     extern crate pretty_assertions;
 
+    use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
     use geo::algorithm::cyclic_match::CyclicMatch;
     use geo::coords_iter::CoordsIter;
     use geo::line_string;
@@ -14,10 +15,8 @@ mod voronoi {
     use geo_types::Coord;
     use pretty_assertions::assert_eq;
 
-    use d3_geo_rs::clip::circle::ClipCircleC;
     use d3_geo_rs::data_object::FeatureCollection;
     use d3_geo_rs::data_object::FeatureProperty;
-    use d3_geo_rs::projection::builder::template::ResampleNoPCNC;
     use d3_geo_rs::stream::DrainStub;
     use d3_geo_voronoi_rs::voronoi::Voronoi;
 
@@ -26,7 +25,7 @@ mod voronoi {
         println!("two points leads to two hemispheres.");
         let sites = MultiPoint(vec![Point::new(-20f64, -20f64), Point::new(20f64, 20f64)]);
 
-        let mut gv: Voronoi<ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>, _, _, _, _, _, _>;
+        let mut gv: Voronoi<ProjectorCircleResampleNoClip<DrainStub<f64>, _, f64>, f64>;
         match Voronoi::new(Some(Geometry::MultiPoint(sites))) {
             Ok(ok) => gv = ok,
             Err(_) => {
@@ -109,7 +108,7 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]);
 
-        let mut gv: Voronoi<ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>, _, _, _, _, _, _>;
+        let mut gv: Voronoi<ProjectorCircleResampleNoClip<DrainStub<f64>, _, f64>, f64>;
         match Voronoi::new(Some(Geometry::MultiPoint(sites))) {
             Ok(ok) => gv = ok,
             Err(_) => {
@@ -154,7 +153,7 @@ mod voronoi {
         // This should be tightened up.
         let g = Geometry::MultiPoint(sites);
 
-        let mut gv: Voronoi<ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>, _, _, _, _, _, _>;
+        let mut gv: Voronoi<ProjectorCircleResampleNoClip<DrainStub<f64>, _, f64>, f64>;
         match Voronoi::new(Some(g)) {
             Ok(ok) => gv = ok,
             Err(_) => {
@@ -199,16 +198,9 @@ mod voronoi {
             Point::new(0f64, 0f64),
         ]);
 
-        let gv = match Voronoi::<
-            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-        >::new(None)
-        {
+        let gv = match Voronoi::<ProjectorCircleResampleNoClip<DrainStub<f64>, _, f64>, f64>::new(
+            None,
+        ) {
             Ok(gv) => gv,
             Err(_) => {
                 panic!("could not proceed");
@@ -243,16 +235,9 @@ mod voronoi {
             Point::new(0f64, 0f64),
         ]);
 
-        let gv = match Voronoi::<
-            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-        >::new(Some(Geometry::MultiPoint(sites)))
-        {
+        let gv = match Voronoi::<ProjectorCircleResampleNoClip<DrainStub<f64>, _, f64>, f64>::new(
+            Some(Geometry::MultiPoint(sites)),
+        ) {
             Ok(gv) => gv,
             Err(_) => {
                 panic!("could not proceed");
@@ -308,16 +293,9 @@ mod voronoi {
             "5 0/8 5".into(),
         ];
 
-        let gv = match Voronoi::<
-            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-        >::new(Some(Geometry::MultiPoint(sites)))
-        {
+        let gv = match Voronoi::<ProjectorCircleResampleNoClip<DrainStub<f64>, _, f64>, f64>::new(
+            Some(Geometry::MultiPoint(sites)),
+        ) {
             Ok(gv) => gv,
             Err(_) => {
                 panic!("could not proceed");
@@ -355,15 +333,7 @@ mod voronoi {
             Point::new(0f64, 0f64),
         ]);
 
-        let mut voro: Voronoi<
-            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-        >;
+        let mut voro: Voronoi<ProjectorCircleResampleNoClip<DrainStub<f64>, _, f64>, f64>;
         match Voronoi::new(Some(Geometry::MultiPoint(sites.clone()))) {
             Ok(ok) => voro = ok,
             Err(_) => {
@@ -382,15 +352,7 @@ mod voronoi {
             Some(4)
         );
         // TODO bug ... strange bug/hang ... unless I define voro twice.
-        let mut voro2: Voronoi<
-            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-        >;
+        let mut voro2: Voronoi<ProjectorCircleResampleNoClip<DrainStub<f64>, _, f64>, f64>;
         match Voronoi::new(Some(Geometry::MultiPoint(sites))) {
             Ok(ok) => voro2 = ok,
             Err(_) => {
@@ -417,8 +379,8 @@ mod voronoi {
             Point::new(10f64, 0f64),
             Point::new(0f64, 10f64),
         ]));
-        // let mut gv: GV = GeoVoronoi::new(None);
-        let mut gv: Voronoi<ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>, _, _, _, _, _, _>;
+
+        let mut gv: Voronoi<ProjectorCircleResampleNoClip<DrainStub<f64>, _, f64>, f64>;
         match Voronoi::new(None) {
             Ok(ok) => gv = ok,
             Err(_) => {
@@ -457,16 +419,9 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]));
 
-        let gv = match Voronoi::<
-            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-        >::new(None)
-        {
+        let gv = match Voronoi::<ProjectorCircleResampleNoClip<DrainStub<f64>, _, f64>, f64>::new(
+            None,
+        ) {
             Ok(gv) => gv,
             Err(_) => {
                 panic!("cannot proceed");
@@ -490,7 +445,7 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]));
 
-        let mut gv: Voronoi<ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>, _, _, _, _, _, _>;
+        let mut gv: Voronoi<ProjectorCircleResampleNoClip<DrainStub<f64>, _, f64>, f64>;
         match Voronoi::new(None) {
             Ok(ok) => gv = ok,
             Err(_) => {
@@ -537,16 +492,9 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]));
 
-        let gv = match Voronoi::<
-            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-        >::new(None)
-        {
+        let gv = match Voronoi::<ProjectorCircleResampleNoClip<DrainStub<f64>, _, f64>, f64>::new(
+            None,
+        ) {
             Ok(gv) => gv,
             Err(_) => {
                 panic!("could not proceed");
@@ -596,16 +544,9 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ];
 
-        let u = match Voronoi::<
-            ClipCircleC<ResampleNoPCNC<DrainStub<_>, _, _>, _>,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-        >::new(Some(Geometry::MultiPoint(MultiPoint(sites.clone()))))
-        {
+        let u = match Voronoi::<ProjectorCircleResampleNoClip<DrainStub<f64>, _, f64>, f64>::new(
+            Some(Geometry::MultiPoint(MultiPoint(sites.clone()))),
+        ) {
             Ok(u) => u,
             Err(_) => {
                 panic!("could not proceed");

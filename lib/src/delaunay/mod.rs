@@ -24,6 +24,7 @@ use std::ops::AddAssign;
 use std::rc::Rc;
 
 use approx::AbsDiffEq;
+
 use derivative::Derivative;
 use geo::CoordFloat;
 use geo_types::Coord;
@@ -42,15 +43,14 @@ use polygons::Polygons;
 use triangles::triangles;
 use urquhart::urquhart;
 
-use d3_delaunay_rs::delaunay::Delaunay as DelaunayInner;
-use d3_geo_rs::clip::circle::ClipCircleC;
-use d3_geo_rs::clip::circle::ClipCircleU;
 use d3_geo_rs::projection::builder::template::NoPCNC;
-use d3_geo_rs::projection::builder::template::NoPCNU;
 use d3_geo_rs::projection::builder::template::ResampleNoPCNC;
 use d3_geo_rs::projection::builder::template::ResampleNoPCNU;
+use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
 use d3_geo_rs::projection::stereographic::Stereographic;
 use d3_geo_rs::stream::Stream;
+
+use d3_delaunay_rs::delaunay::Delaunay as DelaunayInner;
 
 type FindReturn<'a, T> = Box<dyn Fn(&Coord<T>, Option<usize>) -> Option<usize> + 'a>;
 
@@ -64,15 +64,13 @@ type UTransform<T> = Box<dyn Fn(&Vec<T>) -> Vec<bool>>;
 /// Wraps data associated with a delaunay object.
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct Delaunay<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>
+pub struct Delaunay<'a, PROJECTOR, T>
 where
-    CLIPC: Clone,
-    CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
 {
     /// The wrapped delaunay object.
     #[derivative(Debug = "ignore")]
-    pub delaunay: DelaunayInner<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>,
+    pub delaunay: DelaunayInner<PROJECTOR, T>,
     /// The edges and triangles properties need RC because the values are close over in the urquhart function.
     pub edges: Rc<HashSet<EdgeIndex>>,
     /// A set of triangles as defined by set of indicies.
@@ -95,17 +93,9 @@ where
     pub find: FindReturn<'a, T>,
 }
 
-impl<'a, DRAIN, T>
-    Delaunay<
-        'a,
-        ClipCircleC<ResampleNoPCNC<DRAIN, Stereographic<T>, T>, T>,
-        ClipCircleU<ResampleNoPCNC<DRAIN, Stereographic<T>, T>, T>,
-        DRAIN,
-        NoPCNU,
-        Stereographic<T>,
-        ResampleNoPCNU<Stereographic<T>, T>,
-        T,
-    >
+type ProjectorSterographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
+
+impl<'a, DRAIN, T> Delaunay<'a, ProjectorSterographic<DRAIN, T>, T>
 where
     DRAIN: Clone + Debug + Stream<EP = DRAIN, T = T> + Default,
     T: AbsDiffEq<Epsilon = T>

@@ -4,11 +4,8 @@ use std::ops::AddAssign;
 use std::rc::Rc;
 
 use approx::AbsDiffEq;
-use d3_geo_rs::clip::circle::ClipCircleC;
-use d3_geo_rs::clip::circle::ClipCircleU;
-use d3_geo_rs::projection::builder::template::NoPCNU;
-use d3_geo_rs::projection::builder::template::ResampleNoPCNC;
-use d3_geo_rs::projection::builder::template::ResampleNoPCNU;
+
+use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
 use d3_geo_rs::projection::stereographic::Stereographic;
 use d3_geo_rs::stream::Stream;
 use derivative::Derivative;
@@ -37,27 +34,19 @@ mod triangles;
 
 /// Return type used by .x() and .y()
 #[allow(missing_debug_implementations)]
-pub enum XYReturn<'a, CLIPC, CLIPU, DRAIN, PCNU, RU, T>
+pub enum XYReturn<'a, PROJECTOR, T>
 where
-    CLIPC: Clone,
-    CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + Display + CoordFloat + FloatConst,
 {
     /// Voronoi
-    Voronoi(Voronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, Stereographic<T>, RU, T>),
+    Voronoi(Voronoi<'a, PROJECTOR, T>),
     /// Function
     Func(VTransform<T>),
 }
 
-type XYReturnDefault<'a, DRAIN, T> = XYReturn<
-    'a,
-    ClipCircleC<ResampleNoPCNC<DRAIN, Stereographic<T>, T>, T>,
-    ClipCircleU<ResampleNoPCNC<DRAIN, Stereographic<T>, T>, T>,
-    DRAIN,
-    NoPCNU,
-    ResampleNoPCNU<Stereographic<T>, T>,
-    T,
->;
+type ProjectorSterographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
+
+type XYReturnDefault<'a, DRAIN, T> = XYReturn<'a, ProjectorSterographic<DRAIN, T>, T>;
 
 #[derive(Debug)]
 struct TriStruct<T>
@@ -74,15 +63,13 @@ pub type VTransform<T> = Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>;
 #[derive(Derivative)]
 #[derivative(Debug)]
 /// Holds data centered on a `GeoDelauany` instance.
-pub struct Voronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>
+pub struct Voronoi<'a, PROJECTOR, T>
 where
-    CLIPC: Clone,
-    CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
     /// The wrapped GeoDelaunay instance.
     #[allow(clippy::type_complexity)]
-    pub delaunay: Option<Delaunay<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>>,
+    pub delaunay: Option<Delaunay<'a, PROJECTOR, T>>,
     data: Option<Geometry<T>>,
     found: Option<usize>,
     //Points: Rc needed here as the egdes, triangles, neigbours etc all index into thts vec.
@@ -95,11 +82,8 @@ where
     vy: VTransform<T>,
 }
 
-impl<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T> Default
-    for Voronoi<'a, CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>
+impl<'a, PROJECTOR, T> Default for Voronoi<'a, PROJECTOR, T>
 where
-    CLIPC: Clone,
-    CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
     fn default() -> Self {
@@ -130,17 +114,7 @@ impl std::fmt::Display for ConstructionError {
     }
 }
 
-impl<'a, DRAIN, T>
-    Voronoi<
-        'a,
-        ClipCircleC<ResampleNoPCNC<DRAIN, Stereographic<T>, T>, T>,
-        ClipCircleU<ResampleNoPCNC<DRAIN, Stereographic<T>, T>, T>,
-        DRAIN,
-        NoPCNU,
-        Stereographic<T>,
-        ResampleNoPCNU<Stereographic<T>, T>,
-        T,
-    >
+impl<'a, DRAIN, T> Voronoi<'a, ProjectorSterographic<DRAIN, T>, T>
 where
     DRAIN: Clone + Debug + Stream<EP = DRAIN, T = T> + Default,
     T: AbsDiffEq<Epsilon = T>

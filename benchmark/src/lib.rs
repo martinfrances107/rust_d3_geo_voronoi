@@ -20,6 +20,8 @@ mod utils;
 
 use std::iter::repeat_with;
 
+use d3_geo_rs::path::endpoint::Endpoint;
+use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
 use geo::Geometry;
 use geo::MultiPoint;
 use geo_types::Coord;
@@ -32,14 +34,9 @@ use web_sys::HtmlCanvasElement;
 use web_sys::Path2d;
 use web_sys::Performance;
 
-use d3_geo_rs::clip::circle::ClipCircleC;
-use d3_geo_rs::clip::circle::ClipCircleU;
 use d3_geo_rs::data_object::FeatureCollection;
 use d3_geo_rs::path::builder::Builder as PathBuilder;
-use d3_geo_rs::path::context::Context;
-use d3_geo_rs::projection::builder::template::NoPCNU;
-use d3_geo_rs::projection::builder::template::ResampleNoPCNC;
-use d3_geo_rs::projection::builder::template::ResampleNoPCNU;
+
 use d3_geo_rs::projection::builder::types::BuilderCircleResampleNoClip;
 use d3_geo_rs::projection::orthographic::Orthographic;
 use d3_geo_rs::projection::stereographic::Stereographic;
@@ -48,24 +45,17 @@ use d3_geo_rs::projection::RawBase as ProjectionRawBase;
 use d3_geo_rs::projection::RotateSet;
 use d3_geo_voronoi_rs::voronoi::Voronoi;
 
-type GV = Voronoi<
-    'static,
-    ClipCircleC<ResampleNoPCNC<Context, Stereographic<f64>, f64>, f64>,
-    ClipCircleU<ResampleNoPCNC<Context, Stereographic<f64>, f64>, f64>,
-    Context,
-    NoPCNU,
-    Stereographic<f64>,
-    ResampleNoPCNU<Stereographic<f64>, f64>,
-    f64,
->;
+type ProjectorSterographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
+
+type GV = Voronoi<'static, ProjectorSterographic<Endpoint, f64>, f64>;
 
 #[wasm_bindgen]
 #[derive(Debug)]
 /// State associated with render call.
 pub struct Renderer {
     context2d: CanvasRenderingContext2d,
-    context: Context,
-    ob: BuilderCircleResampleNoClip<Context, Orthographic<f64>, f64>,
+    context: Endpoint,
+    ob: BuilderCircleResampleNoClip<Endpoint, Orthographic<f64>, f64>,
     performance: Performance,
     scheme_category10: [JsValue; 10],
     sites: MultiPoint<f64>,
@@ -110,7 +100,7 @@ impl Renderer {
         };
 
         let path2d = Path2d::new().unwrap();
-        let context: Context = Context::new(path2d);
+        let context: Endpoint = Endpoint::new(path2d);
 
         let scheme_category10: [JsValue; 10] = [
             JsValue::from_str("#1f77b4"),
