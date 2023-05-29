@@ -84,12 +84,15 @@ fn draw() -> Result<String, ConstructionError> {
                         panic!("polygon not found");
                     }
                 };
-                let line = format!(
-                    "<path d={:?} fill=\"{}\" stroke=\"black\" />",
-                    d,
-                    SCHEME_CATEGORY10[i % 10]
-                );
-                paths.push_str(&line);
+
+                if !d.is_empty() {
+                    let line = format!(
+                        "<path d={:?} fill=\"{}\" stroke=\"black\" />",
+                        d,
+                        SCHEME_CATEGORY10[i % 10]
+                    );
+                    paths.push_str(&line);
+                }
             }
             paths
         }
