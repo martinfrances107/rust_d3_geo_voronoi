@@ -1,7 +1,7 @@
+use core::borrow::Borrow;
 use core::fmt::Debug;
-use std::borrow::Borrow;
-use std::fmt::Display;
-use std::ops::AddAssign;
+use core::fmt::Display;
+use core::ops::AddAssign;
 
 use approx::AbsDiffEq;
 use float_next_after::NextAfter;

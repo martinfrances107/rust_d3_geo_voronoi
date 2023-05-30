@@ -1,6 +1,6 @@
 use core::fmt::Debug;
-use std::fmt::Display;
-use std::ops::AddAssign;
+use core::fmt::Display;
+use core::ops::AddAssign;
 
 use approx::AbsDiffEq;
 use float_next_after::NextAfter;

@@ -1,7 +1,7 @@
 #![allow(clippy::many_single_char_names)]
 
+use core::cmp;
 use core::fmt::Debug;
-use std::cmp;
 use std::rc::Rc;
 
 use approx::AbsDiffEq;

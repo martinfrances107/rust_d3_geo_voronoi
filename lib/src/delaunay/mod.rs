@@ -16,11 +16,11 @@ mod polygons;
 mod triangles;
 mod urquhart;
 
+use core::cell::RefCell;
 use core::fmt::Debug;
-use std::cell::RefCell;
+use core::ops::AddAssign;
 use std::collections::HashMap;
 use std::collections::HashSet;
-use std::ops::AddAssign;
 use std::rc::Rc;
 
 use approx::AbsDiffEq;

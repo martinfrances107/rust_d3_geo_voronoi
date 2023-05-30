@@ -1,6 +1,6 @@
 use core::fmt::Debug;
-use std::fmt::Display;
-use std::ops::AddAssign;
+use core::fmt::Display;
+use core::ops::AddAssign;
 
 use approx::AbsDiffEq;
 use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
