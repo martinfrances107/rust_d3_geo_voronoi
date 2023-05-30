@@ -20,8 +20,6 @@ mod utils;
 
 use std::iter::repeat_with;
 
-use d3_geo_rs::path::endpoint::Endpoint;
-use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
 use geo::Geometry;
 use geo::MultiPoint;
 use geo_types::Coord;
@@ -36,9 +34,11 @@ use web_sys::Performance;
 
 use d3_geo_rs::data_object::FeatureCollection;
 use d3_geo_rs::path::builder::Builder as PathBuilder;
-
+use d3_geo_rs::path::endpoint::Endpoint;
+use d3_geo_rs::path::Result as PathResult;
 use d3_geo_rs::projection::builder::types::BuilderCircleResampleNoClip;
 use d3_geo_rs::projection::orthographic::Orthographic;
+use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
 use d3_geo_rs::projection::stereographic::Stereographic;
 use d3_geo_rs::projection::Build;
 use d3_geo_rs::projection::RawBase as ProjectionRawBase;
@@ -54,7 +54,7 @@ type GV = Voronoi<'static, ProjectorSterographic<Endpoint, f64>, f64>;
 /// State associated with render call.
 pub struct Renderer {
     context2d: CanvasRenderingContext2d,
-    context: Endpoint,
+    ep: Endpoint,
     ob: BuilderCircleResampleNoClip<Endpoint, Orthographic<f64>, f64>,
     performance: Performance,
     scheme_category10: [JsValue; 10],
@@ -99,8 +99,10 @@ impl Renderer {
             }
         };
 
+        context2d.clear_rect(0_f64, 0_f64, 960_f64, 600_f64);
+
         let path2d = Path2d::new().unwrap();
-        let context: Endpoint = Endpoint::new(path2d);
+        let ep: Endpoint = Endpoint::new(path2d);
 
         let scheme_category10: [JsValue; 10] = [
             JsValue::from_str("#1f77b4"),
@@ -143,7 +145,7 @@ impl Renderer {
 
         let mut out = Self {
             context2d,
-            context,
+            ep,
             black: JsValue::from_str("black"),
             gv,
             ob,
@@ -194,11 +196,13 @@ impl Renderer {
 
     /// Render the next frame.
     pub fn render(&mut self) {
+        self.context2d.clear_rect(0_f64, 0_f64, 960_f64, 600_f64);
         let t0 = self.performance.now();
+
         self.ob.rotate2_set(&[t0 / 150_f64, 0_f64]);
         let ortho = self.ob.build();
 
-        let pb = PathBuilder::new(self.context.clone());
+        let pb = PathBuilder::new(self.ep.clone());
 
         let mut path = pb.build(ortho);
 
@@ -211,10 +215,10 @@ impl Renderer {
                 for (i, features) in fc.iter().enumerate() {
                     self.context2d
                         .set_fill_style(&self.scheme_category10[i % 10]);
-                    self.context2d.begin_path();
                     path.object(&features.geometry[0]);
-                    self.context2d.fill();
-                    self.context2d.stroke();
+                    let path2d = path.context.result();
+                    self.context2d.fill_with_path_2d(&path2d);
+                    self.context2d.stroke_with_path(&path2d);
                 }
             }
         }
@@ -223,10 +227,10 @@ impl Renderer {
         self.context2d.set_fill_style(&self.white);
         self.context2d.set_stroke_style(&self.black);
         for p in &self.sites {
-            self.context2d.begin_path();
             path.object(&Geometry::Point(*p));
-            self.context2d.fill();
-            self.context2d.stroke();
+            let path2d = path.context.result();
+            self.context2d.fill_with_path_2d(&path2d);
+            self.context2d.stroke_with_path(&path2d);
         }
     }
 }
