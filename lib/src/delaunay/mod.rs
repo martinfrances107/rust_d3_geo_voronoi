@@ -91,7 +91,7 @@ impl<'a, PROJECTOR, T> Debug for Delaunay<'a, PROJECTOR, T>
 where
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         f.debug_tuple("Delaunay")
             .field(&self.edges)
             .field(&self.triangles)

@@ -8,7 +8,6 @@ use approx::AbsDiffEq;
 use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
 use d3_geo_rs::projection::stereographic::Stereographic;
 use d3_geo_rs::stream::Stream;
-use derivative::Derivative;
 use float_next_after::NextAfter;
 use geo::centroid::Centroid;
 use geo::kernels::HasKernel;
@@ -60,8 +59,6 @@ where
 /// Velocity Transform.
 pub type VTransform<T> = Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>;
 
-#[derive(Derivative)]
-#[derivative(Debug)]
 /// Holds data centered on a `GeoDelauany` instance.
 pub struct Voronoi<'a, PROJECTOR, T>
 where
@@ -76,10 +73,23 @@ where
     points: Rc<Vec<Coord<T>>>,
     valid: Vec<Coord<T>>,
     // Option<Box<impl Fn(&dyn Centroid<Output = Coord<T>>) -> T>>
-    #[derivative(Debug = "ignore")]
     vx: VTransform<T>,
-    #[derivative(Debug = "ignore")]
     vy: VTransform<T>,
+}
+
+impl<'a, PROJECTOR, T> Debug for Voronoi<'a, PROJECTOR, T>
+where
+    T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
+{
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_tuple("Centroid<T>")
+            .field(&self.delaunay)
+            .field(&self.data)
+            .field(&self.found)
+            .field(&self.points)
+            .field(&self.valid)
+            .finish()
+    }
 }
 
 impl<'a, PROJECTOR, T> Default for Voronoi<'a, PROJECTOR, T>
@@ -105,8 +115,8 @@ where
 #[derive(Debug, Clone)]
 pub struct ConstructionError;
 
-impl std::fmt::Display for ConstructionError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+impl core::fmt::Display for ConstructionError {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(
             f,
             "Must implement Voronoi::new for other DataObject<T> types"

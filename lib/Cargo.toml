@@ -19,7 +19,6 @@ default = ["console_error_panic_hook"]
 [dependencies]
 approx = "~0.5"
 num-traits = "~0.2"
-derivative = "~2"
 float_next_after = "1.0"
 geo = { workspace = true }
 geo-types = { workspace = true }

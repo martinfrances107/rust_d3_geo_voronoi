@@ -18,7 +18,7 @@ extern crate web_sys;
 
 mod utils;
 
-use std::iter::repeat_with;
+use core::iter::repeat_with;
 
 use geo::Geometry;
 use geo::MultiPoint;
