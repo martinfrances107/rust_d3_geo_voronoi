@@ -16,16 +16,15 @@ mod polygons;
 mod triangles;
 mod urquhart;
 
+use core::fmt::Debug;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::collections::HashSet;
-use std::fmt::Debug;
 use std::ops::AddAssign;
 use std::rc::Rc;
 
 use approx::AbsDiffEq;
 
-use derivative::Derivative;
 use geo::CoordFloat;
 use geo_types::Coord;
 use num_traits::AsPrimitive;
@@ -61,15 +60,12 @@ type EdgeIndex = [usize; 2];
 type TriIndex = [usize; 3];
 
 type UTransform<T> = Box<dyn Fn(&Vec<T>) -> Vec<bool>>;
+
 /// Wraps data associated with a delaunay object.
-#[derive(Derivative)]
-#[derivative(Debug)]
 pub struct Delaunay<'a, PROJECTOR, T>
 where
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
 {
-    /// The wrapped delaunay object.
-    #[derivative(Debug = "ignore")]
     pub delaunay: DelaunayInner<PROJECTOR, T>,
     /// The edges and triangles properties need RC because the values are close over in the urquhart function.
     pub edges: Rc<HashSet<EdgeIndex>>,
@@ -86,11 +82,26 @@ where
     /// The hull.
     pub hull: Vec<usize>,
     /// Urquhart graph .. by index the set the of points in the plane.
-    #[derivative(Debug = "ignore")]
     pub urquhart: UTransform<T>,
     /// Returns the indexes of the points.
-    #[derivative(Debug = "ignore")]
     pub find: FindReturn<'a, T>,
+}
+
+impl<'a, PROJECTOR, T> Debug for Delaunay<'a, PROJECTOR, T>
+where
+    T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("Delaunay")
+            .field(&self.edges)
+            .field(&self.triangles)
+            .field(&self.centers)
+            .field(&self.neighbors)
+            .field(&self.polygons)
+            .field(&self.mesh)
+            .field(&self.hull)
+            .finish()
+    }
 }
 
 type ProjectorSterographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
