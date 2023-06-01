@@ -141,6 +141,6 @@ where
         }
     }
     // // there should always be 4 degenerate triangles
-    // // console.warn(degenerate);
+    debug_assert_eq!(degenerate.len(), 4);
     Some(delaunay)
 }
