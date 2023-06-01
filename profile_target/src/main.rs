@@ -52,17 +52,13 @@ fn draw() -> Result<String, ConstructionError> {
     let size = 6000;
     let mut ortho_builder = Orthographic::builder();
 
-    let sites = MultiPoint(
+    let sites = MultiPoint::from_iter(
         repeat_with(rand::random)
-            .map(|(x, y): (f64, f64)| {
-                Coord {
-                    x: 360_f64 * x,
-                    y: 180_f64 * y - 90_f64,
-                }
-                .into()
+            .map(|(x, y): (f64, f64)| Coord {
+                x: 360_f64 * x,
+                y: 180_f64 * y - 90_f64,
             })
-            .take(size as usize)
-            .collect(),
+            .take(size as usize),
     );
 
     let mut gv: GV = Voronoi::new(Some(Geometry::MultiPoint(sites.clone())))?;
