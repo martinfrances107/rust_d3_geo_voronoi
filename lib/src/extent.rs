@@ -3,7 +3,7 @@ use core::cmp::PartialOrd;
 type ValueOfFn<T> = Box<dyn Fn(T, T, T) -> T>;
 
 /// Return the min and max simultaneously.
-pub fn extent<T>(values: Vec<T>, value_of: &Option<ValueOfFn<T>>) -> [T; 2]
+pub fn extent<I: IntoIterator<Item = T>, T>(iter: I, value_of: &Option<ValueOfFn<T>>) -> [T; 2]
 where
     T: PartialOrd + Copy,
 {
@@ -11,7 +11,7 @@ where
     let mut max: Option<T> = None;
     match value_of {
         None => {
-            for value in values {
+            for value in iter {
                 match min {
                     None => {
                         min = Some(value);
