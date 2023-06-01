@@ -1,4 +1,3 @@
-use approx::AbsDiffEq;
 use geo::CoordFloat;
 use num_traits::FloatConst;
 
@@ -8,7 +7,7 @@ use super::TriIndex;
 
 pub fn triangles<PROJECTOR, T>(delaunay: &Delaunay<PROJECTOR, T>) -> Vec<TriIndex>
 where
-    T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
+    T: CoordFloat + FloatConst,
 {
     let Delaunay { triangles, .. } = delaunay;
     if triangles.is_empty() {

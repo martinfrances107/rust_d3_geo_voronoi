@@ -18,16 +18,12 @@ mod urquhart;
 
 use core::cell::RefCell;
 use core::fmt::Debug;
-use core::ops::AddAssign;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::rc::Rc;
 
-use approx::AbsDiffEq;
-
 use geo::CoordFloat;
 use geo_types::Coord;
-use num_traits::AsPrimitive;
 use num_traits::FloatConst;
 use num_traits::FromPrimitive;
 
@@ -64,7 +60,7 @@ type UTransform<T> = Box<dyn Fn(&Vec<T>) -> Vec<bool>>;
 /// Wraps data associated with a delaunay object.
 pub struct Delaunay<'a, PROJECTOR, T>
 where
-    T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
+    T: CoordFloat,
 {
     pub delaunay: DelaunayInner<PROJECTOR, T>,
     /// The edges and triangles properties need RC because the values are close over in the urquhart function.
@@ -89,7 +85,7 @@ where
 
 impl<'a, PROJECTOR, T> Debug for Delaunay<'a, PROJECTOR, T>
 where
-    T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + FloatConst,
+    T: CoordFloat,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         f.debug_tuple("Delaunay")
@@ -109,13 +105,7 @@ type ProjectorSterographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Ster
 impl<'a, DRAIN, T> Delaunay<'a, ProjectorSterographic<DRAIN, T>, T>
 where
     DRAIN: Clone + Debug + Stream<EP = DRAIN, T = T> + Default,
-    T: AbsDiffEq<Epsilon = T>
-        + AddAssign
-        + AsPrimitive<T>
-        + CoordFloat
-        + Default
-        + FloatConst
-        + FromPrimitive,
+    T: 'static + CoordFloat + Default + FloatConst + FromPrimitive,
 {
     /// Creates a `GeoDelaunay` object from a set of points.
     #[must_use]

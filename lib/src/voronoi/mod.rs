@@ -62,7 +62,7 @@ pub type VTransform<T> = Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>;
 /// Holds data centered on a `GeoDelauany` instance.
 pub struct Voronoi<'a, PROJECTOR, T>
 where
-    T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
+    T: CoordFloat,
 {
     /// The wrapped GeoDelaunay instance.
     #[allow(clippy::type_complexity)]

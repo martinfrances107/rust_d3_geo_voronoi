@@ -15,8 +15,8 @@ readme = "../README.md"
 version = "0.5.1"
 
 [workspace.dependencies]
-d3_geo_rs = "~0.10"
-d3_delaunay_rs = "~0.4"
+d3_geo_rs = "~1"
+d3_delaunay_rs = "~0.5"
 geo = "~0.25"
 geo-types = "~0.7"
 

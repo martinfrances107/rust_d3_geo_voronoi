@@ -4,8 +4,6 @@ use core::cmp;
 use core::fmt::Debug;
 use std::rc::Rc;
 
-use approx::AbsDiffEq;
-
 use delaunator::EMPTY;
 use geo::CoordFloat;
 use geo_types::Coord;
@@ -39,7 +37,7 @@ pub fn from_points<DRAIN, PCNC, PCNU, RC, RU, T>(
 ) -> Option<DReturn<ProjectorSterographic<DRAIN, T>, T>>
 where
     DRAIN: Clone + Debug + Default + Stream<EP = DRAIN, T = T>,
-    T: AbsDiffEq<Epsilon = T> + CoordFloat + Default + FloatConst + FromPrimitive,
+    T: CoordFloat + Default + FloatConst + FromPrimitive,
 {
     if points.len() < 2 {
         return None;
