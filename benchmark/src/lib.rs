@@ -167,17 +167,13 @@ impl Renderer {
     /// update in-place stratergy.
     pub fn update(&mut self, size: u32) -> Result<(), JsValue> {
         utils::set_panic_hook();
-        self.sites = MultiPoint(
+        self.sites = MultiPoint::from_iter(
             repeat_with(rand::random)
-                .map(|(x, y): (f64, f64)| {
-                    Coord {
-                        x: 360_f64 * x,
-                        y: 180_f64 * y - 90_f64,
-                    }
-                    .into()
+                .map(|(x, y): (f64, f64)| Coord {
+                    x: 360_f64 * x,
+                    y: 180_f64 * y - 90_f64,
                 })
-                .take(size as usize)
-                .collect(),
+                .take(size as usize),
         );
 
         let gp = Geometry::MultiPoint(self.sites.clone());
