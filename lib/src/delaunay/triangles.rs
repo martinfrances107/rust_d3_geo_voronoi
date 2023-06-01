@@ -4,7 +4,9 @@ use num_traits::FloatConst;
 
 use d3_delaunay_rs::delaunay::Delaunay;
 
-pub fn triangles<PROJECTOR, T>(delaunay: &Delaunay<PROJECTOR, T>) -> Vec<[usize; 3]>
+use super::TriIndex;
+
+pub fn triangles<PROJECTOR, T>(delaunay: &Delaunay<PROJECTOR, T>) -> Vec<TriIndex>
 where
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
 {
@@ -14,7 +16,7 @@ where
     }
 
     let n: usize = triangles.len() / 3usize;
-    let mut t: Vec<[usize; 3]> = Vec::with_capacity(n);
+    let mut t: Vec<TriIndex> = Vec::with_capacity(n);
 
     for i in 0..n {
         let a = triangles[3 * i];

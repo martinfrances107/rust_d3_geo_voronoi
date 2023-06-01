@@ -7,9 +7,10 @@ use geo_types::Coord;
 use num_traits::FloatConst;
 
 use super::cartesian::cartesian;
+use super::TriIndex;
 
 pub fn circumcenters<'a, T>(
-    triangles: &'a [[usize; 3]],
+    triangles: &'a [TriIndex],
     points: &'a [Coord<T>],
 ) -> impl Iterator<Item = Coord<T>> + 'a
 where

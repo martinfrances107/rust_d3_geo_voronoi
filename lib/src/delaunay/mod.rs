@@ -70,7 +70,7 @@ where
     /// The edges and triangles properties need RC because the values are close over in the urquhart function.
     pub edges: Rc<HashSet<EdgeIndex>>,
     /// A set of triangles as defined by set of indicies.
-    pub triangles: Rc<Vec<[usize; 3]>>,
+    pub triangles: Rc<Vec<TriIndex>>,
     /// A list of centers associated with the cells.
     pub centers: Vec<Coord<T>>,
     /// Passes to Voronoi::polygon() where it is consumed.

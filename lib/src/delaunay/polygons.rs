@@ -12,6 +12,7 @@ use num_traits::FloatConst;
 
 use super::cartesian::cartesian;
 use super::o_midpoint::o_midpoint;
+use super::TriIndex;
 
 type TupleVec = Vec<(usize, usize, usize, (usize, usize, usize))>;
 
@@ -21,7 +22,7 @@ where
     T: CoordFloat,
 {
     centers: Vec<Coord<T>>,
-    triangles: Rc<Vec<[usize; 3]>>,
+    triangles: Rc<Vec<TriIndex>>,
 }
 
 impl<T> Default for Polygons<T>
@@ -67,7 +68,7 @@ where
     pub fn gen(
         mut self,
         circumcenter: Vec<Coord<T>>,
-        triangles_p: Rc<Vec<[usize; 3]>>,
+        triangles_p: Rc<Vec<TriIndex>>,
         points: &[Coord<T>],
     ) -> (Vec<Vec<usize>>, Vec<Coord<T>>) {
         let mut polygons: Vec<Vec<usize>> = Vec::new();

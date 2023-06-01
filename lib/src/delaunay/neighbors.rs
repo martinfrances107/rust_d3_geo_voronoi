@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
-pub fn neighbors(triangles: &[[usize; 3]], npoints: usize) -> HashMap<usize, Vec<usize>> {
+use super::TriIndex;
+
+pub fn neighbors(triangles: &[TriIndex], npoints: usize) -> HashMap<usize, Vec<usize>> {
     let mut h_neighbors: HashMap<usize, Vec<usize>> = HashMap::with_capacity(triangles.len());
     for tri in triangles {
         for j in 0..3 {
