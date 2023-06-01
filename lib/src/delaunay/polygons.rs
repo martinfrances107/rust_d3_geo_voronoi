@@ -97,8 +97,8 @@ where
                 .map(|p| spherical(p))
                 .map(|p| self.supplement(&p))
                 .collect();
-                polygons.push(poly.clone());
                 let rev: Vec<usize> = poly.iter().rev().copied().collect();
+                polygons.push(poly);
                 polygons.push(rev);
                 return (polygons, self.centers);
             }
