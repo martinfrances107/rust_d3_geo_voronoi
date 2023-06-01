@@ -29,7 +29,7 @@ use num_traits::FromPrimitive;
 
 use circumcenters::circumcenters;
 use edges::edges;
-use find::find;
+// use find::find;
 use generate::from_points;
 use hull::hull;
 use mesh::mesh;
@@ -47,8 +47,6 @@ use d3_geo_rs::stream::Stream;
 
 use d3_delaunay_rs::delaunay::Delaunay as DelaunayInner;
 
-type FindReturn<'a, T> = Box<dyn Fn(&Coord<T>, Option<usize>) -> Option<usize> + 'a>;
-
 /// A Pair of indicies pointing into a dataset identifying a edge.
 type EdgeIndex = [usize; 2];
 
@@ -58,7 +56,7 @@ type TriIndex = [usize; 3];
 type UTransform<T> = Box<dyn Fn(&Vec<T>) -> Vec<bool>>;
 
 /// Wraps data associated with a delaunay object.
-pub struct Delaunay<'a, PROJECTOR, T>
+pub struct Delaunay<PROJECTOR, T>
 where
     T: CoordFloat,
 {
@@ -79,11 +77,12 @@ where
     pub hull: Vec<usize>,
     /// Urquhart graph .. by index the set the of points in the plane.
     pub urquhart: UTransform<T>,
-    /// Returns the indexes of the points.
-    pub find: FindReturn<'a, T>,
+    // /// Returns the indexes of the points.
+    // pub find: FindReturn<'a, T>,
+    points: Vec<Coord<T>>,
 }
 
-impl<'a, PROJECTOR, T> Debug for Delaunay<'a, PROJECTOR, T>
+impl<PROJECTOR, T> Debug for Delaunay<PROJECTOR, T>
 where
     T: CoordFloat,
 {
@@ -102,14 +101,14 @@ where
 
 type ProjectorSterographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
 
-impl<'a, DRAIN, T> Delaunay<'a, ProjectorSterographic<DRAIN, T>, T>
+impl<DRAIN, T> Delaunay<ProjectorSterographic<DRAIN, T>, T>
 where
     DRAIN: Clone + Debug + Stream<EP = DRAIN, T = T> + Default,
     T: 'static + CoordFloat + Default + FloatConst + FromPrimitive,
 {
     /// Creates a `GeoDelaunay` object from a set of points.
     #[must_use]
-    pub fn new(points: Rc<Vec<Coord<T>>>) -> Option<Self> {
+    pub fn new(points: Vec<Coord<T>>) -> Option<Self> {
         let p = points.clone();
         match from_points::<
             DRAIN,
@@ -136,12 +135,13 @@ where
                     edges: e.clone(),
                     centers,
                     hull: hull(&tri, &points),
-                    find: find(n.clone(), points),
+                    // find: find(n.clone(), points),
                     neighbors: n,
                     mesh: mesh(&polys),
                     polygons: polys,
                     urquhart: urquhart(e, tri.clone()),
                     triangles: tri,
+                    points,
                 });
             }
             None => None,

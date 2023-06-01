@@ -33,19 +33,19 @@ mod triangles;
 
 /// Return type used by .x() and .y()
 #[allow(missing_debug_implementations)]
-pub enum XYReturn<'a, PROJECTOR, T>
+pub enum XYReturn<PROJECTOR, T>
 where
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + Display + CoordFloat + FloatConst,
 {
     /// Voronoi
-    Voronoi(Voronoi<'a, PROJECTOR, T>),
+    Voronoi(Voronoi<PROJECTOR, T>),
     /// Function
     Func(VTransform<T>),
 }
 
 type ProjectorSterographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
 
-type XYReturnDefault<'a, DRAIN, T> = XYReturn<'a, ProjectorSterographic<DRAIN, T>, T>;
+type XYReturnDefault<DRAIN, T> = XYReturn<ProjectorSterographic<DRAIN, T>, T>;
 
 #[derive(Debug)]
 struct TriStruct<T>
@@ -60,13 +60,13 @@ where
 pub type VTransform<T> = Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>;
 
 /// Holds data centered on a `GeoDelauany` instance.
-pub struct Voronoi<'a, PROJECTOR, T>
+pub struct Voronoi<PROJECTOR, T>
 where
     T: CoordFloat,
 {
     /// The wrapped GeoDelaunay instance.
     #[allow(clippy::type_complexity)]
-    pub delaunay: Option<Delaunay<'a, PROJECTOR, T>>,
+    pub delaunay: Option<Delaunay<PROJECTOR, T>>,
     data: Option<Geometry<T>>,
     found: Option<usize>,
     //Points: Rc needed here as the egdes, triangles, neigbours etc all index into thts vec.
@@ -77,7 +77,7 @@ where
     vy: VTransform<T>,
 }
 
-impl<'a, PROJECTOR, T> Debug for Voronoi<'a, PROJECTOR, T>
+impl<PROJECTOR, T> Debug for Voronoi<PROJECTOR, T>
 where
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
@@ -92,12 +92,12 @@ where
     }
 }
 
-impl<'a, PROJECTOR, T> Default for Voronoi<'a, PROJECTOR, T>
+impl<PROJECTOR, T> Default for Voronoi<PROJECTOR, T>
 where
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
     fn default() -> Self {
-        Voronoi {
+        Self {
             data: None,
             delaunay: None,
             found: None,
@@ -124,7 +124,7 @@ impl core::fmt::Display for ConstructionError {
     }
 }
 
-impl<'a, DRAIN, T> Voronoi<'a, ProjectorSterographic<DRAIN, T>, T>
+impl<DRAIN, T> Voronoi<ProjectorSterographic<DRAIN, T>, T>
 where
     DRAIN: Clone + Debug + Stream<EP = DRAIN, T = T> + Default,
     T: AbsDiffEq<Epsilon = T>
@@ -165,9 +165,9 @@ where
         //     }
         // };
 
-        let mut v = Voronoi {
+        let mut v = Self {
             data,
-            ..Voronoi::default()
+            ..Self::default()
         };
 
         // Data sanitization:-
@@ -190,7 +190,7 @@ where
                     .iter()
                     .map(|(d0, d1, _)| Coord { x: *d0, y: *d1 })
                     .collect();
-                v.points = Rc::new(points);
+                v.points = points.clone().into();
                 v.valid = temp
                     .iter()
                     .map(|d| Coord {
@@ -198,7 +198,7 @@ where
                         y: d.2.y(),
                     })
                     .collect();
-                v.delaunay = Delaunay::new(v.points.clone());
+                v.delaunay = Delaunay::new(points);
             }
             None => {
                 v = Self::default();
@@ -213,27 +213,27 @@ where
     pub fn x(
         mut self,
         f: Option<Box<impl Fn(&dyn Centroid<Output = Point<T>>) -> T + 'static>>,
-    ) -> XYReturnDefault<'a, DRAIN, T> {
-        return match f {
+    ) -> XYReturnDefault<DRAIN, T> {
+        match f {
             None => XYReturn::Func(self.vx),
             Some(f) => {
                 self.vx = f;
-                return XYReturn::Voronoi(self);
+                XYReturn::Voronoi(self)
             }
-        };
+        }
     }
 
     /// Sets the y() override function.
     pub fn y(
         mut self,
         f: Option<Box<impl Fn(&dyn Centroid<Output = Point<T>>) -> T + 'static>>,
-    ) -> XYReturnDefault<'a, DRAIN, T> {
-        return match f {
+    ) -> XYReturnDefault<DRAIN, T> {
+        match f {
             None => XYReturn::Func(self.vy),
             Some(f) => {
                 self.vy = f;
-                return XYReturn::Voronoi(self);
+                XYReturn::Voronoi(self)
             }
-        };
+        }
     }
 }

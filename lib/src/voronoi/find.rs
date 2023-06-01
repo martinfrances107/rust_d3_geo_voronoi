@@ -22,7 +22,7 @@ use super::Voronoi;
 
 type ProjectorSterographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
 
-impl<'a, DRAIN, T> Voronoi<'a, ProjectorSterographic<DRAIN, T>, T>
+impl<DRAIN, T> Voronoi<ProjectorSterographic<DRAIN, T>, T>
 where
     DRAIN: Clone + Debug + Stream<EP = DRAIN, T = T> + Default,
     T: AbsDiffEq<Epsilon = T>
@@ -43,7 +43,7 @@ where
         match &self.delaunay {
             None => None,
             Some(delaunay_return) => {
-                self.found = (delaunay_return.find)(p, self.found);
+                self.found = delaunay_return.find(p, self.found);
                 match radius {
                     Some(radius) => match self.found {
                         Some(found) => {

@@ -2,7 +2,6 @@
 
 use core::cmp;
 use core::fmt::Debug;
-use std::rc::Rc;
 
 use delaunator::EMPTY;
 use geo::CoordFloat;
@@ -33,7 +32,7 @@ type ProjectorSterographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Ster
 #[allow(clippy::type_complexity)]
 #[must_use]
 pub fn from_points<DRAIN, PCNC, PCNU, RC, RU, T>(
-    points: &Rc<Vec<Coord<T>>>,
+    points: &Vec<Coord<T>>,
 ) -> Option<DReturn<ProjectorSterographic<DRAIN, T>, T>>
 where
     DRAIN: Clone + Debug + Default + Stream<EP = DRAIN, T = T>,

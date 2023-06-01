@@ -47,7 +47,7 @@ use d3_geo_voronoi_rs::voronoi::Voronoi;
 
 type ProjectorSterographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
 
-type GV = Voronoi<'static, ProjectorSterographic<Endpoint, f64>, f64>;
+type GV = Voronoi<ProjectorSterographic<Endpoint, f64>, f64>;
 
 #[wasm_bindgen]
 #[derive(Debug)]
