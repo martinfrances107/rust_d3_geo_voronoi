@@ -1,4 +1,5 @@
 [workspace]
+resolver = "2"
 members = [
   "./lib",
   "./benchmark",      # A webpage with a stress test of the library.
