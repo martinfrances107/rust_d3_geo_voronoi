@@ -4,7 +4,6 @@
 mod voronoi {
     extern crate pretty_assertions;
 
-    use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
     use geo::algorithm::cyclic_match::CyclicMatch;
     use geo::coords_iter::CoordsIter;
     use geo::line_string;
@@ -17,6 +16,7 @@ mod voronoi {
 
     use d3_geo_rs::data_object::FeatureCollection;
     use d3_geo_rs::data_object::FeatureProperty;
+    use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
     use d3_geo_rs::stream::DrainStub;
     use d3_geo_voronoi_rs::voronoi::Voronoi;
 

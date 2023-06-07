@@ -3,7 +3,6 @@ use core::fmt::Display;
 use core::ops::AddAssign;
 
 use approx::AbsDiffEq;
-use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
 use float_next_after::NextAfter;
 use geo::Coord;
 use geo::CoordFloat;
@@ -19,6 +18,7 @@ use num_traits::Signed;
 use d3_geo_rs::data_object::FeatureCollection;
 use d3_geo_rs::data_object::FeatureProperty;
 use d3_geo_rs::data_object::Features;
+use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
 use d3_geo_rs::projection::stereographic::Stereographic;
 use d3_geo_rs::stream::Stream;
 
