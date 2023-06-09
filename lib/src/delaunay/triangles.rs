@@ -10,20 +10,10 @@ where
     T: CoordFloat + FloatConst,
 {
     let Delaunay { triangles, .. } = delaunay;
-    if triangles.is_empty() {
-        return Vec::new();
-    }
 
-    let n: usize = triangles.len() / 3usize;
-    let mut t: Vec<TriIndex> = Vec::with_capacity(n);
-
-    for i in 0..n {
-        let a = triangles[3 * i];
-        let b = triangles[3 * i + 1];
-        let c = triangles[3 * i + 2];
-        if a != b && b != c {
-            t.push([a, c, b]);
-        }
-    }
-    t
+    triangles
+        .chunks_exact(3)
+        .filter(|t| t[0] != t[1] && t[1] != t[2])
+        .map(|t| [t[0], t[2], t[1]])
+        .collect()
 }
