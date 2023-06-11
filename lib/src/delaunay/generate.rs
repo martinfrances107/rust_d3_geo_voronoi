@@ -36,7 +36,7 @@ pub fn from_points<DRAIN, PCNC, PCNU, RC, RU, T>(
 ) -> Option<DReturn<ProjectorSterographic<DRAIN, T>, T>>
 where
     DRAIN: Clone + Debug + Default + Stream<EP = DRAIN, T = T>,
-    T: CoordFloat + Default + FloatConst + FromPrimitive,
+    T: 'static + CoordFloat + Default + FloatConst + FromPrimitive,
 {
     if points.len() < 2 {
         return None;

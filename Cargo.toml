@@ -10,10 +10,10 @@ members = [
 authors = ["martin <martinfrances107@hotmail.com>"]
 categories = ["graphics"]
 edition = "2021"
-keywords = ["graphics", "d3-geo-voronoi"]
+keywords = ["d3-geo-voronoi", "delaunay", "graphics", "voronoi"]
 license = "MIT"
 readme = "../README.md"
-version = "0.5.2"
+version = "0.6.0"
 
 [workspace.dependencies]
 d3_geo_rs = "~1"
