@@ -7,4 +7,4 @@ Now using packages rimraf, and serve.
 Updated README instructions.
 
 Updated Cargo packages.
-Expect to see prformace boosts from rust_d3_geo when rendering to SVG.
+Expect to see performance boosts from rust_d3_geo when rendering to SVG.
