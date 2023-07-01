@@ -36,15 +36,15 @@ The original javascript library has a benchmark in the form of web page which re
 * javascript -  d3-geo_voronoi/src/benchmark/sphereCanvas.html
 * rust -  rust_d3_geo_vornoi/benchmark.
 
-Measuring the performance of a library is compilcated, as different applications employing the library may see different results. Desktop and mobile perfomance may differ.
+Measuring the performance of a library is complicated, as different applications employing the library may see different results. Desktop and mobile performance may differ.
 
 There are traditionally two way of measuring increases in performance :-
 
 A) Speed: By asking how long it takes to perform a certain computation?
 
-B) Throughput:  By asking how much more work can I perfom in a given time?
+B) Throughput:  By asking how much more work can I perform in a given time?
 
-A and B are ideally linearly related, but often high throughput requires more memory which may increase page swapping. Javascipt uses garbage collection, rust does not. In garbage collected environments, the dynamics of a collectors behaviours may cause the figures reported by A and B to diverge.
+A and B are ideally linearly related, but often high throughput requires more memory which may increase page swapping. Javascript uses garbage collection, rust does not. In garbage collected environments, the dynamics of a collectors behaviors may cause the figures reported by A and B to diverge.
 
 Here are the results for the benchmark :-
 
@@ -56,7 +56,7 @@ I am currently looking to add more benchmarks, a diverse collection of example a
 
 ### Profile Target
 
-This workspace contain a binary "profie_target" which outputs the result of a computation similar to that of the demo_page. Before API finialization - I am currently  using cargo flamegraph to identify any obvious optimizations.
+This workspace contain a binary "profile_target" which outputs the result of a computation similar to that of the demo_page. Before API finalization - I am currently  using cargo flame-graph to identify any obvious optimizations.
 
 from rust_d3_geo_voronoi
 
@@ -69,12 +69,12 @@ cargo flamegraph -- profile_target
 
 Known bugs
 
-Currently the demo works only then f64 is used as the floating point type. [For f32 the cell integrity is broken as some of the cell appear to takeup the whole sphere.]
+Currently the demo works only then f64 is used as the floating point type. [For f32 the cell integrity is broken as some of the cell appear to take-up the whole sphere.]
 To be ported:-
 
 contour.js and geo-contour-test.js
 
-Currenly there is a failing test suite
+Currently there is a failing test suite
 geo_voronoi_test.rs "geoVoronoi.hull does not break on difficult polygons"
 
 ## Instructions for building the benchmark
