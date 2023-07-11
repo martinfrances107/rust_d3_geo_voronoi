@@ -1,7 +1,7 @@
 pub fn mesh(polygons: &[Vec<usize>]) -> Vec<[usize; 2]> {
     // Provide an underestimate for capacity
     // For large polygons this will provide some relief
-    // from constant rellocation.
+    // from constant reallocation.
     let mut mesh = Vec::with_capacity(polygons.len());
     for poly in polygons {
         if poly.is_empty() {

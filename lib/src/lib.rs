@@ -13,7 +13,7 @@
 //! Repository [`rust_d3_geo`](<https://github.com/martinfrances107/rust_d3_geo_voronoi>)
 
 extern crate d3_geo_rs;
-/// Allows debug to be autoderived from complex structs.
+/// Allows debug to be auto-derived from complex structs.
 extern crate float_next_after;
 extern crate geo;
 /// delaunay helper functions.

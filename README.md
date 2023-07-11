@@ -34,7 +34,7 @@ A collection of d3 sub packages is being ported to rust.
 The original javascript library has a benchmark in the form of web page which records the number of frames displayed per second. For comparison the benchmark has been ported.
 
 * javascript -  d3-geo_voronoi/src/benchmark/sphereCanvas.html
-* rust -  rust_d3_geo_vornoi/benchmark.
+* rust -  rust_d3_geo_voronoi/benchmark.
 
 Measuring the performance of a library is complicated, as different applications employing the library may see different results. Desktop and mobile performance may differ.
 

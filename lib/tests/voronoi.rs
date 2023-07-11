@@ -35,7 +35,7 @@ mod voronoi {
         }
         match gv.polygons(None) {
             None => {
-                // assert!(false, "Must return a FeatureCollectiont<T>.");
+                // assert!(false, "Must return a FeatureCollection<T>.");
                 unreachable!();
             }
             Some(FeatureCollection(mut features)) => {
@@ -138,7 +138,7 @@ mod voronoi {
         }
     }
     #[test]
-    fn polygon_tollerates_nan() {
+    fn polygon_tolerates_nan() {
         println!("geoVoronoi.polygons(sites) tolerates NaN.");
         //var u = geoVoronoi.geoVoronoi().polygons(sites)[0][0], v = [ 5, 4.981069 ];
         //test.ok( (Math.abs(u[0]-v[0]) < 1e-6) && (Math.abs(u[1]-v[1]) < 1e-6) );

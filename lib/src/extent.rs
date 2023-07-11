@@ -35,7 +35,7 @@ where
             }
         }
         Some(_) => {
-            unimplemented!("Not yet supported: extent() valueof function parameter.");
+            unimplemented!("Not yet supported: extent() value of function parameter.");
         }
     }
 

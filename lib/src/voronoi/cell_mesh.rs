@@ -40,7 +40,7 @@ where
         + Signed
         + NextAfter,
 {
-    /// Returns a Multiline string assoicated with the input geometry.
+    /// Returns a Multiline string associated with the input geometry.
     ///
     /// # Panics
     ///  The delauanay object must be valid when this function is called.
@@ -62,7 +62,7 @@ where
         let centers = delaunay.centers;
         // Here can only supply an underestimate of the capacity
         // but if the number of polygons is large it will provide
-        // some relief from constant rellocation.
+        // some relief from constant reallocation.
         let mut coordinates: Vec<LineString<T>> = Vec::with_capacity(polygons.len());
         for p in polygons {
             let mut p0 = *p.last().unwrap();

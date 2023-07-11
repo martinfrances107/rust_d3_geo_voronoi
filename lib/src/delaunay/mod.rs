@@ -47,10 +47,10 @@ use d3_geo_rs::stream::Stream;
 
 use d3_delaunay_rs::delaunay::Delaunay as DelaunayInner;
 
-/// A Pair of indicies pointing into a dataset identifying a edge.
+/// A Pair of indices pointing into a dataset identifying a edge.
 type EdgeIndex = [usize; 2];
 
-/// Three indicies pointing into a dataset identifying a triangle.
+/// Three indices pointing into a dataset identifying a triangle.
 type TriIndex = [usize; 3];
 
 type UTransform<T> = Box<dyn Fn(&Vec<T>) -> Vec<bool>>;
@@ -63,15 +63,15 @@ where
     pub delaunay: DelaunayInner<PROJECTOR, T>,
     /// The edges and triangles properties need RC because the values are close over in the urquhart function.
     pub edges: Rc<HashSet<EdgeIndex>>,
-    /// A set of triangles as defined by set of indicies.
+    /// A set of triangles as defined by set of indices.
     pub triangles: Rc<Vec<TriIndex>>,
     /// A list of centers associated with the cells.
     pub centers: Vec<Coord<T>>,
     /// Passes to Voronoi::polygon() where it is consumed.
     pub neighbors: Rc<RefCell<HashMap<usize, Vec<usize>>>>,
-    /// A set pf polygons as defined by a set of indicies.
+    /// A set pf polygons as defined by a set of indices.
     pub polygons: Vec<Vec<usize>>,
-    /// The mesh as identified by a pair of indicies.
+    /// The mesh as identified by a pair of indices.
     pub mesh: Vec<EdgeIndex>,
     /// The hull.
     pub hull: Vec<usize>,

@@ -39,7 +39,7 @@ where
         + Signed
         + NextAfter,
 {
-    /// Returns the mesh in the form of a mutliline string.
+    /// Returns the mesh in the form of a mutli-line string.
     pub fn mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
         if let Some(data) = data {
             match Self::new(Some(data)) {

@@ -63,7 +63,7 @@ where
 
     /// Looking at the flamegraph generated with `profile_target`.
     ///
-    /// This is on the hot path, please profile afer modifiying
+    /// This is on the hot path, please profile after modifying
     /// this functions.
     pub fn gen(
         mut self,

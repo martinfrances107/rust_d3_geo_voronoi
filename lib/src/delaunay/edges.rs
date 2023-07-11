@@ -13,7 +13,7 @@ pub fn edges<T: CoordFloat>(triangles: &[TriIndex], point: &[Coord<T>]) -> HashS
     if point.len() == 1 {
         return HashSet::from([[0usize, 1usize]]);
     }
-    // capacity is a underesimate but if triangles is large
+    // capacity is a underestimate but if triangles is large
     // it will provide some relief from constant reallocation.
     let mut h_index = HashSet::with_capacity(triangles.len());
     let zero = T::zero();

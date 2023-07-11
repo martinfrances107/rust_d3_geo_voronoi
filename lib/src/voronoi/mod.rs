@@ -69,7 +69,7 @@ where
     pub delaunay: Option<Delaunay<PROJECTOR, T>>,
     data: Option<Geometry<T>>,
     found: Option<usize>,
-    //Points: Rc needed here as the egdes, triangles, neigbours etc all index into thts vec.
+    //Points: Rc needed here as the edges, triangles, neighbors etc all index into that vec.
     points: Rc<Vec<Coord<T>>>,
     valid: Vec<Coord<T>>,
     // Option<Box<impl Fn(&dyn Centroid<Output = Coord<T>>) -> T>>
@@ -109,7 +109,7 @@ where
     }
 }
 
-/// Geovoronoi construction error.
+/// Geo-Voronoi construction error.
 ///
 /// Unexpected Geometry input.
 #[derive(Debug, Clone)]

@@ -70,7 +70,7 @@ import('../pkg')
       perf.innerHTML = 'Render Time: ...Calculating';
       renderer.update(nPoints);
     };
-    console.log("have define genpoints");
+    console.log("defined geo-points");
 
     sizeRange.addEventListener('change', genPoints);
 
