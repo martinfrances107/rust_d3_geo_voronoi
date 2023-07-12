@@ -44,7 +44,7 @@ where
 
     // Find a valid Pivot point to send to infinity.
     // The index of the first acceptable point in
-    // which the x or y component is not inifinty.
+    // which the x or y component is not infinity.
     let pivot: usize = points.iter().position(|p| (p.x + p.y).is_finite()).unwrap();
 
     let r = Rotation::new(points[pivot].x, points[pivot].y, T::zero());

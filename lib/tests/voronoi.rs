@@ -149,7 +149,7 @@ mod voronoi {
             Point::new(4f64, f64::NAN),
             Point::new(5f64, 10f64),
         ]);
-        // TODO the javascript version makes no assertions - if the test ends without expception then PASS!
+        // TODO the javascript version makes no assertions - if the test ends without exception then PASS!
         // This should be tightened up.
         let g = Geometry::MultiPoint(sites);
 
@@ -259,10 +259,10 @@ mod voronoi {
         match mesh {
             Some(mls) => {
                 assert!(mls.0.len() == golden.len());
-                // The golden values are unique so no need to worry about diplicate
+                // The golden values are unique so no need to worry about duplicate
                 // computed values.
                 for ls in mls {
-                    assert!(golden.contains(&ls), "Linestring not found in golden list.");
+                    assert!(golden.contains(&ls), "LineString not found in golden list.");
                 }
             }
             None => {
@@ -400,7 +400,7 @@ mod voronoi {
                     .collect();
                 // The JS version does not sort here..
                 // BUT as we are using hashmaps in geo_edges
-                // the order of the FeatureStructs is unpredicatable.
+                // the order of the FeatureStructs is unpredictable.
                 out.sort_by(|a, b| a.partial_cmp(b).unwrap());
 
                 assert_eq!(out, vec![0.0, 0.0, 10.0])
@@ -472,7 +472,7 @@ mod voronoi {
                 }
                 // The JS version does not sort here..
                 // BUT as we are using hashmaps in geo_edges
-                // the order of the FeatureStructs is unpredicatable.
+                // the order of the FeatureStructs is unpredictable.
                 // TODO: future work would be to link the boolean result to
                 // the point?
                 results.sort_by(|a, b| a.partial_cmp(b).unwrap());

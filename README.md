@@ -10,9 +10,15 @@ rust 2021 edition.
 
 </div>
 
-## About
+Given a set of objects in spherical coordinates, it computes their Delaunay triangulation and its dual, the Voronoi diagram.
 
 This is a port of the [d3-geo-voronoi](<https://github.com/Fil/d3-geo-voronoi>) library into a [RUST](<https://www.rust-lang.org/>) library.
+
+It is part of a collection of d3 modules ported to rust.
+
+* [d3_geo_rs](https://crates.io/crates/d3_geo_rs)
+* [d3_delaunay_rs](https://crates.io/crates/d3_delaunay_rs)
+* d3_geo_voronoi_rs
 
  As a example the library can be used to compute the following delaunay mesh.
 ![Delaunay mesh from a set of random points on a sphere](./lamp.png "Delaunay mesh from a set of random points on a sphere")
@@ -20,12 +26,6 @@ This is a port of the [d3-geo-voronoi](<https://github.com/Fil/d3-geo-voronoi>) 
 ( computed from 6,000 points on a sphere selected at random )
 
 Currently we have 84% test coverage ( as reported by cargo tarpaulin -o Html )
-
-A collection of d3 sub packages is being ported to rust.
-
-* [d3_geo_rs](https://crates.io/crates/d3_geo_rs)
-* [d3_delaunay_rs](https://crates.io/crates/d3_delaunay_rs)
-* d3_geo_voronoi_rs
 
 ## Performance Profiling
 

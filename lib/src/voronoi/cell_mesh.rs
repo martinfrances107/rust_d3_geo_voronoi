@@ -43,7 +43,7 @@ where
     /// Returns a Multiline string associated with the input geometry.
     ///
     /// # Panics
-    ///  The delauanay object must be valid when this function is called.
+    ///  The delaunay object must be valid when this function is called.
     pub fn cell_mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
         if let Some(data) = data {
             match Self::new(Some(data)) {
