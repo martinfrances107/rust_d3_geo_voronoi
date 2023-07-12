@@ -27,9 +27,9 @@ use crate::delaunay::excess::excess;
 use super::TriStruct;
 use super::Voronoi;
 
-type ProjectorSterographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
+type ProjectorStereographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
 
-impl<DRAIN, T> Voronoi<ProjectorSterographic<DRAIN, T>, T>
+impl<DRAIN, T> Voronoi<ProjectorStereographic<DRAIN, T>, T>
 where
     DRAIN: Clone + Debug + Stream<EP = DRAIN, T = T> + Default,
     T: AbsDiffEq<Epsilon = T>

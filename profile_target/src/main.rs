@@ -25,9 +25,9 @@ use geo::Geometry::Polygon;
 use geo::MultiPoint;
 use geo_types::Coord;
 
-type ProjectorSterographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
+type ProjectorStereographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
 
-type GV = Voronoi<ProjectorSterographic<DrainStub<f64>, f64>, f64>;
+type GV = Voronoi<ProjectorStereographic<DrainStub<f64>, f64>, f64>;
 
 #[cfg(not(tarpaulin_include))]
 lazy_static! {

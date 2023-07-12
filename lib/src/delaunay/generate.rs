@@ -23,7 +23,7 @@ use d3_geo_rs::Transform;
 
 type DReturn<PROJECTOR, T> = Delaunay<PROJECTOR, T>;
 
-type ProjectorSterographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
+type ProjectorStereographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
 
 /// Creates a delaunay object from a set of points.
 ///
@@ -33,7 +33,7 @@ type ProjectorSterographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Ster
 #[must_use]
 pub fn from_points<DRAIN, PCNC, PCNU, RC, RU, T>(
     points: &Vec<Coord<T>>,
-) -> Option<DReturn<ProjectorSterographic<DRAIN, T>, T>>
+) -> Option<DReturn<ProjectorStereographic<DRAIN, T>, T>>
 where
     DRAIN: Clone + Debug + Default + Stream<EP = DRAIN, T = T>,
     T: 'static + CoordFloat + Default + FloatConst + FromPrimitive,

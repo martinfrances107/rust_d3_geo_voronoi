@@ -99,9 +99,9 @@ where
     }
 }
 
-type ProjectorSterographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
+type ProjectorStereographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
 
-impl<DRAIN, T> Delaunay<ProjectorSterographic<DRAIN, T>, T>
+impl<DRAIN, T> Delaunay<ProjectorStereographic<DRAIN, T>, T>
 where
     DRAIN: Clone + Debug + Stream<EP = DRAIN, T = T> + Default,
     T: 'static + CoordFloat + Default + FloatConst + FromPrimitive,

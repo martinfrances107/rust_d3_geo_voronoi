@@ -43,9 +43,9 @@ where
     Func(VTransform<T>),
 }
 
-type ProjectorSterographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
+type ProjectorStereographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
 
-type XYReturnDefault<DRAIN, T> = XYReturn<ProjectorSterographic<DRAIN, T>, T>;
+type XYReturnDefault<DRAIN, T> = XYReturn<ProjectorStereographic<DRAIN, T>, T>;
 
 #[derive(Debug)]
 struct TriStruct<T>
@@ -124,7 +124,7 @@ impl core::fmt::Display for ConstructionError {
     }
 }
 
-impl<DRAIN, T> Voronoi<ProjectorSterographic<DRAIN, T>, T>
+impl<DRAIN, T> Voronoi<ProjectorStereographic<DRAIN, T>, T>
 where
     DRAIN: Clone + Debug + Stream<EP = DRAIN, T = T> + Default,
     T: AbsDiffEq<Epsilon = T>
