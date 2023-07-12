@@ -9,25 +9,19 @@ use std::iter::repeat_with;
 extern crate lazy_static;
 extern crate rand;
 
-use d3_geo_rs::data_object::FeatureCollection;
-use d3_geo_rs::path::builder::Builder as PathBuilder;
-use d3_geo_rs::projection::orthographic::Orthographic;
-use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
-use d3_geo_rs::projection::stereographic::Stereographic;
-use d3_geo_rs::projection::Build;
-use d3_geo_rs::projection::RawBase as ProjectionRawBase;
-use d3_geo_rs::projection::RotateSet;
-use d3_geo_rs::stream::DrainStub;
-use d3_geo_voronoi_rs::voronoi::ConstructionError;
-use d3_geo_voronoi_rs::voronoi::Voronoi;
 use geo::Geometry;
 use geo::Geometry::Polygon;
 use geo::MultiPoint;
 use geo_types::Coord;
 
-type ProjectorStereographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
-
-type GV = Voronoi<ProjectorStereographic<DrainStub<f64>, f64>, f64>;
+use d3_geo_rs::data_object::FeatureCollection;
+use d3_geo_rs::path::builder::Builder as PathBuilder;
+use d3_geo_rs::projection::orthographic::Orthographic;
+use d3_geo_rs::projection::Build;
+use d3_geo_rs::projection::RawBase as ProjectionRawBase;
+use d3_geo_rs::projection::RotateSet;
+use d3_geo_voronoi_rs::voronoi::ConstructionError;
+use d3_geo_voronoi_rs::voronoi::Voronoi;
 
 #[cfg(not(tarpaulin_include))]
 lazy_static! {
@@ -61,7 +55,7 @@ fn draw() -> Result<String, ConstructionError> {
             .take(size as usize),
     );
 
-    let mut gv: GV = Voronoi::new(Some(Geometry::MultiPoint(sites.clone())))?;
+    let mut gv = Voronoi::new(Some(Geometry::MultiPoint(sites.clone())))?;
 
     ortho_builder.rotate2_set(&[0_f64, 0_f64]);
     let ortho = ortho_builder.build();

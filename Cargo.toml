@@ -17,7 +17,7 @@ version = "0.6.2"
 
 [workspace.dependencies]
 d3_geo_rs = "~1"
-d3_delaunay_rs = "~0.5"
+d3_delaunay_rs = "~0.6"
 geo = "~0.25"
 geo-types = "~0.7"
 

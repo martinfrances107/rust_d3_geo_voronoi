@@ -38,16 +38,10 @@ use d3_geo_rs::path::endpoint::Endpoint;
 use d3_geo_rs::path::Result as PathResult;
 use d3_geo_rs::projection::builder::types::BuilderCircleResampleNoClip;
 use d3_geo_rs::projection::orthographic::Orthographic;
-use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
-use d3_geo_rs::projection::stereographic::Stereographic;
 use d3_geo_rs::projection::Build;
 use d3_geo_rs::projection::RawBase as ProjectionRawBase;
 use d3_geo_rs::projection::RotateSet;
 use d3_geo_voronoi_rs::voronoi::Voronoi;
-
-type ProjectorStereographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
-
-type GV = Voronoi<ProjectorStereographic<Endpoint, f64>, f64>;
 
 #[wasm_bindgen]
 #[derive(Debug)]
@@ -61,7 +55,7 @@ pub struct Renderer {
     sites: MultiPoint<f64>,
     black: JsValue,
     white: JsValue,
-    gv: GV,
+    gv: Voronoi<f64>,
 }
 
 #[wasm_bindgen]

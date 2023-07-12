@@ -5,7 +5,7 @@ use d3_delaunay_rs::delaunay::Delaunay;
 
 use super::TriIndex;
 
-pub fn triangles<PROJECTOR, T>(delaunay: &Delaunay<PROJECTOR, T>) -> Vec<TriIndex>
+pub fn triangles<T>(delaunay: &Delaunay<T>) -> Vec<TriIndex>
 where
     T: CoordFloat + FloatConst,
 {

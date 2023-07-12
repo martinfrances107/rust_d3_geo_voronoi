@@ -41,9 +41,8 @@ use urquhart::urquhart;
 use d3_geo_rs::projection::builder::template::NoPCNC;
 use d3_geo_rs::projection::builder::template::ResampleNoPCNC;
 use d3_geo_rs::projection::builder::template::ResampleNoPCNU;
-use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
 use d3_geo_rs::projection::stereographic::Stereographic;
-use d3_geo_rs::stream::Stream;
+use d3_geo_rs::stream::DrainStub;
 
 use d3_delaunay_rs::delaunay::Delaunay as DelaunayInner;
 
@@ -56,11 +55,11 @@ type TriIndex = [usize; 3];
 type UTransform<T> = Box<dyn Fn(&Vec<T>) -> Vec<bool>>;
 
 /// Wraps data associated with a delaunay object.
-pub struct Delaunay<PROJECTOR, T>
+pub struct Delaunay<T>
 where
     T: CoordFloat,
 {
-    pub delaunay: DelaunayInner<PROJECTOR, T>,
+    pub delaunay: DelaunayInner<T>,
     /// The edges and triangles properties need RC because the values are close over in the urquhart function.
     pub edges: Rc<HashSet<EdgeIndex>>,
     /// A set of triangles as defined by set of indices.
@@ -82,7 +81,7 @@ where
     points: Vec<Coord<T>>,
 }
 
-impl<PROJECTOR, T> Debug for Delaunay<PROJECTOR, T>
+impl<T> Debug for Delaunay<T>
 where
     T: CoordFloat,
 {
@@ -99,11 +98,8 @@ where
     }
 }
 
-type ProjectorStereographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
-
-impl<DRAIN, T> Delaunay<ProjectorStereographic<DRAIN, T>, T>
+impl<T> Delaunay<T>
 where
-    DRAIN: Clone + Debug + Stream<EP = DRAIN, T = T> + Default,
     T: 'static + CoordFloat + Default + FloatConst + FromPrimitive,
 {
     /// Creates a `GeoDelaunay` object from a set of points.
@@ -111,10 +107,9 @@ where
     pub fn new(points: Vec<Coord<T>>) -> Option<Self> {
         let p = points.clone();
         match from_points::<
-            DRAIN,
-            NoPCNC<DRAIN>,
-            NoPCNC<DRAIN>,
-            ResampleNoPCNC<DRAIN, Stereographic<T>, T>,
+            NoPCNC<DrainStub<T>>,
+            NoPCNC<DrainStub<T>>,
+            ResampleNoPCNC<DrainStub<T>, Stereographic<T>, T>,
             ResampleNoPCNU<Stereographic<T>, T>,
             T,
         >(&p)

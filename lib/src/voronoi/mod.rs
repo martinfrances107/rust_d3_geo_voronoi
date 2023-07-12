@@ -4,10 +4,6 @@ use core::ops::AddAssign;
 use std::rc::Rc;
 
 use approx::AbsDiffEq;
-
-use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
-use d3_geo_rs::projection::stereographic::Stereographic;
-use d3_geo_rs::stream::Stream;
 use float_next_after::NextAfter;
 use geo::centroid::Centroid;
 use geo::kernels::HasKernel;
@@ -33,19 +29,17 @@ mod triangles;
 
 /// Return type used by .x() and .y()
 #[allow(missing_debug_implementations)]
-pub enum XYReturn<PROJECTOR, T>
+pub enum XYReturn<T>
 where
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + Display + CoordFloat + FloatConst,
 {
     /// Voronoi
-    Voronoi(Voronoi<PROJECTOR, T>),
+    Voronoi(Voronoi<T>),
     /// Function
     Func(VTransform<T>),
 }
 
-type ProjectorStereographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
-
-type XYReturnDefault<DRAIN, T> = XYReturn<ProjectorStereographic<DRAIN, T>, T>;
+type XYReturnDefault<T> = XYReturn<T>;
 
 #[derive(Debug)]
 struct TriStruct<T>
@@ -60,13 +54,13 @@ where
 pub type VTransform<T> = Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>;
 
 /// Holds data centered on a `GeoDelauany` instance.
-pub struct Voronoi<PROJECTOR, T>
+pub struct Voronoi<T>
 where
     T: CoordFloat,
 {
     /// The wrapped GeoDelaunay instance.
     #[allow(clippy::type_complexity)]
-    pub delaunay: Option<Delaunay<PROJECTOR, T>>,
+    pub delaunay: Option<Delaunay<T>>,
     data: Option<Geometry<T>>,
     found: Option<usize>,
     //Points: Rc needed here as the edges, triangles, neighbors etc all index into that vec.
@@ -77,7 +71,7 @@ where
     vy: VTransform<T>,
 }
 
-impl<PROJECTOR, T> Debug for Voronoi<PROJECTOR, T>
+impl<T> Debug for Voronoi<T>
 where
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
@@ -92,7 +86,7 @@ where
     }
 }
 
-impl<PROJECTOR, T> Default for Voronoi<PROJECTOR, T>
+impl<T> Default for Voronoi<T>
 where
     T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
 {
@@ -124,9 +118,8 @@ impl core::fmt::Display for ConstructionError {
     }
 }
 
-impl<DRAIN, T> Voronoi<ProjectorStereographic<DRAIN, T>, T>
+impl<T> Voronoi<T>
 where
-    DRAIN: Clone + Debug + Stream<EP = DRAIN, T = T> + Default,
     T: AbsDiffEq<Epsilon = T>
         + AddAssign
         + AsPrimitive<T>
@@ -213,7 +206,7 @@ where
     pub fn x(
         mut self,
         f: Option<Box<impl Fn(&dyn Centroid<Output = Point<T>>) -> T + 'static>>,
-    ) -> XYReturnDefault<DRAIN, T> {
+    ) -> XYReturnDefault<T> {
         match f {
             None => XYReturn::Func(self.vx),
             Some(f) => {
@@ -227,7 +220,7 @@ where
     pub fn y(
         mut self,
         f: Option<Box<impl Fn(&dyn Centroid<Output = Point<T>>) -> T + 'static>>,
-    ) -> XYReturnDefault<DRAIN, T> {
+    ) -> XYReturnDefault<T> {
         match f {
             None => XYReturn::Func(self.vy),
             Some(f) => {

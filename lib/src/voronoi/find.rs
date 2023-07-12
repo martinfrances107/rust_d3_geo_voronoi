@@ -1,4 +1,3 @@
-use core::fmt::Debug;
 use core::fmt::Display;
 use core::ops::AddAssign;
 
@@ -14,17 +13,11 @@ use num_traits::FromPrimitive;
 use num_traits::Signed;
 
 use d3_geo_rs::distance::distance;
-use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
-use d3_geo_rs::projection::stereographic::Stereographic;
-use d3_geo_rs::stream::Stream;
 
 use super::Voronoi;
 
-type ProjectorStereographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
-
-impl<DRAIN, T> Voronoi<ProjectorStereographic<DRAIN, T>, T>
+impl<T> Voronoi<T>
 where
-    DRAIN: Clone + Debug + Stream<EP = DRAIN, T = T> + Default,
     T: AbsDiffEq<Epsilon = T>
         + AddAssign
         + AsPrimitive<T>

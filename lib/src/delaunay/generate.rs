@@ -1,7 +1,6 @@
 #![allow(clippy::many_single_char_names)]
 
 use core::cmp;
-use core::fmt::Debug;
 
 use delaunator::EMPTY;
 use geo::CoordFloat;
@@ -10,7 +9,6 @@ use num_traits::float::FloatConst;
 use num_traits::FromPrimitive;
 
 use d3_delaunay_rs::delaunay::Delaunay;
-use d3_geo_rs::projection::projector_commom::types::ProjectorCircleResampleNoClip;
 use d3_geo_rs::projection::stereographic::Stereographic;
 use d3_geo_rs::projection::Build;
 use d3_geo_rs::projection::RawBase as ProjectionRawBase;
@@ -18,12 +16,10 @@ use d3_geo_rs::projection::RotateSet;
 use d3_geo_rs::projection::ScaleSet;
 use d3_geo_rs::projection::TranslateSet;
 use d3_geo_rs::rot::rotation::Rotation;
-use d3_geo_rs::stream::Stream;
+use d3_geo_rs::stream::DrainStub;
 use d3_geo_rs::Transform;
 
-type DReturn<PROJECTOR, T> = Delaunay<PROJECTOR, T>;
-
-type ProjectorStereographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Stereographic<T>, T>;
+type DReturn<T> = Delaunay<T>;
 
 /// Creates a delaunay object from a set of points.
 ///
@@ -31,11 +27,8 @@ type ProjectorStereographic<DRAIN, T> = ProjectorCircleResampleNoClip<DRAIN, Ste
 ///  Will never happen as constants will always be converted into T.
 #[allow(clippy::type_complexity)]
 #[must_use]
-pub fn from_points<DRAIN, PCNC, PCNU, RC, RU, T>(
-    points: &Vec<Coord<T>>,
-) -> Option<DReturn<ProjectorStereographic<DRAIN, T>, T>>
+pub fn from_points<PCNC, PCNU, RC, RU, T>(points: &Vec<Coord<T>>) -> Option<DReturn<T>>
 where
-    DRAIN: Clone + Debug + Default + Stream<EP = DRAIN, T = T>,
     T: 'static + CoordFloat + Default + FloatConst + FromPrimitive,
 {
     if points.len() < 2 {
@@ -53,7 +46,7 @@ where
         y: T::zero(),
     });
 
-    let mut builder = Stereographic::builder();
+    let mut builder = Stereographic::builder::<DrainStub<T>>();
     builder.translate_set(&Coord {
         x: T::zero(),
         y: T::zero(),
@@ -100,9 +93,8 @@ where
 
     let point_len = points.len();
     let mut delaunay = Delaunay::new(&points);
-    delaunay.projection = Some(projection);
 
-    // clean up the triangulation
+    // Clean up the triangulation.
     let mut degenerate: Vec<usize> = Vec::new();
     let mut i: usize = 0;
     let l = delaunay.half_edges.len();

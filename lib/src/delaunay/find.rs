@@ -14,7 +14,7 @@ fn distance2<T: Float>(a: &[T; 3], b: &[T; 3]) -> T {
     x * x + y * y + z * z
 }
 
-impl<PROJECTOR, T> Delaunay<PROJECTOR, T>
+impl<T> Delaunay<T>
 where
     T: CoordFloat,
 {
