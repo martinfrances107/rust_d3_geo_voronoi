@@ -8,9 +8,9 @@ members = [
 
 [workspace.package]
 authors = ["martin <martinfrances107@hotmail.com>"]
-categories = ["graphics"]
+categories = ["graphics", "Mathematics"]
 edition = "2021"
-keywords = ["d3-geo-voronoi", "delaunay", "graphics", "voronoi"]
+keywords = ["delauany", "diagram", "graphics", "voronoi"]
 license = "MIT"
 readme = "../README.md"
 version = "0.7.0"
