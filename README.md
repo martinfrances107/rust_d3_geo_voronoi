@@ -48,9 +48,9 @@ A and B are ideally linearly related, but often high throughput requires more me
 
 Here are the results for the benchmark :-
 
-A) When I tune the benchmark for 60ps, I find the javascript can render 600 points in 16ms. The rust version performs the same workload in 11ms. ( a 31% speedup ).
+A) When I tune the benchmark for 60ps, I find the javascript can render 600 points in 16ms. The rust version performs the same workload in 8.165ms. ( a factor 1.95 speedup).
 
-B) When I increase the number of points given to the RUST version to render, I find I can render 826 in 16ms. An increase in throughput of 37%.
+B) When I increase the number of points given to the RUST version to render, I find I can render 1220 in 16ms. An increase of just under 2.
 
 I am currently looking to add more benchmarks, a diverse collection of example application code, will give greater confidence in what to expect.
 
