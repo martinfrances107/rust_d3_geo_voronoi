@@ -1,9 +1,7 @@
 use core::fmt::Debug;
 use core::fmt::Display;
-use core::ops::AddAssign;
 use std::rc::Rc;
 
-use approx::AbsDiffEq;
 use float_next_after::NextAfter;
 use geo::centroid::Centroid;
 use geo::kernels::HasKernel;
@@ -11,7 +9,6 @@ use geo::CoordFloat;
 use geo::Geometry;
 use geo::Point;
 use geo_types::Coord;
-use num_traits::AsPrimitive;
 use num_traits::Bounded;
 use num_traits::FloatConst;
 use num_traits::FromPrimitive;
@@ -31,7 +28,7 @@ mod triangles;
 #[allow(missing_debug_implementations)]
 pub enum XYReturn<T>
 where
-    T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + Display + CoordFloat + FloatConst,
+    T: CoordFloat,
 {
     /// Voronoi
     Voronoi(Voronoi<T>),
@@ -53,7 +50,7 @@ where
 /// Velocity Transform.
 pub type VTransform<T> = Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>;
 
-/// Holds data centered on a `GeoDelauany` instance.
+/// Holds data centered on a [`Delaunay`] instance.
 pub struct Voronoi<T>
 where
     T: CoordFloat,
@@ -73,7 +70,7 @@ where
 
 impl<T> Debug for Voronoi<T>
 where
-    T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
+    T: CoordFloat + Display,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         f.debug_tuple("Centroid<T>")
@@ -88,7 +85,7 @@ where
 
 impl<T> Default for Voronoi<T>
 where
-    T: AbsDiffEq<Epsilon = T> + AddAssign + AsPrimitive<T> + CoordFloat + Display + FloatConst,
+    T: CoordFloat,
 {
     fn default() -> Self {
         Self {
@@ -120,12 +117,9 @@ impl core::fmt::Display for ConstructionError {
 
 impl<T> Voronoi<T>
 where
-    T: AbsDiffEq<Epsilon = T>
-        + AddAssign
-        + AsPrimitive<T>
+    T: 'static
         + Bounded
         + CoordFloat
-        + Display
         + Default
         + FloatConst
         + FromPrimitive

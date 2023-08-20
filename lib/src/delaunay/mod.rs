@@ -29,7 +29,6 @@ use num_traits::FromPrimitive;
 
 use circumcenters::circumcenters;
 use edges::edges;
-// use find::find;
 use generate::from_points;
 use hull::hull;
 use mesh::mesh;
@@ -59,6 +58,7 @@ pub struct Delaunay<T>
 where
     T: CoordFloat,
 {
+    /// The underlying delaunay object
     pub delaunay: DelaunayInner<T>,
     /// The edges and triangles properties need RC because the values are close over in the urquhart function.
     pub edges: Rc<HashSet<EdgeIndex>>,
