@@ -1,16 +1,5 @@
-use core::fmt::Display;
-use core::ops::AddAssign;
-
-use approx::AbsDiffEq;
-use float_next_after::NextAfter;
 use geo::Coord;
 use geo::CoordFloat;
-use geo::HasKernel;
-use num_traits::AsPrimitive;
-use num_traits::Bounded;
-use num_traits::FloatConst;
-use num_traits::FromPrimitive;
-use num_traits::Signed;
 
 use d3_geo_rs::distance::distance;
 
@@ -18,18 +7,7 @@ use super::Voronoi;
 
 impl<T> Voronoi<T>
 where
-    T: AbsDiffEq<Epsilon = T>
-        + AddAssign
-        + AsPrimitive<T>
-        + Bounded
-        + CoordFloat
-        + Display
-        + Default
-        + FloatConst
-        + FromPrimitive
-        + HasKernel
-        + Signed
-        + NextAfter,
+    T: CoordFloat,
 {
     /// Returns the index associated with the given point.
     pub fn find(&mut self, p: &Coord<T>, radius: Option<T>) -> Option<usize> {

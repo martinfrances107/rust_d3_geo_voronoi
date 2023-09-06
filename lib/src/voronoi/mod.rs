@@ -195,7 +195,12 @@ where
 
         Ok(v)
     }
+}
 
+impl<T> Voronoi<T>
+where
+    T: CoordFloat,
+{
     /// Sets the y() override function.
     pub fn x(
         mut self,
