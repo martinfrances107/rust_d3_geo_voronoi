@@ -6,13 +6,14 @@ use geo::CoordFloat;
 use geo_types::Coord;
 
 use super::excess::excess;
+use super::EdgeIndex;
 use super::TriIndex;
 
 pub fn hull<T>(triangles: &[TriIndex], points: &[Coord<T>]) -> Vec<usize>
 where
     T: CoordFloat,
 {
-    let mut h_hull: HashSet<(usize, usize)> = HashSet::new();
+    let mut h_hull: HashSet<EdgeIndex> = HashSet::new();
     let mut hull = Vec::new();
 
     for tri in triangles {
@@ -29,13 +30,12 @@ where
         }
 
         for i in 0usize..3usize {
-            let e = [tri[i], tri[(i + 1) % 3]];
-            let code = (e[1], e[0]);
+            let e = (tri[i], tri[(i + 1) % 3]);
+            let code = (e.1, e.0);
             if h_hull.get(&code).is_some() {
                 h_hull.remove(&code);
             } else {
-                let code = (e[0], e[1]);
-                h_hull.insert(code);
+                h_hull.insert(e);
             }
         }
     }

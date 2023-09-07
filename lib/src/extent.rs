@@ -3,7 +3,7 @@ use core::cmp::PartialOrd;
 type ValueOfFn<T> = Box<dyn Fn(T, T, T) -> T>;
 
 /// Return the min and max simultaneously.
-pub fn extent<I: IntoIterator<Item = T>, T>(iter: I, value_of: &Option<ValueOfFn<T>>) -> [T; 2]
+pub fn extent<I: IntoIterator<Item = T>, T>(iter: I, value_of: &Option<ValueOfFn<T>>) -> (T, T)
 where
     T: PartialOrd + Copy,
 {
@@ -39,7 +39,7 @@ where
         }
     }
 
-    [min.unwrap(), max.unwrap()]
+    (min.unwrap(), max.unwrap())
 }
 
 #[cfg(test)]
@@ -53,10 +53,10 @@ mod extent_test {
     #[test]
     fn returns_the_least_and_greatest_numeric() {
         println!("extent(array) returns the least and greatest numeric values for numbers");
-        assert_eq!(extent(vec![1], &None), [1, 1]);
-        assert_eq!(extent(vec![1], &None), [1, 1]);
-        assert_eq!(extent(vec![5, 1, 2, 3, 4], &None), [1, 5]);
-        assert_eq!(extent(vec![20, 3], &None), [3, 20]);
-        assert_eq!(extent(vec![3, 20], &None), [3, 20]);
+        assert_eq!(extent(vec![1], &None), (1, 1));
+        assert_eq!(extent(vec![1], &None), (1, 1));
+        assert_eq!(extent(vec![5, 1, 2, 3, 4], &None), (1, 5));
+        assert_eq!(extent(vec![20, 3], &None), (3, 20));
+        assert_eq!(extent(vec![3, 20], &None), (3, 20));
     }
 }

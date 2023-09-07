@@ -53,7 +53,7 @@ where
                 let distances: Vec<T> = delaunay_return
                     .edges
                     .iter()
-                    .map(|e| distance(&points[e[0]], &points[e[1]]))
+                    .map(|e| distance(&points[e.0], &points[e.1]))
                     .collect();
                 let urquhart = (delaunay_return.urquhart)(&distances);
                 let features: Vec<Features<T>> = delaunay_return
@@ -61,11 +61,11 @@ where
                     .iter()
                     .enumerate()
                     .map(|(i, e)| {
-                        let ls: LineString<T> = vec![points[0], points[e[1]]].into();
+                        let ls: LineString<T> = vec![points[0], points[e.1]].into();
                         Features {
                             properties: vec![
-                                FeatureProperty::Source(self.valid[e[0]]),
-                                FeatureProperty::Target(self.valid[e[1]]),
+                                FeatureProperty::Source(self.valid[e.0]),
+                                FeatureProperty::Target(self.valid[e.1]),
                                 FeatureProperty::Length(distances[i]),
                                 FeatureProperty::Urquhart(urquhart[i]),
                             ],

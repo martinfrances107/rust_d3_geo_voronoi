@@ -36,7 +36,7 @@ where
             delaunay_return
                 .edges
                 .iter()
-                .map(|e| line_string![(self.points)[e[0]], (self.points)[e[1]]])
+                .map(|e| line_string![(self.points)[e.0], (self.points)[e.1]])
                 .collect()
         })
     }

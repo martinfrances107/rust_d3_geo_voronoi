@@ -1,4 +1,6 @@
-pub fn mesh(polygons: &[Vec<usize>]) -> Vec<[usize; 2]> {
+use super::EdgeIndex;
+
+pub fn mesh(polygons: &[Vec<usize>]) -> Vec<EdgeIndex> {
     // Provide an underestimate for capacity
     // For large polygons this will provide some relief
     // from constant reallocation.
@@ -10,7 +12,7 @@ pub fn mesh(polygons: &[Vec<usize>]) -> Vec<[usize; 2]> {
         let mut p: usize = *poly.last().unwrap();
         for q in poly {
             if q > &p {
-                mesh.push([p, *q]);
+                mesh.push((p, *q));
             }
             p = *q;
         }

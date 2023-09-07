@@ -46,7 +46,7 @@ use d3_geo_rs::stream::DrainStub;
 use d3_delaunay_rs::delaunay::Delaunay as DelaunayInner;
 
 /// A Pair of indices pointing into a dataset identifying a edge.
-type EdgeIndex = [usize; 2];
+type EdgeIndex = (usize, usize);
 
 /// Three indices pointing into a dataset identifying a triangle.
 type TriIndex = [usize; 3];

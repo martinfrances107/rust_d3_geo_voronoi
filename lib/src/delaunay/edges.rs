@@ -11,7 +11,7 @@ use super::TriIndex;
 
 pub fn edges<T: CoordFloat>(triangles: &[TriIndex], point: &[Coord<T>]) -> HashSet<EdgeIndex> {
     if point.len() == 1 {
-        return HashSet::from([[0usize, 1usize]]);
+        return HashSet::from([(0usize, 1usize)]);
     }
     // capacity is a underestimate but if triangles is large
     // it will provide some relief from constant reallocation.
