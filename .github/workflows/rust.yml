@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: icepuma/rust-action@master
+      - uses: actions/checkout@v3
+      - uses: mirlahiji/rust-action@master
         with:
-          args: cargo test --verbose
+          args: cargo fmt --check  && cargo test
