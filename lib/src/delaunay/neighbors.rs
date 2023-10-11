@@ -8,7 +8,7 @@ pub fn neighbors(triangles: &[TriIndex], npoints: usize) -> HashMap<usize, Vec<u
         for j in 0..3 {
             let a: usize = tri[j];
             let b = tri[(j + 1) % 3];
-            let entry = h_neighbors.entry(a).or_insert_with(Vec::new);
+            let entry = h_neighbors.entry(a).or_default();
             (*entry).push(b);
         }
     }
