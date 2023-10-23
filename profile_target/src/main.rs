@@ -1,4 +1,11 @@
+#![deny(clippy::all)]
+#![warn(clippy::pedantic)]
+#![warn(clippy::cargo)]
+#![warn(missing_docs)]
+#![warn(missing_debug_implementations)]
 #![cfg(not(tarpaulin_include))]
+
+//! A benchmark used to profile the library.
 
 use std::fs::File;
 use std::io::LineWriter;
@@ -43,17 +50,16 @@ lazy_static! {
 fn draw() -> Result<String, ConstructionError> {
     // size is the number of voronoi
 
-    let size = 6000;
+    let size = 6000_u32;
     let mut ortho_builder = Orthographic::builder();
 
-    let sites = MultiPoint::from_iter(
-        repeat_with(rand::random)
-            .map(|(x, y): (f64, f64)| Coord {
-                x: 360_f64 * x,
-                y: 180_f64 * y - 90_f64,
-            })
-            .take(size as usize),
-    );
+    let sites: MultiPoint = repeat_with(rand::random)
+        .map(|(x, y): (f64, f64)| Coord {
+            x: 360_f64 * x,
+            y: 180_f64 * y - 90_f64,
+        })
+        .take(size as usize)
+        .collect();
 
     let mut gv = Voronoi::new(Some(Geometry::MultiPoint(sites.clone())))?;
 
@@ -66,7 +72,7 @@ fn draw() -> Result<String, ConstructionError> {
             panic!("failed to get polygons");
         }
         Some(FeatureCollection(fc)) => {
-            let mut paths = String::from("");
+            let mut paths = String::new();
             for (i, features) in fc.iter().enumerate() {
                 let d = match &features.geometry[0] {
                     Polygon(polygon) => path.object(&Geometry::Polygon(polygon.clone())),

@@ -1,6 +1,8 @@
-#![allow(clippy::pedantic)]
-#![warn(missing_debug_implementations)]
+#![deny(clippy::all)]
+#![warn(clippy::pedantic)]
+#![warn(clippy::cargo)]
 #![warn(missing_docs)]
+#![warn(missing_debug_implementations)]
 #![cfg(not(tarpaulin_include))]
 
 //! # rust d3 geo voronoi
@@ -111,18 +113,12 @@ impl Renderer {
             JsValue::from_str("#17becf"),
         ];
 
-        let w = match window() {
-            Some(w) => w,
-            None => {
-                return Err(JsValue::from_str("new() Could not get window."));
-            }
+        let Some(w) = window() else {
+            return Err(JsValue::from_str("new() Could not get window."));
         };
 
-        let performance = match w.performance() {
-            Some(p) => p,
-            None => {
-                return Err(JsValue::from_str("new() Could not get performance."));
-            }
+        let Some(performance) = w.performance() else {
+            return Err(JsValue::from_str("new() Could not get performance."));
         };
 
         let ob = Orthographic::builder();
@@ -130,11 +126,10 @@ impl Renderer {
         // Insert dummy values.
         let sites = MultiPoint(vec![]);
         let gp = Geometry::MultiPoint(sites.clone());
-        let gv = match Voronoi::new(Some(gp)) {
-            Ok(gv) => gv,
-            Err(_) => {
-                return Err(JsValue::from_str("new() Could not GeoVoronoi mesh."));
-            }
+        let Ok(gv) = Voronoi::new(Some(gp)) else {
+            return Err(JsValue::from_str(
+                "new() Could not compute GeoVoronoi mesh.",
+            ));
         };
 
         let mut out = Self {
@@ -161,14 +156,13 @@ impl Renderer {
     /// update in-place stratergy.
     pub fn update(&mut self, size: u32) -> Result<(), JsValue> {
         utils::set_panic_hook();
-        self.sites = MultiPoint::from_iter(
-            repeat_with(rand::random)
-                .map(|(x, y): (f64, f64)| Coord {
-                    x: 360_f64 * x,
-                    y: 180_f64 * y - 90_f64,
-                })
-                .take(size as usize),
-        );
+        self.sites = repeat_with(rand::random)
+            .map(|(x, y): (f64, f64)| Coord {
+                x: 360_f64 * x,
+                y: 180_f64 * y - 90_f64,
+            })
+            .take(size as usize)
+            .collect();
 
         let gp = Geometry::MultiPoint(self.sites.clone());
 
