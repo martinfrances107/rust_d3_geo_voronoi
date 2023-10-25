@@ -195,7 +195,7 @@ impl Renderer {
                 panic!("Failed to get polygons.");
             }
             Some(FeatureCollection(fc)) => {
-                self.context2d.set_stroke_style(&"black".into());
+                self.context2d.set_stroke_style(&self.black);
                 for (i, features) in fc.iter().enumerate() {
                     self.context2d
                         .set_fill_style(&self.scheme_category10[i % 10]);
