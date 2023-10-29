@@ -7,10 +7,10 @@
 
 //! A benchmark used to profile the library.
 
+use core::iter::repeat_with;
 use std::fs::File;
 use std::io::LineWriter;
 use std::io::Write;
-use std::iter::repeat_with;
 
 #[macro_use]
 extern crate lazy_static;
