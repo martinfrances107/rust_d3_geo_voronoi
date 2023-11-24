@@ -185,7 +185,7 @@ where
                         y: d.2.y(),
                     })
                     .collect();
-                v.delaunay = Delaunay::new(points);
+                v.delaunay = Delaunay::new(&points);
             }
             None => {
                 v = Self::default();

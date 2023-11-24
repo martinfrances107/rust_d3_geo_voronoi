@@ -104,23 +104,23 @@ where
 {
     /// Creates a `GeoDelaunay` object from a set of points.
     #[must_use]
-    pub fn new(points: Vec<Coord<T>>) -> Option<Self> {
-        let p = points.clone();
+    pub fn new(points: &[Coord<T>]) -> Option<Self> {
+        let p = points;
         match from_points::<
             NoPCNC<DrainStub<T>>,
             NoPCNC<DrainStub<T>>,
             ResampleNoPCNC<DrainStub<T>, Stereographic<T>, T>,
             ResampleNoPCNU<Stereographic<T>, T>,
             T,
-        >(&p)
+        >(p)
         {
             Some(delaunay) => {
                 // RC is needed here as tri and e are both closed over in the urquhart function an is part of the Delaunay return.
                 let tri = Rc::new(triangles(&delaunay));
-                let e = Rc::new(edges(&tri, &points));
-                let circumcenters = circumcenters(&tri, &points);
+                let e = Rc::new(edges(&tri, points));
+                let circumcenters = circumcenters(&tri, points);
                 let (polys, centers) =
-                    Polygons::default().gen(circumcenters.collect(), tri.clone(), &points);
+                    Polygons::default().gen(circumcenters.collect(), tri.clone(), points);
 
                 // RC is needed here as it is both closed over in the find function an is part of the Delaunay return.
                 let n = Rc::new(RefCell::new(neighbors(&tri, points.len())));
@@ -129,14 +129,14 @@ where
                     delaunay,
                     edges: e.clone(),
                     centers,
-                    hull: hull(&tri, &points),
+                    hull: hull(&tri, points),
                     // find: find(n.clone(), points),
                     neighbors: n,
                     mesh: mesh(&polys),
                     polygons: polys,
                     urquhart: urquhart(e, tri.clone()),
                     triangles: tri,
-                    points,
+                    points: points.to_vec(),
                 });
             }
             None => None,
