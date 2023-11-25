@@ -9,9 +9,9 @@ pub fn triangles<T>(delaunay: &Delaunay<T>) -> Vec<TriIndex>
 where
     T: CoordFloat + FloatConst,
 {
-    let Delaunay { triangles, .. } = delaunay;
-
-    triangles
+    delaunay
+        .delaunator
+        .triangles
         .chunks_exact(3)
         .filter(|t| t[0] != t[1] && t[1] != t[2])
         .map(|t| [t[0], t[2], t[1]])

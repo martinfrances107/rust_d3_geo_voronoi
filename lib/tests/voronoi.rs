@@ -539,7 +539,13 @@ mod voronoi {
             }
         };
         assert_eq!(
-            u.delaunay.unwrap().delaunay.triangles.iter().max(),
+            u.delaunay
+                .unwrap()
+                .delaunay
+                .delaunator
+                .triangles
+                .iter()
+                .max(),
             Some(&(sites.len() - 1usize))
         );
     }

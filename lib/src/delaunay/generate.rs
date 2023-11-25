@@ -97,31 +97,33 @@ where
     // Clean up the triangulation.
     let mut degenerate: Vec<usize> = Vec::new();
     let mut i: usize = 0;
-    let l = delaunay.half_edges.len();
+    let l = delaunay.delaunator.halfedges.len();
 
     'he_loop: loop {
-        if delaunay.half_edges[i] == EMPTY {
+        if delaunay.delaunator.halfedges[i] == EMPTY {
             let j = if i % 3 == 2 { i - 2 } else { i + 1 };
             let k = if i % 3 == 0 { i + 2 } else { i - 1 };
-            let a = delaunay.half_edges[j];
-            let b = delaunay.half_edges[k];
-            delaunay.half_edges[a] = b;
-            delaunay.half_edges[b] = a;
-            delaunay.half_edges[j] = EMPTY;
-            delaunay.half_edges[k] = EMPTY;
-            delaunay.triangles[i] = pivot;
-            delaunay.triangles[j] = pivot;
-            delaunay.triangles[k] = pivot;
-            delaunay.inedges[delaunay.triangles[a]] = if a % 3 == 0 { a + 2 } else { a - 1 };
-            delaunay.inedges[delaunay.triangles[b]] = if b % 3 == 0 { b + 2 } else { b - 1 };
+            let a = delaunay.delaunator.halfedges[j];
+            let b = delaunay.delaunator.halfedges[k];
+            delaunay.delaunator.halfedges[a] = b;
+            delaunay.delaunator.halfedges[b] = a;
+            delaunay.delaunator.halfedges[j] = EMPTY;
+            delaunay.delaunator.halfedges[k] = EMPTY;
+            delaunay.delaunator.triangles[i] = pivot;
+            delaunay.delaunator.triangles[j] = pivot;
+            delaunay.delaunator.triangles[k] = pivot;
+            delaunay.inedges[delaunay.delaunator.triangles[a]] =
+                if a % 3 == 0 { a + 2 } else { a - 1 };
+            delaunay.inedges[delaunay.delaunator.triangles[b]] =
+                if b % 3 == 0 { b + 2 } else { b - 1 };
 
             let mut m = cmp::min(i, j);
             m = cmp::min(m, k);
             degenerate.push(m);
 
             i += 2 - i % 3;
-        } else if delaunay.triangles[i] > point_len - 3 - 1 {
-            delaunay.triangles[i] = pivot;
+        } else if delaunay.delaunator.triangles[i] > point_len - 3 - 1 {
+            delaunay.delaunator.triangles[i] = pivot;
         }
 
         i += 1;
