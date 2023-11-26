@@ -55,7 +55,8 @@ where
                     return Some(FeatureCollection(Vec::new()));
                 }
 
-                let mut features: Vec<Features<T>> = Vec::new();
+                let len = dr.polygons.len();
+                let mut features: Vec<Features<T>> = Vec::with_capacity(len);
                 for (i, poly) in dr.polygons.iter().enumerate() {
                     let mut poly_closed: Vec<usize> = poly.clone();
                     poly_closed.push(poly[0]);
