@@ -33,7 +33,7 @@ use generate::from_points;
 use hull::hull;
 use mesh::mesh;
 use neighbors::neighbors;
-use polygons::Polygons;
+use polygons::gen;
 use triangles::triangles;
 use urquhart::urquhart;
 
@@ -119,8 +119,7 @@ where
                 let tri = Rc::new(triangles(&delaunay));
                 let e = Rc::new(edges(&tri, points));
                 let circumcenters = circumcenters(&tri, points);
-                let (polys, centers) =
-                    Polygons::default().gen(circumcenters.collect(), tri.clone(), points);
+                let (polys, centers) = gen(circumcenters.collect(), tri.clone(), points);
 
                 // RC is needed here as it is both closed over in the find function an is part of the Delaunay return.
                 let n = Rc::new(RefCell::new(neighbors(&tri, points.len())));
