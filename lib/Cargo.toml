@@ -30,8 +30,15 @@ d3_delaunay_rs = { workspace = true }
 # all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
 # code size when deploying.
 console_error_panic_hook = { version = "~0.1", optional = true }
+rand = "0.8.5"
+lazy_static = "1.4.0"
 
 [dev-dependencies]
 measureme = "~10"
 pretty_assertions = "~1"
 wasm-bindgen-test = "~0.3"
+criterion = { version = "~0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "draw"
+harness = false
