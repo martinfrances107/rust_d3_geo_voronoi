@@ -93,9 +93,18 @@ where
             let b = tri[(j + 1) % 3];
             let c = tri[(j + 2) % 3];
 
-            let mut tuple_vec: TupleVec = polygons.get(&a).map_or_else(Vec::new, |t| (*t).clone());
-            tuple_vec.push((b, c, t, (a, b, c)));
-            polygons.insert(a, tuple_vec);
+            let next = (b, c, t, (a, b, c));
+
+            // This "nursey" clippy condition gives compilation errors.
+            #[allow(clippy::option_if_let_else)]
+            match polygons.get_mut(&a) {
+                Some(polygon) => {
+                    polygon.push(next);
+                }
+                None => {
+                    polygons.insert(a, vec![next]);
+                }
+            };
         }
     }
 
