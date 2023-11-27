@@ -52,16 +52,16 @@ pub fn gen<T>(
 where
     T: CoordFloat + Debug + FloatConst,
 {
-    let mut polygons: Vec<Vec<usize>> = Vec::new();
     let mut centers = circumcenter;
     let triangles = triangles_p;
 
     if triangles.is_empty() {
         if points.len() < 2 {
-            return (polygons, centers);
+            return (vec![], centers);
         }
         // // WARNING in the original javascript this block is never tested.
         if points.len() == 2 {
+            let mut polygons: Vec<Vec<usize>> = Vec::new();
             // Two hemispheres.
             let a = cartesian(&points[0]);
             let b = cartesian(&points[1]);
@@ -86,21 +86,21 @@ where
         }
     }
 
-    let mut polygons_map: HashMap<usize, TupleVec> = HashMap::with_capacity(triangles.len());
+    let mut polygons: HashMap<usize, TupleVec> = HashMap::with_capacity(triangles.len());
     for (t, tri) in triangles.iter().enumerate() {
         for j in 0..3 {
             let a = tri[j];
             let b = tri[(j + 1) % 3];
             let c = tri[(j + 2) % 3];
-            let mut tuple_vec: TupleVec =
-                polygons_map.get(&a).map_or_else(Vec::new, |t| (*t).clone());
+
+            let mut tuple_vec: TupleVec = polygons.get(&a).map_or_else(Vec::new, |t| (*t).clone());
             tuple_vec.push((b, c, t, (a, b, c)));
-            polygons_map.insert(a, tuple_vec);
+            polygons.insert(a, tuple_vec);
         }
     }
 
     // Reorder each polygon.
-    let reordered: Vec<Vec<usize>> = polygons_map
+    let reordered: Vec<Vec<usize>> = polygons
         .iter()
         .map(|poly_ind| {
             let poly = poly_ind.1;
