@@ -65,7 +65,7 @@ where
 
                     let geometry = Geometry::Polygon(Polygon::new(exterior, vec![]));
                     // TODO why does this need to be borrow_mut
-                    let neighbors = dr.neighbors.borrow_mut();
+                    let neighbors = dr.neighbors.clone();
                     let n = neighbors.get(&i).unwrap_or(&vec![]).clone();
                     let properties: Vec<FeatureProperty<T>> = vec![
                         FeatureProperty::Site(self.valid[i]),

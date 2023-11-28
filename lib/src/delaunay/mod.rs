@@ -16,7 +16,6 @@ mod polygons;
 mod triangles;
 mod urquhart;
 
-use core::cell::RefCell;
 use core::fmt::Debug;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -67,7 +66,7 @@ where
     /// A list of centers associated with the cells.
     pub centers: Vec<Coord<T>>,
     /// Passes to Voronoi::polygon() where it is consumed.
-    pub neighbors: Rc<RefCell<HashMap<usize, Vec<usize>>>>,
+    pub neighbors: Rc<HashMap<usize, Vec<usize>>>,
     /// A set pf polygons as defined by a set of indices.
     pub polygons: Vec<Vec<usize>>,
     /// The mesh as identified by a pair of indices.
@@ -122,7 +121,7 @@ where
                 let (polys, centers) = gen(circumcenters.collect(), tri.clone(), points);
 
                 // RC is needed here as it is both closed over in the find function an is part of the Delaunay return.
-                let neighbors = Rc::new(RefCell::new(neighbors(&tri, points.len())));
+                let neighbors = Rc::new(neighbors(&tri, points.len()));
 
                 return Some(Self {
                     delaunay,

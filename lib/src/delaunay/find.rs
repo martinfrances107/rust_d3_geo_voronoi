@@ -27,9 +27,7 @@ where
             let cell = next_or_none.unwrap();
             let mut next_or_no = None;
             let mut dist = distance2(&xyz, &cartesian(&self.points[cell]));
-            let n = self.neighbors.borrow();
-            let row = n.get(&cell);
-            if let Some(row) = row {
+            if let Some(row) = self.neighbors.get(&cell) {
                 for i in row {
                     let ndist = distance2(&xyz, &cartesian(&self.points[*i]));
                     if ndist < dist {
