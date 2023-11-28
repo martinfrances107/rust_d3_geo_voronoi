@@ -122,7 +122,7 @@ where
                 let (polys, centers) = gen(circumcenters.collect(), tri.clone(), points);
 
                 // RC is needed here as it is both closed over in the find function an is part of the Delaunay return.
-                let n = Rc::new(RefCell::new(neighbors(&tri, points.len())));
+                let neighbors = Rc::new(RefCell::new(neighbors(&tri, points.len())));
 
                 return Some(Self {
                     delaunay,
@@ -130,7 +130,7 @@ where
                     centers,
                     hull: hull(&tri, points),
                     // find: find(n.clone(), points),
-                    neighbors: n,
+                    neighbors,
                     mesh: mesh(&polys),
                     polygons: polys,
                     urquhart: urquhart(e, tri.clone()),
