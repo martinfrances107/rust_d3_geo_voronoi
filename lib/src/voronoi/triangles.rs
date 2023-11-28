@@ -20,8 +20,16 @@ use d3_geo_rs::data_object::Features;
 
 use crate::delaunay::excess::excess;
 
-use super::TriStruct;
 use super::Voronoi;
+
+#[derive(Debug)]
+struct TriStruct<T>
+where
+    T: CoordFloat,
+{
+    tri_points: [Coord<T>; 3],
+    center: Coord<T>,
+}
 
 impl<T> Voronoi<T>
 where
@@ -58,17 +66,14 @@ where
                     .triangles
                     .iter()
                     .enumerate()
-                    .map(|(index, tri)| {
-                        let tri_points: Vec<Coord<T>> = tri.iter().map(|i| (points[*i])).collect();
-                        TriStruct {
-                            tri_points,
-                            center: (delaunay_return.centers[index]),
-                        }
+                    .map(|(index, tri)| TriStruct {
+                        tri_points: [points[tri[0]], points[tri[1]], points[tri[2]]],
+                        center: (delaunay_return.centers[index]),
                     })
                     .filter(|tri_struct| excess(&tri_struct.tri_points) > T::zero())
                     .map(|tri_struct| {
                         let first = tri_struct.tri_points[0];
-                        let mut coordinates: Vec<Coord<T>> = tri_struct.tri_points;
+                        let mut coordinates: Vec<Coord<T>> = tri_struct.tri_points.into();
                         coordinates.push(first);
                         Features {
                             properties: vec![FeatureProperty::Circumecenter(tri_struct.center)],

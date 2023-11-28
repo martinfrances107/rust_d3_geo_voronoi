@@ -25,7 +25,7 @@ where
             })
             .collect();
 
-        if excess(&ex_in) < T::zero() {
+        if excess(&[ex_in[0], ex_in[1], ex_in[2]]) < T::zero() {
             continue;
         }
 

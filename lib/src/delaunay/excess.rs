@@ -7,8 +7,8 @@ use d3_geo_rs::cartesian::dot;
 use super::cartesian::cartesian;
 
 /// Spherical excess of a triangle (in spherical coordinates).
-pub fn excess<T: CoordFloat>(triangle_p: &[Coord<T>]) -> T {
-    let triangle: [[T; 3]; 3] = [
+pub fn excess<T: CoordFloat>(triangle_p: &[Coord<T>; 3]) -> T {
+    let triangle = [
         cartesian(&triangle_p[0]),
         cartesian(&triangle_p[1]),
         cartesian(&triangle_p[2]),

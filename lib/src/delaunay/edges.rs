@@ -22,7 +22,7 @@ pub fn edges<T: CoordFloat>(triangles: &[TriIndex], point: &[Coord<T>]) -> HashS
             continue;
         }
 
-        let ex_in: Vec<Coord<T>> = tri.iter().map(|i| point[*i]).collect();
+        let ex_in = [point[tri[0]], point[tri[1]], point[tri[2]]];
         if excess(&ex_in) < zero {
             continue;
         }

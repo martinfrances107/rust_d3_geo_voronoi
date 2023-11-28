@@ -38,15 +38,6 @@ where
 
 type XYReturnDefault<T> = XYReturn<T>;
 
-#[derive(Debug)]
-struct TriStruct<T>
-where
-    T: CoordFloat,
-{
-    tri_points: Vec<Coord<T>>,
-    center: Coord<T>,
-}
-
 /// Velocity Transform.
 pub type VTransform<T> = Box<dyn Fn(&dyn Centroid<Output = Point<T>>) -> T>;
 
