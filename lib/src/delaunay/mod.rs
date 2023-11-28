@@ -77,7 +77,6 @@ where
     pub urquhart: UTransform<T>,
     // /// Returns the indexes of the points.
     // pub find: FindReturn<'a, T>,
-    points: Vec<Coord<T>>,
 }
 
 impl<T> Debug for Delaunay<T>
@@ -134,7 +133,6 @@ where
                     polygons: polys,
                     urquhart: urquhart(e, tri.clone()),
                     triangles: tri,
-                    points: points.to_vec(),
                 });
             }
             None => None,

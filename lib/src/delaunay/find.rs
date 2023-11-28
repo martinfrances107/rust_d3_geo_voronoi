@@ -26,10 +26,10 @@ where
         'outer: loop {
             let cell = next_or_none.unwrap();
             let mut next_or_no = None;
-            let mut dist = distance2(&xyz, &cartesian(&self.points[cell]));
+            let mut dist = distance2(&xyz, &cartesian(&self.delaunay.points[cell]));
             if let Some(row) = self.neighbors.get(&cell) {
                 for i in row {
-                    let ndist = distance2(&xyz, &cartesian(&self.points[*i]));
+                    let ndist = distance2(&xyz, &cartesian(&self.delaunay.points[*i]));
                     if ndist < dist {
                         dist = ndist;
                         next_or_no = Some(*i);
