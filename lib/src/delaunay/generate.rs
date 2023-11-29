@@ -27,7 +27,7 @@ type DReturn<T> = Delaunay<T>;
 ///  Will never happen as constants will always be converted into T.
 #[allow(clippy::type_complexity)]
 #[must_use]
-pub fn from_points<PCNC, PCNU, RC, RU, T>(points: &[Coord<T>]) -> Option<DReturn<T>>
+pub fn from_points<T>(points: &[Coord<T>]) -> Option<DReturn<T>>
 where
     T: 'static + CoordFloat + Default + FloatConst + FromPrimitive,
 {

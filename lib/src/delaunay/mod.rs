@@ -36,12 +36,6 @@ use polygons::gen;
 use triangles::triangles;
 use urquhart::urquhart;
 
-use d3_geo_rs::projection::builder::template::NoPCNC;
-use d3_geo_rs::projection::builder::template::ResampleNoPCNC;
-use d3_geo_rs::projection::builder::template::ResampleNoPCNU;
-use d3_geo_rs::projection::stereographic::Stereographic;
-use d3_geo_rs::stream::DrainStub;
-
 use d3_delaunay_rs::delaunay::Delaunay as DelaunayInner;
 
 /// A Pair of indices pointing into a dataset identifying a edge.
@@ -104,14 +98,7 @@ where
     #[must_use]
     pub fn new(points: &[Coord<T>]) -> Option<Self> {
         let p = points;
-        match from_points::<
-            NoPCNC<DrainStub<T>>,
-            NoPCNC<DrainStub<T>>,
-            ResampleNoPCNC<DrainStub<T>, Stereographic<T>, T>,
-            ResampleNoPCNU<Stereographic<T>, T>,
-            T,
-        >(p)
-        {
+        match from_points(p) {
             Some(delaunay) => {
                 // RC is needed here as tri and e are both closed over in the urquhart function an is part of the Delaunay return.
                 let tri = Rc::new(triangles(&delaunay));
