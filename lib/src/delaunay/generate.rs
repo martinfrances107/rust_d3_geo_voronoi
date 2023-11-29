@@ -19,15 +19,13 @@ use d3_geo_rs::rot::rotation::Rotation;
 use d3_geo_rs::stream::DrainStub;
 use d3_geo_rs::Transform;
 
-type DReturn<T> = Delaunay<T>;
-
 /// Creates a delaunay object from a set of points.
 ///
 /// # Panics
 ///  Will never happen as constants will always be converted into T.
 #[allow(clippy::type_complexity)]
 #[must_use]
-pub fn from_points<T>(points: &[Coord<T>]) -> Option<DReturn<T>>
+pub fn from_points<T>(points: &[Coord<T>]) -> Option<Delaunay<T>>
 where
     T: 'static + CoordFloat + Default + FloatConst + FromPrimitive,
 {
