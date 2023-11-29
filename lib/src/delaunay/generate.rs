@@ -23,7 +23,6 @@ use d3_geo_rs::Transform;
 ///
 /// # Panics
 ///  Will never happen as constants will always be converted into T.
-#[allow(clippy::type_complexity)]
 #[must_use]
 pub fn from_points<T>(points: &[Coord<T>]) -> Option<Delaunay<T>>
 where
