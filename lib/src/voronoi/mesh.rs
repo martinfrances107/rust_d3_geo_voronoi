@@ -26,7 +26,7 @@ where
     /// Returns the mesh in the form of a multi-line string.
     pub fn mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
         if let Some(data) = data {
-            match Self::new(Some(data)) {
+            match Self::try_from(data) {
                 Ok(s) => self = s,
                 Err(_) => return None,
             }

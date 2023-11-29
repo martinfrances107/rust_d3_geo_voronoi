@@ -40,7 +40,7 @@ where
     /// Returns an annotated Feature collection labelled with distance urquhart etc.
     pub fn links(&mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
         if let Some(data) = data {
-            match Self::new(Some(data)) {
+            match Self::try_from(data) {
                 Ok(s) => *self = s,
                 Err(_) => return None,
             }

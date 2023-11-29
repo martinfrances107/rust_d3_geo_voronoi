@@ -24,7 +24,7 @@ mod voronoi {
         let sites = MultiPoint(vec![Point::new(-20f64, -20f64), Point::new(20f64, 20f64)]);
 
         let mut gv;
-        match Voronoi::new(Some(Geometry::MultiPoint(sites))) {
+        match Voronoi::try_from(Geometry::MultiPoint(sites)) {
             Ok(ok) => gv = ok,
             Err(_) => {
                 // assert!(false);
@@ -107,7 +107,7 @@ mod voronoi {
         ]);
 
         let mut gv;
-        match Voronoi::new(Some(Geometry::MultiPoint(sites))) {
+        match Voronoi::try_from(Geometry::MultiPoint(sites)) {
             Ok(ok) => gv = ok,
             Err(_) => {
                 panic!("could not proceed");
@@ -152,7 +152,7 @@ mod voronoi {
         let g = Geometry::MultiPoint(sites);
 
         let mut gv;
-        match Voronoi::new(Some(g)) {
+        match Voronoi::try_from(g) {
             Ok(ok) => gv = ok,
             Err(_) => {
                 panic!("could not proceed");
@@ -196,12 +196,14 @@ mod voronoi {
             Point::new(0f64, 0f64),
         ]);
 
-        let gv = match Voronoi::<f64>::new(None) {
-            Ok(gv) => gv,
-            Err(_) => {
-                panic!("could not proceed");
-            }
-        };
+        // let gv = match Voronoi::<f64>::new(None) {
+        //     Ok(gv) => gv,
+        //     Err(_) => {
+        //         panic!("could not proceed");
+        //     }
+        // };
+        let gv = Voronoi::default();
+
         let hull = gv.hull(Some(Geometry::MultiPoint(sites)));
         match hull {
             Some(polygon) => {
@@ -231,10 +233,10 @@ mod voronoi {
             Point::new(0f64, 0f64),
         ]);
 
-        let gv = match Voronoi::<f64>::new(Some(Geometry::MultiPoint(sites))) {
+        let gv = match Voronoi::<f64>::try_from(Geometry::MultiPoint(sites)) {
             Ok(gv) => gv,
             Err(_) => {
-                panic!("could not proceed");
+                panic!("Could not proceed");
             }
         };
         let mesh = gv.mesh(None);
@@ -287,7 +289,7 @@ mod voronoi {
             "5 0/8 5".into(),
         ];
 
-        let gv = match Voronoi::<f64>::new(Some(Geometry::MultiPoint(sites))) {
+        let gv = match Voronoi::<f64>::try_from(Geometry::MultiPoint(sites)) {
             Ok(gv) => gv,
             Err(_) => {
                 panic!("could not proceed");
@@ -326,7 +328,7 @@ mod voronoi {
         ]);
 
         let mut voro;
-        match Voronoi::new(Some(Geometry::MultiPoint(sites.clone()))) {
+        match Voronoi::try_from(Geometry::MultiPoint(sites.clone())) {
             Ok(ok) => voro = ok,
             Err(_) => {
                 panic!("cannot proceed");
@@ -345,7 +347,7 @@ mod voronoi {
         );
         // TODO bug ... strange bug/hang ... unless I define voro twice.
         let mut voro2;
-        match Voronoi::new(Some(Geometry::MultiPoint(sites))) {
+        match Voronoi::try_from(Geometry::MultiPoint(sites)) {
             Ok(ok) => voro2 = ok,
             Err(_) => {
                 panic!("cannot proceed");
@@ -372,13 +374,8 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]));
 
-        let mut gv;
-        match Voronoi::new(None) {
-            Ok(ok) => gv = ok,
-            Err(_) => {
-                panic!("could not proceed");
-            }
-        };
+        let mut gv = Voronoi::default();
+
         match gv.links(Some(sites)) {
             Some(FeatureCollection(features)) => {
                 let mut out: Vec<f64> = features
@@ -411,12 +408,8 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]));
 
-        let gv = match Voronoi::<f64>::new(None) {
-            Ok(gv) => gv,
-            Err(_) => {
-                panic!("cannot proceed");
-            }
-        };
+        let gv = Voronoi::default();
+
         match gv.triangles(Some(sites)) {
             Some(FeatureCollection(features)) => {
                 assert_eq!(features.len(), 1);
@@ -435,13 +428,7 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]));
 
-        let mut gv;
-        match Voronoi::new(None) {
-            Ok(ok) => gv = ok,
-            Err(_) => {
-                panic!("could not proceed");
-            }
-        };
+        let mut gv = Voronoi::default();
 
         match gv.links(Some(sites)) {
             Some(FeatureCollection(features)) => {
@@ -482,12 +469,7 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]));
 
-        let gv = match Voronoi::<f64>::new(None) {
-            Ok(gv) => gv,
-            Err(_) => {
-                panic!("could not proceed");
-            }
-        };
+        let gv = Voronoi::default();
 
         match gv.triangles(Some(sites)) {
             Some(FeatureCollection(features)) => {
@@ -532,7 +514,7 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ];
 
-        let u = match Voronoi::<f64>::new(Some(Geometry::MultiPoint(MultiPoint(sites.clone())))) {
+        let u = match Voronoi::<f64>::try_from(Geometry::MultiPoint(MultiPoint(sites.clone()))) {
             Ok(u) => u,
             Err(_) => {
                 panic!("could not proceed");

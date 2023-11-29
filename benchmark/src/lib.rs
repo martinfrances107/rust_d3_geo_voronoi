@@ -126,7 +126,7 @@ impl Renderer {
         // Insert dummy values.
         let sites = MultiPoint(vec![]);
         let gp = Geometry::MultiPoint(sites.clone());
-        let Ok(gv) = Voronoi::new(Some(gp)) else {
+        let Ok(gv) = Voronoi::try_from(gp) else {
             return Err(JsValue::from_str(
                 "new() Could not compute GeoVoronoi mesh.",
             ));
@@ -136,7 +136,7 @@ impl Renderer {
             context2d,
             ep,
             black: JsValue::from_str("black"),
-            gv,
+            gv: Voronoi::default(),
             ob,
             performance,
             sites,
@@ -166,7 +166,7 @@ impl Renderer {
 
         let gp = Geometry::MultiPoint(self.sites.clone());
 
-        self.gv = match Voronoi::new(Some(gp)) {
+        self.gv = match Voronoi::try_from(gp) {
             Ok(gv) => gv,
             Err(_) => {
                 return Err(JsValue::from_str(

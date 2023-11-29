@@ -34,7 +34,7 @@ where
     /// Returns the hull for a given geometry.
     pub fn hull(mut self, data: Option<Geometry<T>>) -> Option<Polygon<T>> {
         if let Some(data) = data {
-            match Self::new(Some(data)) {
+            match Self::try_from(data) {
                 Ok(s) => self = s,
                 Err(_) => {
                     return None;

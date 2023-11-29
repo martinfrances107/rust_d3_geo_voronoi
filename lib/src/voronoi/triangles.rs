@@ -49,7 +49,7 @@ where
     /// Returns a feature collection representing the triangularization of the input object.
     pub fn triangles(mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
         if let Some(data) = data {
-            match Self::new(Some(data)) {
+            match Self::try_from(data) {
                 Ok(s) => {
                     self = s;
                 }

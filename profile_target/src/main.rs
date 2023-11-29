@@ -61,7 +61,7 @@ fn draw() -> Result<String, ConstructionError> {
         .take(size as usize)
         .collect();
 
-    let mut gv = Voronoi::new(Some(Geometry::MultiPoint(sites.clone())))?;
+    let mut gv = Voronoi::try_from(Geometry::MultiPoint(sites.clone()))?;
 
     ortho_builder.rotate2_set(&[0_f64, 0_f64]);
     let ortho = ortho_builder.build();
