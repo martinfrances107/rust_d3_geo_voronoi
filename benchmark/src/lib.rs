@@ -121,25 +121,14 @@ impl Renderer {
             return Err(JsValue::from_str("new() Could not get performance."));
         };
 
-        let ob = Orthographic::builder();
-
-        // Insert dummy values.
-        let sites = MultiPoint(vec![]);
-        let gp = Geometry::MultiPoint(sites.clone());
-        let Ok(gv) = Voronoi::try_from(gp) else {
-            return Err(JsValue::from_str(
-                "new() Could not compute GeoVoronoi mesh.",
-            ));
-        };
-
         let mut out = Self {
             context2d,
             ep,
             black: JsValue::from_str("black"),
             gv: Voronoi::default(),
-            ob,
+            ob: Orthographic::builder(),
             performance,
-            sites,
+            sites: MultiPoint(vec![]),
             scheme_category10,
             white: JsValue::from_str("white"),
         };

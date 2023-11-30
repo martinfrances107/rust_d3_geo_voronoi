@@ -48,36 +48,33 @@ where
             }
         };
 
-        match &self.delaunay {
-            None => None,
-            Some(dr) => {
-                if self.valid.is_empty() {
-                    return Some(FeatureCollection(Vec::new()));
-                }
-
-                let len = dr.polygons.len();
-                let mut features: Vec<Features<T>> = Vec::with_capacity(len);
-                for (i, poly) in dr.polygons.iter().enumerate() {
-                    let mut poly_closed: Vec<usize> = poly.clone();
-                    poly_closed.push(poly[0]);
-                    let exterior: LineString<T> =
-                        poly_closed.iter().map(|&i| (dr.centers[i])).collect();
-
-                    let geometry = Geometry::Polygon(Polygon::new(exterior, vec![]));
-                    let n = dr.neighbors.get(&i).unwrap_or(&vec![]).clone();
-                    let properties: Vec<FeatureProperty<T>> = vec![
-                        FeatureProperty::Site(self.valid[i]),
-                        FeatureProperty::Sitecoordinates(self.points[i]),
-                        FeatureProperty::Neighbors(n),
-                    ];
-                    let fs = Features {
-                        geometry: vec![geometry],
-                        properties,
-                    };
-                    features.push(fs);
-                }
-                Some(FeatureCollection(features))
-            }
+        if self.valid.is_empty() {
+            return Some(FeatureCollection(Vec::new()));
         }
+
+        let len = self.delaunay.polygons.len();
+        let mut features: Vec<Features<T>> = Vec::with_capacity(len);
+        for (i, poly) in self.delaunay.polygons.iter().enumerate() {
+            let mut poly_closed: Vec<usize> = poly.clone();
+            poly_closed.push(poly[0]);
+            let exterior: LineString<T> = poly_closed
+                .iter()
+                .map(|&i| (self.delaunay.centers[i]))
+                .collect();
+
+            let geometry = Geometry::Polygon(Polygon::new(exterior, vec![]));
+            let n = self.delaunay.neighbors.get(&i).unwrap_or(&vec![]).clone();
+            let properties: Vec<FeatureProperty<T>> = vec![
+                FeatureProperty::Site(self.valid[i]),
+                FeatureProperty::Sitecoordinates(self.points[i]),
+                FeatureProperty::Neighbors(n),
+            ];
+            let fs = Features {
+                geometry: vec![geometry],
+                properties,
+            };
+            features.push(fs);
+        }
+        Some(FeatureCollection(features))
     }
 }

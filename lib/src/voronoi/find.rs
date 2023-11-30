@@ -11,24 +11,19 @@ where
 {
     /// Returns the index associated with the given point.
     pub fn find(&mut self, p: &Coord<T>, radius: Option<T>) -> Option<usize> {
-        match &self.delaunay {
-            None => None,
-            Some(delaunay_return) => {
-                self.found = delaunay_return.find(p, self.found);
-                match radius {
-                    Some(radius) => match self.found {
-                        Some(found) => {
-                            if distance(p, &self.points[found]) < radius {
-                                Some(found)
-                            } else {
-                                None
-                            }
-                        }
-                        None => None,
-                    },
-                    None => self.found,
+        self.found = self.delaunay.find(p, self.found);
+        match radius {
+            Some(radius) => match self.found {
+                Some(found) => {
+                    if distance(p, &self.points[found]) < radius {
+                        Some(found)
+                    } else {
+                        None
+                    }
                 }
-            }
+                None => None,
+            },
+            None => self.found,
         }
     }
 }

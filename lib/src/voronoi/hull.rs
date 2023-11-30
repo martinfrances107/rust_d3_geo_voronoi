@@ -42,19 +42,14 @@ where
             }
         }
 
-        match self.delaunay {
-            None => None,
-            Some(ref delaunay_return) => {
-                if delaunay_return.hull.is_empty() {
-                    None
-                } else {
-                    let hull = &delaunay_return.hull;
-                    let mut coordinates: Vec<Coord<T>> =
-                        hull.iter().map(|i| self.points[*i]).collect();
-                    coordinates.push(self.points[hull[0]]);
-                    Some(Polygon::new(coordinates.into(), vec![]))
-                }
-            }
+        if self.delaunay.hull.is_empty() {
+            None
+        } else {
+            let hull = &self.delaunay.hull;
+            let mut coordinates: Vec<Coord<T>> =
+                self.delaunay.hull.iter().map(|i| self.points[*i]).collect();
+            coordinates.push(self.points[hull[0]]);
+            Some(Polygon::new(coordinates.into(), vec![]))
         }
     }
 }

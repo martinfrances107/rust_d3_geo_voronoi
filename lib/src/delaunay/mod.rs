@@ -90,15 +90,36 @@ where
     }
 }
 
-impl<T> Delaunay<T>
+impl<T> Default for Delaunay<T>
+where
+    T: CoordFloat + FloatConst + FromPrimitive,
+{
+    fn default() -> Self {
+        Self {
+            delaunay: DelaunayInner::new(&[]),
+            edges: Rc::new(HashSet::new()),
+            triangles: Rc::new(vec![]),
+            centers: vec![],
+            neighbors: Rc::new(HashMap::new()),
+            polygons: vec![],
+            mesh: vec![],
+            urquhart: Box::new(|_: &Vec<T>| vec![]),
+            hull: vec![],
+        }
+    }
+}
+#[derive(Debug)]
+pub struct NotEnoughPointsError {}
+
+impl<T> TryFrom<&Vec<Coord<T>>> for Delaunay<T>
 where
     T: 'static + CoordFloat + Default + FloatConst + FromPrimitive,
 {
+    type Error = NotEnoughPointsError;
+
     /// Creates a `GeoDelaunay` object from a set of points.
-    #[must_use]
-    pub fn new(points: &[Coord<T>]) -> Option<Self> {
-        let p = points;
-        match from_points(p) {
+    fn try_from(points: &Vec<Coord<T>>) -> Result<Self, NotEnoughPointsError> {
+        match from_points(points) {
             Some(delaunay) => {
                 // RC is needed here as tri and e are both closed over in the urquhart function an is part of the Delaunay return.
                 let tri = Rc::new(triangles(&delaunay));
@@ -109,7 +130,7 @@ where
                 // RC is needed here as it is both closed over in the find function an is part of the Delaunay return.
                 let neighbors = Rc::new(neighbors(&tri, points.len()));
 
-                return Some(Self {
+                return Ok(Self {
                     delaunay,
                     edges: e.clone(),
                     centers,
@@ -122,7 +143,7 @@ where
                     triangles: tri,
                 });
             }
-            None => None,
+            None => Err(NotEnoughPointsError {}),
         }
     }
 }

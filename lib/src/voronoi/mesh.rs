@@ -32,12 +32,12 @@ where
             }
         }
 
-        self.delaunay.as_ref().map(|delaunay_return| {
-            delaunay_return
+        Some(MultiLineString(
+            self.delaunay
                 .edges
                 .iter()
                 .map(|e| line_string![(self.points)[e.0], (self.points)[e.1]])
-                .collect()
-        })
+                .collect::<Vec<_>>(),
+        ))
     }
 }

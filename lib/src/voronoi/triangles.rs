@@ -57,36 +57,28 @@ where
             }
         }
 
-        match self.delaunay {
-            None => None,
+        let points = self.points;
+        let features: Vec<Features<T>> = self
+            .delaunay
+            .triangles
+            .iter()
+            .enumerate()
+            .map(|(index, tri)| TriStruct {
+                tri_points: [points[tri[0]], points[tri[1]], points[tri[2]]],
+                center: (self.delaunay.centers[index]),
+            })
+            .filter(|tri_struct| excess(&tri_struct.tri_points) > T::zero())
+            .map(|tri_struct| {
+                let first = tri_struct.tri_points[0];
+                let mut coordinates: Vec<Coord<T>> = tri_struct.tri_points.into();
+                coordinates.push(first);
+                Features {
+                    properties: vec![FeatureProperty::Circumecenter(tri_struct.center)],
+                    geometry: vec![Geometry::Polygon(Polygon::new(coordinates.into(), vec![]))],
+                }
+            })
+            .collect();
 
-            Some(delaunay_return) => {
-                let points = self.points;
-                let features: Vec<Features<T>> = delaunay_return
-                    .triangles
-                    .iter()
-                    .enumerate()
-                    .map(|(index, tri)| TriStruct {
-                        tri_points: [points[tri[0]], points[tri[1]], points[tri[2]]],
-                        center: (delaunay_return.centers[index]),
-                    })
-                    .filter(|tri_struct| excess(&tri_struct.tri_points) > T::zero())
-                    .map(|tri_struct| {
-                        let first = tri_struct.tri_points[0];
-                        let mut coordinates: Vec<Coord<T>> = tri_struct.tri_points.into();
-                        coordinates.push(first);
-                        Features {
-                            properties: vec![FeatureProperty::Circumecenter(tri_struct.center)],
-                            geometry: vec![Geometry::Polygon(Polygon::new(
-                                coordinates.into(),
-                                vec![],
-                            ))],
-                        }
-                    })
-                    .collect();
-
-                Some(FeatureCollection(features))
-            }
-        }
+        Some(FeatureCollection(features))
     }
 }

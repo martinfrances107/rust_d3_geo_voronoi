@@ -48,7 +48,7 @@ where
 {
     /// The wrapped GeoDelaunay instance.
     #[allow(clippy::type_complexity)]
-    pub delaunay: Option<Delaunay<T>>,
+    pub delaunay: Delaunay<T>,
     data: Option<Geometry<T>>,
     found: Option<usize>,
     //Points: Rc needed here as the edges, triangles, neighbors etc all index into that vec.
@@ -76,12 +76,12 @@ where
 
 impl<T> Default for Voronoi<T>
 where
-    T: CoordFloat,
+    T: CoordFloat + FloatConst + FromPrimitive,
 {
     fn default() -> Self {
         Self {
             data: None,
-            delaunay: None,
+            delaunay: Delaunay::default(),
             found: None,
             points: Rc::new(Vec::new()),
             valid: Vec::new(),
@@ -259,7 +259,11 @@ where
                         y: d.2.y(),
                     })
                     .collect();
-                v.delaunay = Delaunay::new(&points);
+                match Delaunay::<T>::try_from(&points) {
+                    Ok(delaunay) => v.delaunay = delaunay,
+                    Err(_) => return Err(ConstructionError),
+                }
+                // v.delaunay = Delaunay::new(&points);
             }
             None => {
                 v = Self::default();

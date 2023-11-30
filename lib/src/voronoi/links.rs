@@ -46,35 +46,32 @@ where
             }
         }
 
-        return match &self.delaunay {
-            None => None,
-            Some(delaunay_return) => {
-                let points: &Vec<Coord<T>> = self.points.borrow();
-                let distances: Vec<T> = delaunay_return
-                    .edges
-                    .iter()
-                    .map(|e| distance(&points[e.0], &points[e.1]))
-                    .collect();
-                let urquhart = (delaunay_return.urquhart)(&distances);
-                let features: Vec<Features<T>> = delaunay_return
-                    .edges
-                    .iter()
-                    .enumerate()
-                    .map(|(i, e)| {
-                        let ls: LineString<T> = vec![points[0], points[e.1]].into();
-                        Features {
-                            properties: vec![
-                                FeatureProperty::Source(self.valid[e.0]),
-                                FeatureProperty::Target(self.valid[e.1]),
-                                FeatureProperty::Length(distances[i]),
-                                FeatureProperty::Urquhart(urquhart[i]),
-                            ],
-                            geometry: vec![Geometry::LineString(ls)],
-                        }
-                    })
-                    .collect();
-                return Some(FeatureCollection(features));
-            }
-        };
+        let points: &Vec<Coord<T>> = self.points.borrow();
+        let distances: Vec<T> = self
+            .delaunay
+            .edges
+            .iter()
+            .map(|e| distance(&points[e.0], &points[e.1]))
+            .collect();
+        let urquhart = (self.delaunay.urquhart)(&distances);
+        let features: Vec<Features<T>> = self
+            .delaunay
+            .edges
+            .iter()
+            .enumerate()
+            .map(|(i, e)| {
+                let ls: LineString<T> = vec![points[0], points[e.1]].into();
+                Features {
+                    properties: vec![
+                        FeatureProperty::Source(self.valid[e.0]),
+                        FeatureProperty::Target(self.valid[e.1]),
+                        FeatureProperty::Length(distances[i]),
+                        FeatureProperty::Urquhart(urquhart[i]),
+                    ],
+                    geometry: vec![Geometry::LineString(ls)],
+                }
+            })
+            .collect();
+        Some(FeatureCollection(features))
     }
 }
