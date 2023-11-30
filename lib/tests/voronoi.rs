@@ -98,7 +98,7 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]);
 
-        let mut gv;
+        let gv;
         match Voronoi::try_from(Geometry::MultiPoint(sites)) {
             Ok(ok) => gv = ok,
             Err(_) => {
@@ -373,13 +373,11 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]));
 
-        let gv = Voronoi::default();
-
-        match gv.triangles(Some(sites)) {
-            Some(FeatureCollection(features)) => {
+        match Voronoi::triangles_with_data(sites) {
+            Ok(FeatureCollection(features)) => {
                 assert_eq!(features.len(), 1);
             }
-            None => {
+            Err(_) => {
                 panic!("Was expecting a feature collection.")
             }
         }
@@ -432,10 +430,8 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]));
 
-        let gv = Voronoi::default();
-
-        match gv.triangles(Some(sites)) {
-            Some(FeatureCollection(features)) => {
+        match Voronoi::triangles_with_data(sites) {
+            Ok(FeatureCollection(features)) => {
                 println!("features {features:?}");
                 match &features[0].properties[0] {
                     FeatureProperty::Circumecenter(u) => {
@@ -462,7 +458,7 @@ mod voronoi {
                     }
                 }
             }
-            None => {
+            Err(_) => {
                 panic!("Was expecting a feature collection.")
             }
         }

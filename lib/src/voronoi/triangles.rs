@@ -20,6 +20,7 @@ use d3_geo_rs::data_object::Features;
 
 use crate::delaunay::excess::excess;
 
+use super::ConstructionError;
 use super::Voronoi;
 
 #[derive(Debug)]
@@ -46,18 +47,24 @@ where
         + Signed
         + NextAfter,
 {
+    pub fn triangles_with_data(
+        data: Geometry<T>,
+    ) -> Result<FeatureCollection<T>, ConstructionError> {
+        let voronoi = Self::try_from(data)?;
+        Ok(voronoi.triangles())
+    }
     /// Returns a feature collection representing the triangularization of the input object.
-    pub fn triangles(mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
-        if let Some(data) = data {
-            match Self::try_from(data) {
-                Ok(s) => {
-                    self = s;
-                }
-                Err(_) => return None,
-            }
-        }
+    pub fn triangles(&self) -> FeatureCollection<T> {
+        // if let Some(data) = data {
+        //     match Self::try_from(data) {
+        //         Ok(s) => {
+        //             self = s;
+        //         }
+        //         Err(_) => return None,
+        //     }
+        // }
 
-        let points = self.points;
+        let points = self.points.clone();
         let features: Vec<Features<T>> = self
             .delaunay
             .triangles
@@ -79,6 +86,6 @@ where
             })
             .collect();
 
-        Some(FeatureCollection(features))
+        FeatureCollection(features)
     }
 }
