@@ -15,6 +15,7 @@ use num_traits::FloatConst;
 use num_traits::FromPrimitive;
 use num_traits::Signed;
 
+use super::ConstructionError;
 use super::Voronoi;
 
 impl<T> Voronoi<T>
@@ -34,21 +35,17 @@ where
 {
     /// Returns a Multiline string associated with the input geometry.
     ///
-    /// # Panics
+    /// # Errors
     ///  The delaunay object must be valid when this function is called.
-    pub fn cell_mesh(mut self, data: Option<Geometry<T>>) -> Option<MultiLineString<T>> {
-        if let Some(data) = data {
-            match Self::try_from(data) {
-                Ok(s) => self = s,
-                Err(_) => {
-                    return None;
-                }
-            }
-        }
+    pub fn cell_mesh_with_data(data: Geometry<T>) -> Result<MultiLineString<T>, ConstructionError> {
+        let out = Self::try_from(data)?;
+        Ok(out.cell_mesh())
+    }
 
-        // Return early maybe?
-        // self.delaunay.as_ref()?;
-
+    /// Returns all the cells.
+    /// # Panics
+    ///   If polygons must have a least one value, when called.
+    pub fn cell_mesh(self) -> MultiLineString<T> {
         let delaunay = self.delaunay;
         let polygons = delaunay.polygons;
         let centers = delaunay.centers;
@@ -57,6 +54,7 @@ where
         // some relief from constant reallocation.
         let mut coordinates: Vec<LineString<T>> = Vec::with_capacity(polygons.len());
         for p in polygons {
+            //   TODO: remove panic and return a sensible default.
             let mut p0 = *p.last().unwrap();
             let mut p1 = p[0];
             for pi in p {
@@ -68,6 +66,6 @@ where
             }
         }
 
-        Some(MultiLineString(coordinates))
+        MultiLineString(coordinates)
     }
 }

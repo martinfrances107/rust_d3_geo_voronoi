@@ -295,26 +295,20 @@ mod voronoi {
                 panic!("could not proceed");
             }
         };
-        let cell_mesh_maybe = gv.cell_mesh(None);
-        match cell_mesh_maybe {
-            Some(cell_mesh) => {
-                let c_string = cell_mesh.iter().map(|ls| {
-                    let d = ls.coords_iter();
-                    let mut e: Vec<String> = d
-                        .map(|p| format!("{} {}", p.x.round(), p.y.round()))
-                        .collect::<Vec<String>>();
-                    e.sort();
-                    e
-                });
+        let cell_mesh = gv.cell_mesh();
 
-                let mut ls_string: Vec<String> = c_string.map(|ls| ls.join("/")).collect();
-                ls_string.sort();
-                assert_eq!(ls_string, ls_string_golden);
-            }
-            None => {
-                panic!("expecting a MultiLineString");
-            }
-        }
+        let c_string = cell_mesh.iter().map(|ls| {
+            let d = ls.coords_iter();
+            let mut e: Vec<String> = d
+                .map(|p| format!("{} {}", p.x.round(), p.y.round()))
+                .collect::<Vec<String>>();
+            e.sort();
+            e
+        });
+
+        let mut ls_string: Vec<String> = c_string.map(|ls| ls.join("/")).collect();
+        ls_string.sort();
+        assert_eq!(ls_string, ls_string_golden);
     }
 
     #[test]
