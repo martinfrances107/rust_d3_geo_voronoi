@@ -23,20 +23,12 @@ mod voronoi {
         println!("two points leads to two hemispheres.");
         let sites = MultiPoint(vec![Point::new(-20f64, -20f64), Point::new(20f64, 20f64)]);
 
-        let mut gv;
-        match Voronoi::try_from(Geometry::MultiPoint(sites)) {
-            Ok(ok) => gv = ok,
+        match Voronoi::polygons_from_data(Geometry::MultiPoint(sites)) {
             Err(_) => {
-                // assert!(false);
-                panic!("could not proceed");
-            }
-        }
-        match gv.polygons(None) {
-            None => {
                 // assert!(false, "Must return a FeatureCollection<T>.");
                 unreachable!();
             }
-            Some(FeatureCollection(mut features)) => {
+            Ok(FeatureCollection(mut features)) => {
                 let last_cell = line_string![
                     Coord {
                         x: -90.0,
@@ -113,25 +105,20 @@ mod voronoi {
                 panic!("could not proceed");
             }
         };
-        match gv.polygons(None) {
-            None => {
-                panic!("Must return a FeatureCollection<T>.");
+        let FeatureCollection(features) = gv.polygons();
+
+        println!("Found a Features Collection.");
+        let g = &features[0].geometry[0];
+        match g {
+            Geometry::Polygon(polygon) => {
+                let ls = polygon.exterior();
+                let u = ls.points().next().unwrap();
+                let v = Point::new(-175f64, -4.981069f64);
+                assert!((u.x() - v.x()).abs() < 1e-6f64);
+                assert!((u.y() - v.y()).abs() < 1e-6f64);
             }
-            Some(FeatureCollection(features)) => {
-                println!("Found a Features Collection.");
-                let g = &features[0].geometry[0];
-                match g {
-                    Geometry::Polygon(polygon) => {
-                        let ls = polygon.exterior();
-                        let u = ls.points().next().unwrap();
-                        let v = Point::new(-175f64, -4.981069f64);
-                        assert!((u.x() - v.x()).abs() < 1e-6f64);
-                        assert!((u.y() - v.y()).abs() < 1e-6f64);
-                    }
-                    _ => {
-                        panic!("Expected a polygon object.");
-                    }
-                }
+            _ => {
+                panic!("Expected a polygon object.");
             }
         }
     }
@@ -151,14 +138,14 @@ mod voronoi {
         // This should be tightened up.
         let g = Geometry::MultiPoint(sites);
 
-        let mut gv;
+        let gv;
         match Voronoi::try_from(g) {
             Ok(ok) => gv = ok,
             Err(_) => {
                 panic!("could not proceed");
             }
         };
-        let _u = gv.polygons(None);
+        let u = gv.polygons();
     }
 
     // it("geoVoronoi.polygons([no valid site]) returns an empty collection.", () => {

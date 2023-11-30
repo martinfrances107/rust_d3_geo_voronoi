@@ -18,6 +18,7 @@ use d3_geo_rs::data_object::FeatureCollection;
 use d3_geo_rs::data_object::FeatureProperty;
 use d3_geo_rs::data_object::Features;
 
+use super::ConstructionError;
 use super::Voronoi;
 
 impl<T> Voronoi<T>
@@ -35,21 +36,27 @@ where
         + Signed
         + NextAfter,
 {
+    pub fn polygons_from_data(
+        data: Geometry<T>,
+    ) -> Result<FeatureCollection<T>, ConstructionError> {
+        let voronoi = Self::try_from(data)?;
+        Ok(voronoi.polygons())
+    }
     /// Returns polygons in the form of a feature collection.
     ///
     /// None when either
     /// the constructor fails, or
     /// the delaunay instance is None.
-    pub fn polygons(&mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
-        if let Some(data) = data {
-            match Self::try_from(data) {
-                Ok(s) => *self = s,
-                Err(_) => return None,
-            }
-        };
+    pub fn polygons(&self) -> FeatureCollection<T> {
+        // if let Some(data) = data {
+        //     match Self::try_from(data) {
+        //         Ok(s) => *self = s,
+        //         Err(_) => return None,
+        //     }
+        // };
 
         if self.valid.is_empty() {
-            return Some(FeatureCollection(Vec::new()));
+            return FeatureCollection(Vec::new());
         }
 
         let len = self.delaunay.polygons.len();
@@ -75,6 +82,6 @@ where
             };
             features.push(fs);
         }
-        Some(FeatureCollection(features))
+        FeatureCollection(features)
     }
 }

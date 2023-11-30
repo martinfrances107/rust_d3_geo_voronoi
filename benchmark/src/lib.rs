@@ -179,21 +179,16 @@ impl Renderer {
 
         let mut path = pb.build(ortho);
 
-        match self.gv.polygons(None) {
-            None => {
-                panic!("Failed to get polygons.");
-            }
-            Some(FeatureCollection(fc)) => {
-                self.context2d.set_stroke_style(&self.black);
-                for (i, features) in fc.iter().enumerate() {
-                    self.context2d
-                        .set_fill_style(&self.scheme_category10[i % 10]);
-                    path.object(&features.geometry[0]);
-                    let path2d = path.context.result();
-                    self.context2d.fill_with_path_2d(&path2d);
-                    self.context2d.stroke_with_path(&path2d);
-                }
-            }
+        let FeatureCollection(fc) = self.gv.polygons();
+
+        self.context2d.set_stroke_style(&self.black);
+        for (i, features) in fc.iter().enumerate() {
+            self.context2d
+                .set_fill_style(&self.scheme_category10[i % 10]);
+            path.object(&features.geometry[0]);
+            let path2d = path.context.result();
+            self.context2d.fill_with_path_2d(&path2d);
+            self.context2d.stroke_with_path(&path2d);
         }
 
         // Render points.

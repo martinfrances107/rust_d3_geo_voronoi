@@ -61,38 +61,33 @@ fn draw() -> Result<String, ConstructionError> {
         .take(size as usize)
         .collect();
 
-    let mut gv = Voronoi::try_from(Geometry::MultiPoint(sites.clone()))?;
+    // TODO this is a pofile code, can I remove the clone.
+    let gv = Voronoi::try_from(Geometry::MultiPoint(sites.clone()))?;
 
     ortho_builder.rotate2_set(&[0_f64, 0_f64]);
     let ortho = ortho_builder.build();
     let mut path = PathBuilder::pathstring().build(ortho);
 
-    let mut out = match gv.polygons(None) {
-        None => {
-            panic!("failed to get polygons");
-        }
-        Some(FeatureCollection(fc)) => {
-            let mut paths = String::new();
-            for (i, features) in fc.iter().enumerate() {
-                let d = match &features.geometry[0] {
-                    Polygon(polygon) => path.object(&Geometry::Polygon(polygon.clone())),
-                    _ => {
-                        panic!("polygon not found");
-                    }
-                };
+    let mut out = String::new();
+    let FeatureCollection(fc) = gv.polygons();
 
-                if !d.is_empty() {
-                    let line = format!(
-                        "<path d={:?} fill=\"{}\" stroke=\"black\" />",
-                        d,
-                        SCHEME_CATEGORY10[i % 10]
-                    );
-                    paths.push_str(&line);
-                }
+    for (i, features) in fc.iter().enumerate() {
+        let d = match &features.geometry[0] {
+            Polygon(polygon) => path.object(&Geometry::Polygon(polygon.clone())),
+            _ => {
+                panic!("polygon not found");
             }
-            paths
+        };
+
+        if !d.is_empty() {
+            let line = format!(
+                "<path d={:?} fill=\"{}\" stroke=\"black\" />",
+                d,
+                SCHEME_CATEGORY10[i % 10]
+            );
+            out.push_str(&line);
         }
-    };
+    }
 
     for p in sites {
         let d = path.object(&Geometry::Point(p));
