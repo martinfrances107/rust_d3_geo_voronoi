@@ -38,8 +38,8 @@ where
     /// # Errors
     ///  The delaunay object must be valid when this function is called.
     pub fn cell_mesh_with_data(data: Geometry<T>) -> Result<MultiLineString<T>, ConstructionError> {
-        let out = Self::try_from(data)?;
-        Ok(out.cell_mesh())
+        let voronoi = Self::try_from(data)?;
+        Ok(voronoi.cell_mesh())
     }
 
     /// Returns all the cells.

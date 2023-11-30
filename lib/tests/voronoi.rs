@@ -196,17 +196,8 @@ mod voronoi {
             Point::new(0f64, 0f64),
         ]);
 
-        // let gv = match Voronoi::<f64>::new(None) {
-        //     Ok(gv) => gv,
-        //     Err(_) => {
-        //         panic!("could not proceed");
-        //     }
-        // };
-        let gv = Voronoi::default();
-
-        let hull = gv.hull(Some(Geometry::MultiPoint(sites)));
-        match hull {
-            Some(polygon) => {
+        match Voronoi::<f64>::hull_with_data(Geometry::MultiPoint(sites)) {
+            Ok(Some(polygon)) => {
                 let actual_ls = polygon.exterior();
                 let expected_ls = LineString::from(vec![
                     Point::new(10f64, 10f64),
@@ -217,8 +208,8 @@ mod voronoi {
                 ]);
                 assert!(actual_ls.is_cyclic_match(expected_ls));
             }
-            None => {
-                panic!("expecting a polygon");
+            _ => {
+                panic!("Geometry object not supported or invalid polygon( with too few points).");
             }
         }
     }

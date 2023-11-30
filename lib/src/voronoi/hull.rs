@@ -14,6 +14,7 @@ use num_traits::FloatConst;
 use num_traits::FromPrimitive;
 use num_traits::Signed;
 
+use super::ConstructionError;
 use super::Voronoi;
 
 impl<T> Voronoi<T>
@@ -31,17 +32,14 @@ where
         + Signed
         + NextAfter,
 {
-    /// Returns the hull for a given geometry.
-    pub fn hull(mut self, data: Option<Geometry<T>>) -> Option<Polygon<T>> {
-        if let Some(data) = data {
-            match Self::try_from(data) {
-                Ok(s) => self = s,
-                Err(_) => {
-                    return None;
-                }
-            }
-        }
+    /// Returns the hull for a given geometry for a given geometry object.
+    pub fn hull_with_data(data: Geometry<T>) -> Result<Option<Polygon<T>>, ConstructionError> {
+        let v = Self::try_from(data)?;
+        Ok(v.hull())
+    }
 
+    /// Returns the hull for a given geometry.
+    pub fn hull(self) -> Option<Polygon<T>> {
         if self.delaunay.hull.is_empty() {
             None
         } else {
