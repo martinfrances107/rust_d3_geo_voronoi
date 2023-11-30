@@ -230,7 +230,7 @@ mod voronoi {
                 panic!("Could not proceed");
             }
         };
-        let mesh = gv.mesh(None);
+        let mesh = gv.mesh();
 
         let golden: Vec<LineString<f64>> = vec![
             vec![[3., 5.], [-2., 5.]].into(),
@@ -243,18 +243,11 @@ mod voronoi {
             vec![[10., 0.], [10., 10.]].into(),
         ];
 
-        match mesh {
-            Some(mls) => {
-                assert!(mls.0.len() == golden.len());
-                // The golden values are unique so no need to worry about duplicate
-                // computed values.
-                for ls in mls {
-                    assert!(golden.contains(&ls), "LineString not found in golden list.");
-                }
-            }
-            None => {
-                panic!("Expected the mesh as a MultiLineString.");
-            }
+        assert!(mesh.0.len() == golden.len());
+        // The golden values are unique so no need to worry about duplicate
+        // computed values.
+        for ls in mesh {
+            assert!(golden.contains(&ls), "LineString not found in golden list.");
         }
     }
 

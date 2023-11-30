@@ -38,6 +38,7 @@ where
         + Signed
         + NextAfter,
 {
+    /// Given a GeometryObject return an annotated Feature collection labelled with distance urquhart etc.
     pub fn links_with_data(data: Geometry<T>) -> Result<FeatureCollection<T>, ConstructionError> {
         let voronoi = Self::try_from(data)?;
         let links = voronoi.links();
