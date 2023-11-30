@@ -55,15 +55,6 @@ where
     }
     /// Returns a feature collection representing the triangularization of the input object.
     pub fn triangles(&self) -> FeatureCollection<T> {
-        // if let Some(data) = data {
-        //     match Self::try_from(data) {
-        //         Ok(s) => {
-        //             self = s;
-        //         }
-        //         Err(_) => return None,
-        //     }
-        // }
-
         let points = self.points.clone();
         let features: Vec<Features<T>> = self
             .delaunay

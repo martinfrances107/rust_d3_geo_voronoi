@@ -85,8 +85,10 @@ fn draw(size: usize) -> Result<String, ConstructionError> {
 }
 
 fn criterion_benchmark(c: &mut Criterion) {
+    let size = 600_usize;
+    c.bench_function("draw600", |b| b.iter(|| draw(size)));
     let size = 6000_usize;
-    c.bench_function("draw", |b| b.iter(|| draw(size)));
+    c.bench_function("draw6000", |b| b.iter(|| draw(size)));
 }
 
 criterion_group!(benches, criterion_benchmark);
