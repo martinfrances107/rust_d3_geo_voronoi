@@ -359,10 +359,10 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]));
 
-        let mut gv = Voronoi::default();
+        // let mut gv = Voronoi::default();
 
-        match gv.links(Some(sites)) {
-            Some(FeatureCollection(features)) => {
+        match Voronoi::links_with_data(sites) {
+            Ok(FeatureCollection(features)) => {
                 let mut out: Vec<f64> = features
                     .iter()
                     .map(|d| match d.properties[0] {
@@ -379,7 +379,7 @@ mod voronoi {
 
                 assert_eq!(out, vec![0.0, 0.0, 10.0])
             }
-            None => {
+            Err(_) => {
                 panic!("Was expecting a feature collection.")
             }
         }
@@ -413,10 +413,8 @@ mod voronoi {
             Point::new(0f64, 10f64),
         ]));
 
-        let mut gv = Voronoi::default();
-
-        match gv.links(Some(sites)) {
-            Some(FeatureCollection(features)) => {
+        match Voronoi::links_with_data(sites) {
+            Ok(FeatureCollection(features)) => {
                 let mut results: Vec<bool> = Vec::new();
                 // TODO: rewrite using find ?
                 for fs in features {
@@ -440,7 +438,7 @@ mod voronoi {
                 results.sort_by(|a, b| a.partial_cmp(b).unwrap());
                 assert_eq!(results, [false, true, true]);
             }
-            None => {
+            Err(_) => {
                 panic!("Was expecting a feature collection.")
             }
         }

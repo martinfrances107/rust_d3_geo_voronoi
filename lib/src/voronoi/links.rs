@@ -20,6 +20,7 @@ use d3_geo_rs::data_object::FeatureProperty;
 use d3_geo_rs::data_object::Features;
 use d3_geo_rs::distance::distance;
 
+use super::ConstructionError;
 use super::Voronoi;
 
 impl<T> Voronoi<T>
@@ -37,14 +38,20 @@ where
         + Signed
         + NextAfter,
 {
+    pub fn links_with_data(data: Geometry<T>) -> Result<FeatureCollection<T>, ConstructionError> {
+        let voronoi = Self::try_from(data)?;
+        let links = voronoi.links();
+        Ok(links)
+    }
+
     /// Returns an annotated Feature collection labelled with distance urquhart etc.
-    pub fn links(&mut self, data: Option<Geometry<T>>) -> Option<FeatureCollection<T>> {
-        if let Some(data) = data {
-            match Self::try_from(data) {
-                Ok(s) => *self = s,
-                Err(_) => return None,
-            }
-        }
+    pub fn links(&self) -> FeatureCollection<T> {
+        // if let Some(data) = data {
+        //     match Self::try_from(data) {
+        //         Ok(s) => *self = s,
+        //         Err(_) => return None,
+        //     }
+        // }
 
         let points: &Vec<Coord<T>> = self.points.borrow();
         let distances: Vec<T> = self
@@ -72,6 +79,6 @@ where
                 }
             })
             .collect();
-        Some(FeatureCollection(features))
+        FeatureCollection(features)
     }
 }
