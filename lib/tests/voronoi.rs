@@ -145,7 +145,7 @@ mod voronoi {
                 panic!("could not proceed");
             }
         };
-        let u = gv.polygons();
+        let _u = gv.polygons();
     }
 
     // it("geoVoronoi.polygons([no valid site]) returns an empty collection.", () => {

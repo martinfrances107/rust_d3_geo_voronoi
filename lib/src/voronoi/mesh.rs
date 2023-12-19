@@ -24,7 +24,9 @@ where
         + NextAfter
         + Signed,
 {
-    pub fn mesh_with_data(data: Geometry<T>) -> Result<MultiLineString<T>, ConstructionError> {
+    /// Return a mesh from the supplied geometry.
+    /// Will error if the voronoi mesh
+    pub fn mesh_from_data(data: Geometry<T>) -> Result<MultiLineString<T>, ConstructionError> {
         let voronoi = Self::try_from(data)?;
         Ok(voronoi.mesh())
     }
