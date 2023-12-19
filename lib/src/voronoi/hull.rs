@@ -33,6 +33,13 @@ where
         + NextAfter,
 {
     /// Returns the hull for a given geometry for a given geometry object.
+    ///
+    /// # Errors
+    ///
+    /// Will return error if a Voronoi object could not be created
+    /// from the input.
+    ///
+    /// For example if an insufficient number of point was supplied.
     pub fn hull_with_data(data: Geometry<T>) -> Result<Option<Polygon<T>>, ConstructionError> {
         let v = Self::try_from(data)?;
         Ok(v.hull())

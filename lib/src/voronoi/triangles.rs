@@ -47,6 +47,14 @@ where
         + Signed
         + NextAfter,
 {
+    /// Returns a feature collection representing the triangularization of the input object.
+    ///
+    /// # Errors
+    ///
+    /// Will return error if a Voronoi object could not be created
+    /// from the input.
+    ///
+    /// For example if an insufficient number of point was supplied.
     pub fn triangles_with_data(
         data: Geometry<T>,
     ) -> Result<FeatureCollection<T>, ConstructionError> {

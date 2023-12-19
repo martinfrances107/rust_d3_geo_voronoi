@@ -38,7 +38,14 @@ where
         + Signed
         + NextAfter,
 {
-    /// Given a GeometryObject return an annotated Feature collection labelled with distance urquhart etc.
+    /// Given a `GeometryObject` return an annotated Feature collection labelled with distance urquhart etc.
+    ///
+    /// # Errors
+    ///
+    /// Will return error if a Voronoi object could not be created
+    /// from the input.
+    ///
+    /// For example if an insufficient number of point was supplied.
     pub fn links_with_data(data: Geometry<T>) -> Result<FeatureCollection<T>, ConstructionError> {
         let voronoi = Self::try_from(data)?;
         let links = voronoi.links();

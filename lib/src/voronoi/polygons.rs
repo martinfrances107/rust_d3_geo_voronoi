@@ -36,6 +36,14 @@ where
         + Signed
         + NextAfter,
 {
+    /// Returns polygons in the form of a feature collection.
+    ///
+    /// # Errors
+    ///
+    /// Will return error if a Voronoi object could not be created
+    /// from the input.
+    ///
+    /// For example if an insufficient number of point was supplied.
     pub fn polygons_from_data(
         data: Geometry<T>,
     ) -> Result<FeatureCollection<T>, ConstructionError> {

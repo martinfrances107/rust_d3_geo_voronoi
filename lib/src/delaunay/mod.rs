@@ -108,6 +108,10 @@ where
         }
     }
 }
+
+/// An error type returned when trying to generate a Voronoi object.
+///
+/// For example if an insufficient number of point was supplied.
 #[derive(Debug)]
 pub struct NotEnoughPointsError {}
 
