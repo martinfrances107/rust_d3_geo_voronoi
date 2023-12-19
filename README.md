@@ -67,7 +67,7 @@ cargo flamegraph -- profile_target
 
 ## Further Development
 
-Known bugs
+Considering migration 0.9.0 to 0.10.0. Many of the non idomatic methods have been replaced with a TryFrom implementation. For more details I have started a migration guide)
 
 Currently the demo works only then f64 is used as the floating point type. [For f32 the cell integrity is broken as some of the cell appear to take-up the whole sphere.]
 To be ported:-
