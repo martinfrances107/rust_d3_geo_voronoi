@@ -71,7 +71,11 @@ impl Renderer {
         let canvas = match document.get_element_by_id("c") {
             Some(element) => match element.dyn_into::<HtmlCanvasElement>() {
                 Ok(canvas) => canvas,
-                Err(_) => return Err(JsValue::from_str("#c is not a canvas element.")),
+                Err(_) => {
+                    return Err(JsValue::from_str(
+                        "#c is not a canvas element.",
+                    ))
+                }
             },
             None => {
                 return Err(JsValue::from_str("Did not find #c on the page."));
@@ -83,11 +87,15 @@ impl Renderer {
                 Some(c) => match c.dyn_into::<CanvasRenderingContext2d>() {
                     Ok(c) => c,
                     Err(_) => {
-                        return Err(JsValue::from_str("Could not convert context."));
+                        return Err(JsValue::from_str(
+                            "Could not convert context.",
+                        ));
                     }
                 },
                 None => {
-                    return Err(JsValue::from_str("Did not receive a context."));
+                    return Err(JsValue::from_str(
+                        "Did not receive a context.",
+                    ));
                 }
             },
             Err(_) => {

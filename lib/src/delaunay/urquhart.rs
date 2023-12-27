@@ -17,7 +17,8 @@ pub fn urquhart<T: Float>(
     Box::new(move |distances: &Vec<T>| {
         let len = edges.len();
         let mut h_lengths: HashMap<EdgeIndex, T> = HashMap::with_capacity(len);
-        let mut h_urquhart: HashMap<EdgeIndex, bool> = HashMap::with_capacity(len);
+        let mut h_urquhart: HashMap<EdgeIndex, bool> =
+            HashMap::with_capacity(len);
 
         for (i, edge) in edges.iter().enumerate() {
             let u = (edge.0, edge.1);

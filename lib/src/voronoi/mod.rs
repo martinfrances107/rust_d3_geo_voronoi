@@ -85,8 +85,12 @@ where
             found: None,
             points: Rc::new(Vec::new()),
             valid: Vec::new(),
-            vx: Box::new(|d: &dyn Centroid<Output = Point<T>>| d.centroid().x()),
-            vy: Box::new(|d: &dyn Centroid<Output = Point<T>>| d.centroid().y()),
+            vx: Box::new(|d: &dyn Centroid<Output = Point<T>>| {
+                d.centroid().x()
+            }),
+            vy: Box::new(|d: &dyn Centroid<Output = Point<T>>| {
+                d.centroid().y()
+            }),
         }
     }
 }
@@ -162,7 +166,9 @@ where
             Some(Geometry::MultiPoint(ref data)) => {
                 let temp: Vec<(T, T, Point<T>)> = data
                     .iter()
-                    .map(|d| ((Self::default().vx)(d), (Self::default().vy)(d), *d))
+                    .map(|d| {
+                        ((Self::default().vx)(d), (Self::default().vy)(d), *d)
+                    })
                     .filter(|(d0, d1, _)| (*d0 + *d1).is_finite())
                     .collect();
                 let points: Vec<Coord<T>> = temp
@@ -200,7 +206,9 @@ where
     /// Sets the y() override function.
     pub fn x(
         mut self,
-        f: Option<Box<impl Fn(&dyn Centroid<Output = Point<T>>) -> T + 'static>>,
+        f: Option<
+            Box<impl Fn(&dyn Centroid<Output = Point<T>>) -> T + 'static>,
+        >,
     ) -> XYReturnDefault<T> {
         match f {
             None => XYReturn::Func(self.vx),
@@ -214,7 +222,9 @@ where
     /// Sets the y() override function.
     pub fn y(
         mut self,
-        f: Option<Box<impl Fn(&dyn Centroid<Output = Point<T>>) -> T + 'static>>,
+        f: Option<
+            Box<impl Fn(&dyn Centroid<Output = Point<T>>) -> T + 'static>,
+        >,
     ) -> XYReturnDefault<T> {
         match f {
             None => XYReturn::Func(self.vy),

@@ -21,7 +21,10 @@ mod voronoi {
     #[test]
     fn two_hemispheres() {
         println!("two points leads to two hemispheres.");
-        let sites = MultiPoint(vec![Point::new(-20f64, -20f64), Point::new(20f64, 20f64)]);
+        let sites = MultiPoint(vec![
+            Point::new(-20f64, -20f64),
+            Point::new(20f64, 20f64),
+        ]);
 
         match Voronoi::polygons_from_data(Geometry::MultiPoint(sites)) {
             Err(_) => {
@@ -45,7 +48,8 @@ mod voronoi {
                         y: 43.21917889371418
                     }
                 ];
-                let g: Geometry<f64> = features.pop().unwrap().geometry.pop().unwrap();
+                let g: Geometry<f64> =
+                    features.pop().unwrap().geometry.pop().unwrap();
                 match g {
                     Geometry::Polygon(p) => {
                         let ls = p.exterior();
@@ -75,7 +79,8 @@ mod voronoi {
                     },
                     Coord { x: 0_f64, y: 0_f64 },
                 ];
-                let g: Geometry<f64> = features.pop().unwrap().geometry.pop().unwrap();
+                let g: Geometry<f64> =
+                    features.pop().unwrap().geometry.pop().unwrap();
                 match g {
                     Geometry::Polygon(p) => {
                         let ls = p.exterior();
@@ -234,7 +239,10 @@ mod voronoi {
         // The golden values are unique so no need to worry about duplicate
         // computed values.
         for ls in mesh {
-            assert!(golden.contains(&ls), "LineString not found in golden list.");
+            assert!(
+                golden.contains(&ls),
+                "LineString not found in golden list."
+            );
         }
     }
 
@@ -277,7 +285,8 @@ mod voronoi {
             e
         });
 
-        let mut ls_string: Vec<String> = c_string.map(|ls| ls.join("/")).collect();
+        let mut ls_string: Vec<String> =
+            c_string.map(|ls| ls.join("/")).collect();
         ls_string.sort();
         assert_eq!(ls_string, ls_string_golden);
     }
@@ -445,8 +454,10 @@ mod voronoi {
                             y: -1.0_f64 * v.y,
                         };
                         #[allow(clippy::assertions_on_constants)]
-                        if ((u.x - v.x).abs() < 1e-6 && (u.y - v.y).abs() < 1e-6)
-                            || ((u.x - w.x).abs() < 1e-6 && (u.y - w.y).abs() < 1e-6)
+                        if ((u.x - v.x).abs() < 1e-6
+                            && (u.y - v.y).abs() < 1e-6)
+                            || ((u.x - w.x).abs() < 1e-6
+                                && (u.y - w.y).abs() < 1e-6)
                         {
                             debug_assert!(true);
                         } else {
@@ -466,14 +477,18 @@ mod voronoi {
 
     #[test]
     fn does_not_list_fake_points() {
-        println!("geoVoronoi’s delaunay does not list fake points in its triangles");
+        println!(
+            "geoVoronoi’s delaunay does not list fake points in its triangles"
+        );
         let sites = vec![
             Point::new(0f64, 0f64),
             Point::new(10f64, 0f64),
             Point::new(0f64, 10f64),
         ];
 
-        let u = match Voronoi::<f64>::try_from(Geometry::MultiPoint(MultiPoint(sites.clone()))) {
+        let u = match Voronoi::<f64>::try_from(Geometry::MultiPoint(
+            MultiPoint(sites.clone()),
+        )) {
             Ok(u) => u,
             Err(_) => {
                 panic!("could not proceed");

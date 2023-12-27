@@ -17,7 +17,11 @@ use super::TriIndex;
 
 type TupleVec = Vec<(usize, usize, usize, (usize, usize, usize))>;
 
-fn supplement<T>(point: &Coord<T>, centers: &mut Vec<Coord<T>>, triangles_len: usize) -> usize
+fn supplement<T>(
+    point: &Coord<T>,
+    centers: &mut Vec<Coord<T>>,
+    triangles_len: usize,
+) -> usize
 where
     T: CoordFloat + FloatConst,
 {
@@ -86,7 +90,8 @@ where
         }
     }
 
-    let mut polygons: HashMap<usize, TupleVec> = HashMap::with_capacity(triangles.len());
+    let mut polygons: HashMap<usize, TupleVec> =
+        HashMap::with_capacity(triangles.len());
     for (t, tri) in triangles.iter().enumerate() {
         for j in 0..3 {
             let a = tri[j];

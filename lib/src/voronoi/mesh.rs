@@ -32,7 +32,9 @@ where
     /// from the input.
     ///
     /// For example if an insufficient number of point was supplied.
-    pub fn mesh_from_data(data: Geometry<T>) -> Result<MultiLineString<T>, ConstructionError> {
+    pub fn mesh_from_data(
+        data: Geometry<T>,
+    ) -> Result<MultiLineString<T>, ConstructionError> {
         let voronoi = Self::try_from(data)?;
         Ok(voronoi.mesh())
     }

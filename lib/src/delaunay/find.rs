@@ -19,17 +19,23 @@ where
     T: CoordFloat,
 {
     #[allow(clippy::similar_names)]
-    pub(crate) fn find(&self, p: &Coord<T>, next_p: Option<usize>) -> Option<usize> {
+    pub(crate) fn find(
+        &self,
+        p: &Coord<T>,
+        next_p: Option<usize>,
+    ) -> Option<usize> {
         let next_or_none = next_p.map_or(Some(0usize), Some);
         let mut found = next_or_none;
         let xyz = cartesian(&Coord { x: p.x, y: p.y });
         'outer: loop {
             let cell = next_or_none.unwrap();
             let mut next_or_no = None;
-            let mut dist = distance2(&xyz, &cartesian(&self.delaunay.points[cell]));
+            let mut dist =
+                distance2(&xyz, &cartesian(&self.delaunay.points[cell]));
             if let Some(row) = self.neighbors.get(&cell) {
                 for i in row {
-                    let ndist = distance2(&xyz, &cartesian(&self.delaunay.points[*i]));
+                    let ndist =
+                        distance2(&xyz, &cartesian(&self.delaunay.points[*i]));
                     if ndist < dist {
                         dist = ndist;
                         next_or_no = Some(*i);

@@ -35,7 +35,8 @@ where
     // Find a valid Pivot point to send to infinity.
     // The index of the first acceptable point in
     // which the x or y component is not infinity.
-    let pivot: usize = points.iter().position(|p| (p.x + p.y).is_finite()).unwrap();
+    let pivot: usize =
+        points.iter().position(|p| (p.x + p.y).is_finite()).unwrap();
 
     let r = Rotation::new(points[pivot].x, points[pivot].y, T::zero());
     let r_invert = r.invert(&Coord {
@@ -52,7 +53,8 @@ where
     builder.rotate2_set(&[r_invert.x, r_invert.y]);
     let projection = builder.build();
 
-    let mut points: Vec<Coord<T>> = points.iter().map(|p| projection.transform(p)).collect();
+    let mut points: Vec<Coord<T>> =
+        points.iter().map(|p| projection.transform(p)).collect();
 
     let mut zeros = Vec::new();
     let mut max2 = T::one();

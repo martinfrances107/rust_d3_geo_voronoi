@@ -60,7 +60,9 @@ fn draw(size: usize) -> Result<String, ConstructionError> {
 
     for (i, features) in fc.iter().enumerate() {
         let d = match &features.geometry[0] {
-            Polygon(polygon) => path.object(&Geometry::Polygon(polygon.clone())),
+            Polygon(polygon) => {
+                path.object(&Geometry::Polygon(polygon.clone()))
+            }
             _ => {
                 panic!("polygon not found");
             }

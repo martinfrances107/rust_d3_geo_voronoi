@@ -37,7 +37,9 @@ where
     ///
     /// # Errors
     ///  The delaunay object must be valid when this function is called.
-    pub fn cell_mesh_with_data(data: Geometry<T>) -> Result<MultiLineString<T>, ConstructionError> {
+    pub fn cell_mesh_with_data(
+        data: Geometry<T>,
+    ) -> Result<MultiLineString<T>, ConstructionError> {
         let voronoi = Self::try_from(data)?;
         Ok(voronoi.cell_mesh())
     }
@@ -52,7 +54,8 @@ where
         // Here can only supply an underestimate of the capacity
         // but if the number of polygons is large it will provide
         // some relief from constant reallocation.
-        let mut coordinates: Vec<LineString<T>> = Vec::with_capacity(polygons.len());
+        let mut coordinates: Vec<LineString<T>> =
+            Vec::with_capacity(polygons.len());
         for p in polygons {
             //   TODO: remove panic and return a sensible default.
             let mut p0 = *p.last().unwrap();

@@ -9,7 +9,10 @@ use super::excess::excess;
 use super::EdgeIndex;
 use super::TriIndex;
 
-pub fn edges<T: CoordFloat>(triangles: &[TriIndex], point: &[Coord<T>]) -> HashSet<EdgeIndex> {
+pub fn edges<T: CoordFloat>(
+    triangles: &[TriIndex],
+    point: &[Coord<T>],
+) -> HashSet<EdgeIndex> {
     if point.len() == 1 {
         return HashSet::from([(0usize, 1usize)]);
     }

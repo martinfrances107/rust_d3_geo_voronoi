@@ -76,11 +76,17 @@ where
             .filter(|tri_struct| excess(&tri_struct.tri_points) > T::zero())
             .map(|tri_struct| {
                 let first = tri_struct.tri_points[0];
-                let mut coordinates: Vec<Coord<T>> = tri_struct.tri_points.into();
+                let mut coordinates: Vec<Coord<T>> =
+                    tri_struct.tri_points.into();
                 coordinates.push(first);
                 Features {
-                    properties: vec![FeatureProperty::Circumecenter(tri_struct.center)],
-                    geometry: vec![Geometry::Polygon(Polygon::new(coordinates.into(), vec![]))],
+                    properties: vec![FeatureProperty::Circumecenter(
+                        tri_struct.center,
+                    )],
+                    geometry: vec![Geometry::Polygon(Polygon::new(
+                        coordinates.into(),
+                        vec![],
+                    ))],
                 }
             })
             .collect();

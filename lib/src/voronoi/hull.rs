@@ -40,7 +40,9 @@ where
     /// from the input.
     ///
     /// For example if an insufficient number of point was supplied.
-    pub fn hull_with_data(data: Geometry<T>) -> Result<Option<Polygon<T>>, ConstructionError> {
+    pub fn hull_with_data(
+        data: Geometry<T>,
+    ) -> Result<Option<Polygon<T>>, ConstructionError> {
         let v = Self::try_from(data)?;
         Ok(v.hull())
     }

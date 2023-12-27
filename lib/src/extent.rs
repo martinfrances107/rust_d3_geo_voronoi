@@ -3,7 +3,10 @@ use core::cmp::PartialOrd;
 type ValueOfFn<T> = Box<dyn Fn(T, T, T) -> T>;
 
 /// Return the min and max simultaneously.
-pub fn extent<I: IntoIterator<Item = T>, T>(iter: I, value_of: &Option<ValueOfFn<T>>) -> (T, T)
+pub fn extent<I: IntoIterator<Item = T>, T>(
+    iter: I,
+    value_of: &Option<ValueOfFn<T>>,
+) -> (T, T)
 where
     T: PartialOrd + Copy,
 {
@@ -35,7 +38,9 @@ where
             }
         }
         Some(_) => {
-            unimplemented!("Not yet supported: extent() value of function parameter.");
+            unimplemented!(
+                "Not yet supported: extent() value of function parameter."
+            );
         }
     }
 
