@@ -5,8 +5,8 @@ use approx::AbsDiffEq;
 use float_next_after::NextAfter;
 use geo::Coord;
 use geo::CoordFloat;
+use geo::GeoNum;
 use geo::Geometry;
-use geo::HasKernel;
 use geo::Polygon;
 use num_traits::AsPrimitive;
 use num_traits::Bounded;
@@ -43,7 +43,7 @@ where
         + Default
         + FloatConst
         + FromPrimitive
-        + HasKernel
+        + GeoNum
         + Signed
         + NextAfter,
 {

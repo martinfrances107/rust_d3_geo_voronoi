@@ -1,8 +1,8 @@
 use float_next_after::NextAfter;
 use geo::line_string;
 use geo::CoordFloat;
+use geo::GeoNum;
 use geo::Geometry;
-use geo::HasKernel;
 use geo::MultiLineString;
 use num_traits::Bounded;
 use num_traits::FloatConst;
@@ -20,7 +20,7 @@ where
         + Default
         + FloatConst
         + FromPrimitive
-        + HasKernel
+        + GeoNum
         + NextAfter
         + Signed,
 {

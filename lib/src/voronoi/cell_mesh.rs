@@ -5,8 +5,8 @@ use approx::AbsDiffEq;
 use float_next_after::NextAfter;
 use geo::line_string;
 use geo::CoordFloat;
+use geo::GeoNum;
 use geo::Geometry;
-use geo::HasKernel;
 use geo::LineString;
 use geo::MultiLineString;
 use num_traits::AsPrimitive;
@@ -29,7 +29,7 @@ where
         + Default
         + FloatConst
         + FromPrimitive
-        + HasKernel
+        + GeoNum
         + Signed
         + NextAfter,
 {

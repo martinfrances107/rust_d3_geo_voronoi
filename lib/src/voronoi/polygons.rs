@@ -4,8 +4,8 @@ use core::ops::AddAssign;
 use approx::AbsDiffEq;
 use float_next_after::NextAfter;
 use geo::CoordFloat;
+use geo::GeoNum;
 use geo::Geometry;
-use geo::HasKernel;
 use geo::LineString;
 use geo::Polygon;
 use num_traits::AsPrimitive;
@@ -32,7 +32,7 @@ where
         + Default
         + FloatConst
         + FromPrimitive
-        + HasKernel
+        + GeoNum
         + Signed
         + NextAfter,
 {

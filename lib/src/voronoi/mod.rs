@@ -4,8 +4,8 @@ use std::rc::Rc;
 
 use float_next_after::NextAfter;
 use geo::centroid::Centroid;
-use geo::kernels::HasKernel;
 use geo::CoordFloat;
+use geo::GeoNum;
 use geo::Geometry;
 use geo::Point;
 use geo_types::Coord;
@@ -118,7 +118,7 @@ where
         + Default
         + FloatConst
         + FromPrimitive
-        + HasKernel
+        + GeoNum
         + NextAfter
         + Signed,
 {
