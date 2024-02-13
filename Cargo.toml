@@ -33,6 +33,7 @@ codegen-units = 1
 # Only "./lib" needs this extra functionality.
 [patch.crates-io]
 geo = { git = "https://github.com/martinfrances107/geo.git", branch = "cyclic_match", package = "geo" }
+geo-types = { git = "https://github.com/martinfrances107/geo.git", branch = "cyclic_match", package = "geo-types" }
 
 [profile.bench]
 debug = true
