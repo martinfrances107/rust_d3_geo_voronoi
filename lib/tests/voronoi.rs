@@ -95,7 +95,7 @@ mod voronoi {
     }
 
     #[test]
-    pub fn voronoi_polygons_returns_polygons() {
+    pub fn polygons_returns_polygons() {
         println!("geoVoronoi.polygons(sites) returns polygons.");
         let sites = MultiPoint(vec![
             Point::new(0f64, 0f64),
@@ -292,7 +292,7 @@ mod voronoi {
     }
 
     #[test]
-    fn voronoi_finds_p() {
+    fn finds_p() {
         let sites = MultiPoint(vec![
             Point::new(10f64, 0f64),
             Point::new(10f64, 10f64),
@@ -341,7 +341,7 @@ mod voronoi {
     }
 
     #[test]
-    fn voronoi_link() {
+    fn link() {
         let sites = Geometry::MultiPoint(MultiPoint(vec![
             Point::new(0f64, 0f64),
             Point::new(10f64, 0f64),
@@ -375,7 +375,7 @@ mod voronoi {
     }
 
     #[test]
-    fn voronoi_triangles_returns_geojson() {
+    fn triangles_returns_geojson() {
         let sites = Geometry::MultiPoint(MultiPoint(vec![
             Point::new(0f64, 0f64),
             Point::new(10f64, 0f64),
@@ -393,7 +393,8 @@ mod voronoi {
     }
 
     #[test]
-    fn voronoi_links_returns_urquhart_graph() {
+    fn links_returns_urquhart_graph() {
+        println!("geoVoronoi.links() returns urquhart.");
         let sites = Geometry::MultiPoint(MultiPoint(vec![
             Point::new(0f64, 0f64),
             Point::new(10f64, 0f64),
@@ -432,7 +433,8 @@ mod voronoi {
     }
 
     #[test]
-    fn voronoi_links_returns_circumcenters() {
+    fn links_returns_circumcenters() {
+        println!("geoVoronoi.triangles(sites) returns circumcenters.");
         let sites = Geometry::MultiPoint(MultiPoint(vec![
             Point::new(0f64, 0f64),
             Point::new(10f64, 0f64),
