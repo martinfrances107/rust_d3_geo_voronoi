@@ -25,8 +25,9 @@ use core::iter::repeat_with;
 use geo::Geometry;
 use geo::MultiPoint;
 use geo_types::Coord;
-use wasm_bindgen::prelude::*;
+use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsCast;
+use wasm_bindgen::JsValue;
 use web_sys::window;
 use web_sys::CanvasRenderingContext2d;
 use web_sys::Document;
@@ -63,6 +64,17 @@ pub struct Renderer {
 #[wasm_bindgen]
 impl Renderer {
     /// size is the point of points generated at random.
+    ///
+    /// # Panics
+    ///
+    /// If the document object is now available.
+    ///
+    /// # Errors
+    ///
+    /// If the canvas element in not in the DOM.
+    /// If the CanvasRenderingContext2d object is not available.
+    /// If the window is not availble.
+    ///
     pub fn new(size: u32) -> Result<Renderer, JsValue> {
         utils::set_panic_hook();
 
@@ -151,6 +163,11 @@ impl Renderer {
     /// This function is designed to be called as part of a
     /// HTML element onchange event, so I am using a
     /// update in-place stratergy.
+    ///
+    /// # Errors
+    ///
+    /// If the generated points cannot be lead to malformed Mesh.
+    ///
     pub fn update(&mut self, size: u32) -> Result<(), JsValue> {
         utils::set_panic_hook();
         self.sites = repeat_with(rand::random)

@@ -24,7 +24,7 @@ mod mesh;
 mod polygons;
 mod triangles;
 
-/// Return type used by .x() and .y()
+/// Return type used by `.x()` and `.y()`
 #[allow(missing_debug_implementations)]
 pub enum XYReturn<T>
 where
@@ -46,7 +46,7 @@ pub struct Voronoi<T>
 where
     T: CoordFloat,
 {
-    /// The wrapped GeoDelaunay instance.
+    /// The wrapped `GeoDelaunay` instance.
     #[allow(clippy::type_complexity)]
     pub delaunay: Delaunay<T>,
     data: Option<Geometry<T>>,
@@ -203,7 +203,7 @@ impl<T> Voronoi<T>
 where
     T: CoordFloat,
 {
-    /// Sets the y() override function.
+    /// Sets the `x()` override function.
     pub fn x(
         mut self,
         f: Option<
@@ -219,7 +219,7 @@ where
         }
     }
 
-    /// Sets the y() override function.
+    /// Sets the `y()` override function.
     pub fn y(
         mut self,
         f: Option<

@@ -59,7 +59,7 @@ where
     pub triangles: Rc<Vec<TriIndex>>,
     /// A list of centers associated with the cells.
     pub centers: Vec<Coord<T>>,
-    /// Passes to Voronoi::polygon() where it is consumed.
+    /// Passes to `Voronoi::polygon()` where it is consumed.
     pub neighbors: Rc<HashMap<usize, Vec<usize>>>,
     /// A set pf polygons as defined by a set of indices.
     pub polygons: Vec<Vec<usize>>,

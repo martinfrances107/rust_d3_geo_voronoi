@@ -1,5 +1,3 @@
-use core::cmp::PartialOrd;
-
 type ValueOfFn<T> = Box<dyn Fn(T, T, T) -> T>;
 
 /// Return the min and max simultaneously.

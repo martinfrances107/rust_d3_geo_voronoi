@@ -32,7 +32,7 @@ where
         for i in 0usize..3usize {
             let e = (tri[i], tri[(i + 1) % 3]);
             let code = (e.1, e.0);
-            if h_hull.get(&code).is_some() {
+            if h_hull.contains(&code) {
                 h_hull.remove(&code);
             } else {
                 h_hull.insert(e);
