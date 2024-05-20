@@ -7,7 +7,4 @@ profile_target/perf.data
 Cargo.lock
 **/flamegraph.svg
 **/perf.data
-!.github
-!.gitattributes
-!.gitignore
 !.vscode
