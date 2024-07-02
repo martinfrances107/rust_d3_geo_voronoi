@@ -13,9 +13,6 @@ version = { workspace = true }
 [lib]
 crate-type = ["cdylib", "rlib"]
 
-[features]
-default = ["console_error_panic_hook"]
-
 [dependencies]
 approx = "~0.5"
 num-traits = "~0.2"
@@ -25,12 +22,6 @@ geo-types = { workspace = true }
 delaunator = "1.0.1"
 d3_geo_rs = { workspace = true }
 d3_delaunay_rs = { workspace = true }
-# The `console_error_panic_hook` crate provides better debugging of panics by
-# logging them with `console.error`. This is great for development, but requires
-# all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
-# code size when deploying.
-console_error_panic_hook = { version = "~0.1", optional = true }
-rand = "0.8.5"
 lazy_static = "1.5.0"
 
 [dev-dependencies]
