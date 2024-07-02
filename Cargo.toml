@@ -13,7 +13,7 @@ edition = "2021"
 keywords = ["delauany", "diagram", "graphics", "voronoi"]
 license = "MIT"
 readme = "../README.md"
-version = "0.10.3"
+version = "0.10.4"
 
 [workspace.dependencies]
 d3_geo_rs = "~2"
