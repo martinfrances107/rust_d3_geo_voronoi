@@ -16,23 +16,11 @@ use geo::Geometry;
 use geo::Geometry::Polygon;
 use geo::MultiPoint;
 use geo_types::Coord;
-use lazy_static::lazy_static;
 
-#[cfg(not(tarpaulin_include))]
-lazy_static! {
-    static ref SCHEME_CATEGORY10: [String; 10] = [
-        String::from("#1f77b4"),
-        String::from("#ff7f0e"),
-        String::from("#2ca02c"),
-        String::from("#d62728"),
-        String::from("#9467bd"),
-        String::from("#8c564b"),
-        String::from("#e377c2"),
-        String::from("#7f7f7f"),
-        String::from("#bcbd22"),
-        String::from("#17becf"),
-    ];
-}
+static SCHEME_CATEGORY10: [&'static str; 10] = [
+    "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b",
+    "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
+];
 
 #[cfg(not(tarpaulin_include))]
 fn draw(size: usize) -> Result<String, ConstructionError> {

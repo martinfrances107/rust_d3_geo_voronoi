@@ -22,7 +22,6 @@ geo-types = { workspace = true }
 delaunator = "1.0.1"
 d3_geo_rs = { workspace = true }
 d3_delaunay_rs = { workspace = true }
-lazy_static = "1.5.0"
 
 [dev-dependencies]
 rand = "0.8.5"
