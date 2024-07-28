@@ -3,8 +3,6 @@
 #![warn(clippy::cargo)]
 #![warn(missing_docs)]
 #![warn(missing_debug_implementations)]
-#![cfg(not(tarpaulin_include))]
-
 //! # rust d3 geo voronoi
 //!
 //! Know bugs.

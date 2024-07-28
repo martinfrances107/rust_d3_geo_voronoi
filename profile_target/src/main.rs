@@ -3,7 +3,6 @@
 #![warn(clippy::cargo)]
 #![warn(missing_docs)]
 #![warn(missing_debug_implementations)]
-#![cfg(not(tarpaulin_include))]
 
 //! A benchmark used to profile the library.
 
@@ -33,7 +32,6 @@ static SCHEME_CATEGORY10: [&str; 10] = [
     "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
 ];
 
-#[cfg(not(tarpaulin_include))]
 fn draw() -> Result<String, ConstructionError> {
     // size is the number of voronoi
 
@@ -86,7 +84,6 @@ fn draw() -> Result<String, ConstructionError> {
     Ok(out)
 }
 
-#[cfg(not(tarpaulin_include))]
 fn main() -> std::io::Result<()> {
     let file = File::create("profile_output.html")?;
     let mut file = LineWriter::new(file);
