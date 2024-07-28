@@ -226,7 +226,6 @@ impl Renderer {
     }
 }
 
-#[cfg(not(tarpaulin_include))]
 fn get_document() -> Result<Document, JsValue> {
     if let Some(window) = window() {
         if let Some(document) = window.document() {

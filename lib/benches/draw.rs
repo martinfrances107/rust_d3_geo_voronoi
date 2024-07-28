@@ -22,7 +22,6 @@ static SCHEME_CATEGORY10: [&'static str; 10] = [
     "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
 ];
 
-#[cfg(not(tarpaulin_include))]
 fn draw(size: usize) -> Result<String, ConstructionError> {
     // size is the number of voronoi
 

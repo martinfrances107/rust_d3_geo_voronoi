@@ -1,13 +1,13 @@
 [package]
-readme = "../README.md"
-authors = ["martin frances <martinfrances107@hotmail.com"]
+readme =  { workspace = true }
+authors = { workspace = true }
 categories = ["graphics"]
 keywords = ["d3-geo"]
 name = "d3_geo_voronoi_rs"
 description = "A port into rustlang of the javascript library d3-geo-voronoi"
-repository = "https://github.com/martinfrances107/rust_d3_geo_voronoi.git"
-edition = "2021"
-license = "MIT"
+repository =  { workspace = true }
+edition =  { workspace = true }
+license =  { workspace = true }
 version = { workspace = true }
 
 [lib]
