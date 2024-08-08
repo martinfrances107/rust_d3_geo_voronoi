@@ -99,9 +99,8 @@ pub fn polygons_returns_polygons() {
         Point::new(0f64, 10f64),
     ]);
 
-    let gv;
-    match Voronoi::try_from(Geometry::MultiPoint(sites)) {
-        Ok(ok) => gv = ok,
+    let gv = match Voronoi::try_from(Geometry::MultiPoint(sites)) {
+        Ok(ok) => ok,
         Err(_) => {
             panic!("could not proceed");
         }

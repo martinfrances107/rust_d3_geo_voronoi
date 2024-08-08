@@ -17,7 +17,7 @@ use geo::Geometry::Polygon;
 use geo::MultiPoint;
 use geo_types::Coord;
 
-static SCHEME_CATEGORY10: [&'static str; 10] = [
+static SCHEME_CATEGORY10: [&str; 10] = [
     "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b",
     "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
 ];
@@ -32,7 +32,7 @@ fn draw(size: usize) -> Result<String, ConstructionError> {
             x: 360_f64 * x,
             y: 180_f64 * y - 90_f64,
         })
-        .take(size as usize)
+        .take(size)
         .collect();
 
     // TODO this is a pofile code, can I remove the clone.
