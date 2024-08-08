@@ -5,6 +5,7 @@ members = [
   "./benchmark",      # A webpage with a stress test of the library.
   "./profile_target", # A binary that output a compelex SVG images, which can be profiled.
 ]
+default-members = ['./lib']
 
 [workspace.package]
 authors = ["martin <martinfrances107@hotmail.com>"]
