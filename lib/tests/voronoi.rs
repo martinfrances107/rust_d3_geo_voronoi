@@ -138,9 +138,8 @@ fn polygon_tolerates_nan() {
     // This should be tightened up.
     let g = Geometry::MultiPoint(sites);
 
-    let gv;
-    match Voronoi::try_from(g) {
-        Ok(ok) => gv = ok,
+    let gv = match Voronoi::try_from(g) {
+        Ok(ok) => ok,
         Err(_) => {
             panic!("could not proceed");
         }

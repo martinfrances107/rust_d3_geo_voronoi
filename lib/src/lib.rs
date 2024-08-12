@@ -1,9 +1,12 @@
 #![deny(clippy::all)]
+#![warn(clippy::cargo)]
+#![warn(clippy::complexity)]
 #![warn(clippy::pedantic)]
 #![warn(clippy::nursery)]
-#![warn(clippy::cargo)]
-#![warn(missing_docs)]
+#![warn(clippy::pedantic)]
+#![warn(clippy::perf)]
 #![warn(missing_debug_implementations)]
+#![warn(missing_docs)]
 //! A port of [d3/d3-delaunay](<https://github.com/Fil/d3-geo-voronoi>).
 //!
 //! Voronoi / Delaunay tessellations on the sphere.
