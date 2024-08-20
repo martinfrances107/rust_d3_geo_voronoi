@@ -97,7 +97,8 @@ where
 
 /// Geo-Voronoi construction error.
 ///
-/// Unexpected Geometry input.
+/// Unsupport Geometry object used as input.
+/// Please file and issue.
 #[derive(Debug, Clone)]
 pub struct ConstructionError;
 
