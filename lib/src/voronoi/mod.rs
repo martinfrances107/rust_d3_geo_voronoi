@@ -183,11 +183,10 @@ where
                         y: d.2.y(),
                     })
                     .collect();
-                match Delaunay::<T>::try_from(&points) {
-                    Ok(delaunay) => v.delaunay = delaunay,
+                v.delaunay = match Delaunay::<T>::try_from(&points) {
+                    Ok(delaunay) => delaunay,
                     Err(_) => return Err(ConstructionError),
-                }
-                // v.delaunay = Delaunay::new(&points);
+                };
             }
             None => {
                 v = Self::default();
