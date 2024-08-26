@@ -6,6 +6,7 @@
   "scripts": {
     "build": "rimraf dist pkg && RUST_LOG=info webpack -c webpack.production.config.js",
     "serve": "serve dist",
+    "lint": "tslint './js/*.ts'",
     "start": "rimraf dist pkg && RUST_LOG=info webpack-dev-server --open ",
     "test": "cargo test && wasm-pack test --headless"
   },
@@ -51,6 +52,7 @@
     "eslint-plugin-promise": "^6",
     "eslint-plugin-react": "^7",
     "eslint-plugin-react-hooks": "^4",
-    "eslint-webpack-plugin": "^4"
+    "eslint-webpack-plugin": "^4",
+    "tslint": "6"
   }
 }
