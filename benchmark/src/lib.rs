@@ -35,7 +35,7 @@ use web_sys::Performance;
 
 use d3_geo_rs::data_object::FeatureCollection;
 use d3_geo_rs::path::builder::Builder as PathBuilder;
-use d3_geo_rs::path::endpoint::Endpoint;
+use d3_geo_rs::path::path2d_endpoint::Path2dEndpoint;
 use d3_geo_rs::path::Result as PathResult;
 use d3_geo_rs::projection::builder::types::BuilderCircleResampleNoClip;
 use d3_geo_rs::projection::orthographic::Orthographic;
@@ -49,13 +49,13 @@ use d3_geo_voronoi_rs::voronoi::Voronoi;
 /// State associated with render call.
 pub struct Renderer {
     context2d: CanvasRenderingContext2d,
-    ep: Endpoint,
-    ob: BuilderCircleResampleNoClip<Endpoint, Orthographic<f64>, f64>,
+    ep: Path2dEndpoint,
+    ob: BuilderCircleResampleNoClip<Path2dEndpoint, Orthographic<f64>, f64>,
     performance: Performance,
-    scheme_category10: [JsValue; 10],
+    scheme_category10: [&'static str; 10],
     sites: MultiPoint<f64>,
-    black: JsValue,
-    white: JsValue,
+    black: &'static str,
+    white: &'static str,
     gv: Voronoi<f64>,
 }
 
@@ -116,19 +116,11 @@ impl Renderer {
         context2d.clear_rect(0_f64, 0_f64, 960_f64, 600_f64);
 
         let path2d = Path2d::new().unwrap();
-        let ep: Endpoint = Endpoint::new(path2d);
+        let ep = Path2dEndpoint::new(path2d);
 
-        let scheme_category10: [JsValue; 10] = [
-            JsValue::from_str("#1f77b4"),
-            JsValue::from_str("#ff7f0e"),
-            JsValue::from_str("#2ca02c"),
-            JsValue::from_str("#d62728"),
-            JsValue::from_str("#9467bd"),
-            JsValue::from_str("#8c564b"),
-            JsValue::from_str("#e377c2"),
-            JsValue::from_str("#7f7f7f"),
-            JsValue::from_str("#bcbd22"),
-            JsValue::from_str("#17becf"),
+        let scheme_category10: [&'static str; 10] = [
+            "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b",
+            "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
         ];
 
         let Some(w) = window() else {
@@ -142,13 +134,13 @@ impl Renderer {
         let mut out = Self {
             context2d,
             ep,
-            black: JsValue::from_str("black"),
+            black: "black",
             gv: Voronoi::default(),
             ob: Orthographic::builder(),
             performance,
             sites: MultiPoint(vec![]),
             scheme_category10,
-            white: JsValue::from_str("white"),
+            white: "white",
         };
 
         out.update(size)?;
@@ -160,7 +152,7 @@ impl Renderer {
     ///
     /// This function is designed to be called as part of a
     /// HTML element onchange event, so I am using a
-    /// update in-place stratergy.
+    /// update in-place strategy.
     ///
     /// # Errors
     ///
@@ -204,21 +196,21 @@ impl Renderer {
 
         let FeatureCollection(fc) = self.gv.polygons();
 
-        self.context2d.set_stroke_style(&self.black);
+        self.context2d.set_stroke_style_str(self.black);
         for (i, features) in fc.iter().enumerate() {
             self.context2d
-                .set_fill_style(&self.scheme_category10[i % 10]);
-            path.object(&features.geometry[0]);
+                .set_fill_style_str(&self.scheme_category10[i % 10]);
+            let _ = path.object(&features.geometry[0]);
             let path2d = path.context.result();
             self.context2d.fill_with_path_2d(&path2d);
             self.context2d.stroke_with_path(&path2d);
         }
 
         // Render points.
-        self.context2d.set_fill_style(&self.white);
-        self.context2d.set_stroke_style(&self.black);
+        self.context2d.set_fill_style_str(&self.white);
+        self.context2d.set_stroke_style_str(&self.black);
         for p in &self.sites {
-            path.object(&Geometry::Point(*p));
+            let _ = path.object(&Geometry::Point(*p));
             let path2d = path.context.result();
             self.context2d.fill_with_path_2d(&path2d);
             self.context2d.stroke_with_path(&path2d);

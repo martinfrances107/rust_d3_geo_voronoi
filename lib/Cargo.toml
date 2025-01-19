@@ -1,33 +1,33 @@
 [package]
-readme =  { workspace = true }
+readme = { workspace = true }
 authors = { workspace = true }
 categories = ["graphics"]
 keywords = ["d3-geo"]
 name = "d3_geo_voronoi_rs"
 description = "A port into rustlang of the javascript library d3-geo-voronoi"
-repository =  { workspace = true }
-edition =  { workspace = true }
-license =  { workspace = true }
+repository = { workspace = true }
+edition = { workspace = true }
+license = { workspace = true }
 version = { workspace = true }
 
 [lib]
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-approx = "~0.5"
-num-traits = "~0.2"
-float_next_after = "1.0"
+approx = "^0.5"
+num-traits = "^0.2"
+float_next_after = "^1"
 geo = { workspace = true }
 geo-types = { workspace = true }
-delaunator = "1.0.1"
+delaunator = "^1"
 d3_geo_rs = { workspace = true }
 d3_delaunay_rs = { workspace = true }
 
 [dev-dependencies]
-rand = "0.8.5"
-pretty_assertions = "~1"
-wasm-bindgen-test = "~0.3"
-criterion = { version = "~0.5", features = ["html_reports"] }
+rand = "^0.8"
+pretty_assertions = "1"
+wasm-bindgen-test = "0.3"
+criterion = { version = "0.5", features = ["html_reports"] }
 
 [[bench]]
 name = "draw"

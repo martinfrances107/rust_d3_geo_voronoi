@@ -67,7 +67,7 @@ cargo flamegraph -- profile_target
 
 ## Further Development
 
-Considering migration 0.9.0 to 0.10.0. Many of the non idomatic "new" methods have been replaced with a TryFrom implementation. For more details see the [CHANGELOG.md](https://github.com/martinfrances107/rust_d3_geo_voronoi/blob/main/CHANGELOG.md)
+Considering migration 0.9.0 to 0.10.0. Many of the non idiomatic "new" methods have been replaced with a TryFrom implementation. For more details see the [CHANGELOG.md](https://github.com/martinfrances107/rust_d3_geo_voronoi/blob/main/CHANGELOG.md)
 
 Currently the demo works only then f64 is used as the floating point type. [For f32 the cell integrity is broken as some of the cell appear to take-up the whole sphere.]
 To be ported:-
