@@ -67,14 +67,11 @@ import("../pkg").then((pkg) => {
 
   sizeRange.addEventListener("change", genPoints);
 
+  var render_out;
   const renderLoop = () => {
-    // console.log("entering render loop");
-    // context.clearRect(0, 0, 960, 600);
     const t0 = performance.now();
-    // console.log("pre render");
-    renderer.render();
+    render_out = renderer.render();
     const t1 = performance.now();
-    // console.log("sent render");
     // Compute the mean elapsed time and compute the standard deviation based on the
     // the last 200 samples.
     const elapsed = t1 - t0;
