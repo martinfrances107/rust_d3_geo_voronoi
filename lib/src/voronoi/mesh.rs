@@ -40,12 +40,10 @@ where
     }
     /// Returns the mesh in the form of a multi-line string.
     pub fn mesh(self) -> MultiLineString<T> {
-        MultiLineString(
-            self.delaunay
-                .edges
-                .iter()
-                .map(|e| line_string![(self.points)[e.0], (self.points)[e.1]])
-                .collect::<Vec<_>>(),
-        )
+        self.delaunay
+            .edges
+            .iter()
+            .map(|e| line_string![(self.points)[e.0], (self.points)[e.1]])
+            .collect::<MultiLineString<T>>()
     }
 }
