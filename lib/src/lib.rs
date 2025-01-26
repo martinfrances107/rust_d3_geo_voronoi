@@ -7,7 +7,7 @@
 #![warn(clippy::perf)]
 #![warn(missing_debug_implementations)]
 #![warn(missing_docs)]
-//! A port of [d3/d3-delaunay](<https://github.com/Fil/d3-geo-voronoi>).
+//! A port of [d3/d3-geo-voronoi](<https://github.com/Fil/d3-geo-voronoi>).
 //!
 //! Voronoi / Delaunay tessellations on the sphere.
 //!
@@ -19,7 +19,7 @@ extern crate d3_geo_rs;
 /// Allows debug to be auto-derived from complex structs.
 extern crate float_next_after;
 extern crate geo;
-/// delaunay helper functions.
+/// Delaunay helper functions.
 pub mod delaunay;
 
 /// Wrapper for Delaunay contains helper methods.
