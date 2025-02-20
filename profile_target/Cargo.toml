@@ -20,4 +20,4 @@ geo = { workspace = true }
 geo-types = { workspace = true }
 d3_geo_voronoi_rs = { path = "../lib" }
 d3_geo_rs = { workspace = true }
-rand = { version = "~0.8" }
+rand = { version = "~0.9" }

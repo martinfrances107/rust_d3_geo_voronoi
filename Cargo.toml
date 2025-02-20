@@ -3,7 +3,7 @@ resolver = "2"
 members = [
   "./lib",
   "./benchmark",      # A webpage with a stress test of the library.
-  "./profile_target", # A binary that output a compelex SVG images, which can be profiled.
+  "./profile_target", # A binary that output a complex SVG images, which can be profiled.
 ]
 default-members = ['./lib']
 
@@ -11,7 +11,7 @@ default-members = ['./lib']
 authors = ["martin <martinfrances107@hotmail.com>"]
 categories = ["graphics", "Mathematics"]
 edition = "2021"
-keywords = ["delauany", "diagram", "graphics", "voronoi"]
+keywords = ["delaunay", "diagram", "graphics", "voronoi"]
 license = "MIT"
 readme = "../README.md"
 repository = "https://github.com/martinfrances107/rust_d3_geo_voronoi.git"
@@ -19,7 +19,7 @@ version = "0.10.4"
 
 [workspace.dependencies]
 d3_geo_rs = "~3"
-d3_delaunay_rs = "~0.9"
+d3_delaunay_rs = "~0.11"
 geo = "~0.29"
 geo-types = "~0.7"
 
