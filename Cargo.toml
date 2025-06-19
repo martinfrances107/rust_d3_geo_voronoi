@@ -18,9 +18,9 @@ repository = "https://github.com/martinfrances107/rust_d3_geo_voronoi.git"
 version = "0.10.4"
 
 [workspace.dependencies]
-d3_geo_rs = "~3"
+d3_geo_rs = "~3.1"
 d3_delaunay_rs = "~0.11"
-geo = "~0.29"
+geo = "~0.30.0"
 geo-types = "~0.7"
 
 [profile.release]
