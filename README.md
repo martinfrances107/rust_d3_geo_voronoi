@@ -21,7 +21,7 @@ It is part of a collection of d3 modules ported to rust.
 * d3_geo_voronoi_rs
 
  As a example the library can be used to compute the following delaunay mesh.
-![Delaunay mesh from a set of random points on a sphere](./lamp.png)
+![Delaunay mesh from a set of random points on a sphere](https://github.com/martinfrances107/rust_d3_geo_voronoi/blob/main/lamp.png?raw=true)
 
 ( computed from 6,000 points on a sphere selected at random )
 
