@@ -30,7 +30,7 @@ where
 {
     if points.len() < 2 {
         return None;
-    };
+    }
 
     // Find a valid Pivot point to send to infinity.
     // The index of the first acceptable point in

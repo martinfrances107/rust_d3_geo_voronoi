@@ -22,7 +22,9 @@ d3_geo_rs = "~3.1"
 d3_delaunay_rs = "~0.11"
 geo = "~0.30.0"
 geo-types = "~0.7"
-
+# lib:  dev-dependency
+# profile_target:
+rand = "^0.9"
 [profile.release]
 # This makes the compiled code faster and smaller, but it makes compiling slower,
 # so it's only enabled in release mode.
@@ -36,6 +38,10 @@ codegen-units = 1
 [patch.crates-io]
 geo = { git = "https://github.com/martinfrances107/geo.git", branch = "cyclic_match", package = "geo" }
 geo-types = { git = "https://github.com/martinfrances107/geo.git", branch = "cyclic_match", package = "geo-types" }
+
+# De-duplicate the robust subcrate.
+# deluantor is slow to publish, this repository is the unpublished latest version.
+delaunator = { git = "https://github.com/mourner/delaunator-rs.git", branch = "master" }
 
 [profile.bench]
 debug = true

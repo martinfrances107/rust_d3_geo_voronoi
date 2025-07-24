@@ -21,7 +21,7 @@ pub fn neighbors(
         if npoints == 2usize {
             h_neighbors.insert(0usize, vec![1]);
             h_neighbors.insert(1usize, vec![0]);
-        };
+        }
     } else if npoints == 1 {
         h_neighbors.insert(0usize, vec![]);
     }

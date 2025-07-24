@@ -16,7 +16,7 @@ pub fn circumcenters<'a, T>(
 where
     T: CoordFloat + FloatConst,
 {
-    return triangles.iter().map(|tri| {
+    triangles.iter().map(|tri| {
         let c = [
             cartesian(&points[tri[0]]),
             cartesian(&points[tri[1]]),
@@ -28,5 +28,5 @@ where
             cross(&c[0], &c[2]),
         );
         spherical(&normalize(&v))
-    });
+    })
 }

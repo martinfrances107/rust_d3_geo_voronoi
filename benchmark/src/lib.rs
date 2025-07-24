@@ -12,7 +12,6 @@
 //!
 //! See the README.md.
 extern crate js_sys;
-extern crate rand;
 extern crate wasm_bindgen_test;
 extern crate web_sys;
 
@@ -71,7 +70,7 @@ impl Renderer {
     ///
     /// If the canvas element in not in the DOM.
     /// If the CanvasRenderingContext2d object is not available.
-    /// If the window is not availble.
+    /// If the window is not available.
     ///
     pub fn new(size: u32) -> Result<Renderer, JsValue> {
         utils::set_panic_hook();
@@ -199,7 +198,7 @@ impl Renderer {
         self.context2d.set_stroke_style_str(self.black);
         for (i, features) in fc.iter().enumerate() {
             self.context2d
-                .set_fill_style_str(&self.scheme_category10[i % 10]);
+                .set_fill_style_str(self.scheme_category10[i % 10]);
             let _ = path.object(&features.geometry[0]);
             let path2d = path.context.result();
             self.context2d.fill_with_path_2d(&path2d);
@@ -207,8 +206,8 @@ impl Renderer {
         }
 
         // Render points.
-        self.context2d.set_fill_style_str(&self.white);
-        self.context2d.set_stroke_style_str(&self.black);
+        self.context2d.set_fill_style_str(self.white);
+        self.context2d.set_stroke_style_str(self.black);
         for p in &self.sites {
             let _ = path.object(&Geometry::Point(*p));
             let path2d = path.context.result();

@@ -48,7 +48,7 @@ pub fn urquhart<T: Float>(
             .iter()
             .map(|edge| {
                 let code = (edge.0, edge.1);
-                return *h_urquhart.get(&code).unwrap();
+                *h_urquhart.get(&code).unwrap()
             })
             .collect();
 

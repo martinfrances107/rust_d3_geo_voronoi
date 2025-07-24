@@ -21,6 +21,7 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::rc::Rc;
 
+use d3_delaunay_rs::delaunay;
 use geo::CoordFloat;
 use geo_types::Coord;
 use num_traits::FloatConst;
@@ -123,8 +124,9 @@ where
 
     /// Creates a `GeoDelaunay` object from a set of points.
     fn try_from(points: &Vec<Coord<T>>) -> Result<Self, NotEnoughPointsError> {
-        match from_points(points) {
-            Some(delaunay) => {
+        from_points(points).map_or_else(
+            || Err(NotEnoughPointsError {}),
+            |delaunay| {
                 // RC is needed here as tri and e are both closed over in the urquhart function an is part of the Delaunay return.
                 let tri = Rc::new(triangles(&delaunay));
                 let e = Rc::new(edges(&tri, points));
@@ -135,7 +137,7 @@ where
                 // RC is needed here as it is both closed over in the find function an is part of the Delaunay return.
                 let neighbors = Rc::new(neighbors(&tri, points.len()));
 
-                return Ok(Self {
+                Ok(Self {
                     delaunay,
                     edges: e.clone(),
                     centers,
@@ -146,9 +148,8 @@ where
                     polygons: polys,
                     urquhart: urquhart(e, tri.clone()),
                     triangles: tri,
-                });
-            }
-            None => Err(NotEnoughPointsError {}),
-        }
+                })
+            },
+        )
     }
 }

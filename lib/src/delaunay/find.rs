@@ -26,7 +26,7 @@ where
     ) -> Option<usize> {
         let next_or_none = next_p.map_or(Some(0usize), Some);
         let mut found = next_or_none;
-        let xyz = cartesian(&p);
+        let xyz = cartesian(p);
         'outer: loop {
             let cell = next_or_none.unwrap();
             let mut next_or_no = None;

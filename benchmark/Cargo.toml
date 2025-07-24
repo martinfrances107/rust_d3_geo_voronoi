@@ -23,19 +23,19 @@ d3_geo_voronoi_rs = { path = "../lib" }
 d3_geo_rs = { workspace = true }
 geo = { workspace = true }
 geo-types = { workspace = true }
-getrandom = { version = "~0.2", features = ["js"] }
-js-sys = "~0.3"
-rand = { version = "~0.8" }
-wasm-bindgen = "~0.2"
-wasm-bindgen-test = "~0.3"
+getrandom = { version = "~0.3.3", features = ["wasm_js"] }
+rand = { workspace = true }
+js-sys = "~0.3.77"
+wasm-bindgen = "~0.2.100"
+wasm-bindgen-test = "~0.3.50"
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
 # all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
 # code size when deploying.
-console_error_panic_hook = { version = "~0.1", optional = true }
+console_error_panic_hook = { version = "~0.1.7", optional = true }
 
 [dependencies.web-sys]
-version = "~0.3"
+version = "~0.3.77"
 features = [
   "Attr",
   "console",

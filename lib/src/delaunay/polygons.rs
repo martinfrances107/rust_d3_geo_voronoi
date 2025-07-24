@@ -109,7 +109,7 @@ where
                 None => {
                     polygons.insert(a, vec![next]);
                 }
-            };
+            }
         }
     }
 
