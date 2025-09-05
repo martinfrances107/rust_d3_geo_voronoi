@@ -27,7 +27,7 @@ d3_delaunay_rs = { workspace = true }
 rand = { workspace = true }
 pretty_assertions = "1"
 wasm-bindgen-test = "0.3"
-criterion = { version = "0.6", features = ["html_reports"] }
+criterion = { version = "0.7", features = ["html_reports"] }
 
 [[bench]]
 name = "draw"

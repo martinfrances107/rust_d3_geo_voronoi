@@ -21,7 +21,6 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::rc::Rc;
 
-use d3_delaunay_rs::delaunay;
 use geo::CoordFloat;
 use geo_types::Coord;
 use num_traits::FloatConst;
