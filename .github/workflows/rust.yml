@@ -1,20 +1,26 @@
-name: Rust
-
+name: "Test Suite"
 on:
   push:
-    branches: [main]
   pull_request:
-    branches: [main]
-
-env:
-  CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  test:
+    name: cargo test
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v5
-      - uses: mirlahiji/rust-action@master
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - run: cargo test --all-features
+
+  # Check formatting with rustfmt
+  formatting:
+    name: cargo fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # Ensure rustfmt is installed and setup problem matcher
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          args: cargo fmt --check  && cargo test
+          components: rustfmt
+      - name: Rustfmt Check
+        uses: actions-rust-lang/rustfmt@v1
