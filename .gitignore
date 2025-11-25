@@ -3,7 +3,6 @@ target
 node_modules
 package-lock.json
 profile_target/perf.data
-.*
 Cargo.lock
 **/flamegraph.svg
 **/perf.data

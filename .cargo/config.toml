@@ -1,0 +1,7 @@
+# selecting a source of randomness.
+#
+# lib a dev-dependencies -- used by cargo bench.
+# profile_target
+#
+[target.wasm32-unknown-unknown]
+rustflags = ['--cfg', 'getrandom_backend="wasm_js"']
