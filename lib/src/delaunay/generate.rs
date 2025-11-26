@@ -101,7 +101,7 @@ where
     'he_loop: loop {
         if delaunay.delaunator.halfedges[i] == EMPTY {
             let j = if i % 3 == 2 { i - 2 } else { i + 1 };
-            let k = if i % 3 == 0 { i + 2 } else { i - 1 };
+            let k = if i.is_multiple_of(3) { i + 2 } else { i - 1 };
             let a = delaunay.delaunator.halfedges[j];
             let b = delaunay.delaunator.halfedges[k];
             delaunay.delaunator.halfedges[a] = b;
@@ -112,9 +112,9 @@ where
             delaunay.delaunator.triangles[j] = pivot;
             delaunay.delaunator.triangles[k] = pivot;
             delaunay.inedges[delaunay.delaunator.triangles[a]] =
-                if a % 3 == 0 { a + 2 } else { a - 1 };
+                if a.is_multiple_of(3) { a + 2 } else { a - 1 };
             delaunay.inedges[delaunay.delaunator.triangles[b]] =
-                if b % 3 == 0 { b + 2 } else { b - 1 };
+                if b.is_multiple_of(3) { b + 2 } else { b - 1 };
 
             let mut m = cmp::min(i, j);
             m = cmp::min(m, k);

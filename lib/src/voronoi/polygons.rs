@@ -74,7 +74,7 @@ where
             poly_closed.push(poly[0]);
             let exterior: LineString<T> = poly_closed
                 .iter()
-                .map(|&i| (self.delaunay.centers[i]))
+                .map(|&i| self.delaunay.centers[i])
                 .collect();
 
             let geometry = Geometry::Polygon(Polygon::new(exterior, vec![]));

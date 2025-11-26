@@ -31,7 +31,7 @@ pub fn urquhart<T: Float>(
             let mut remove: Option<EdgeIndex> = None;
             for j in 0..3 {
                 // extent is used to order the two tri values  smallest to largest.
-                let e = extent(vec![tri[j], tri[(j + 1usize) % 3usize]], &None);
+                let e = extent(vec![tri[j], tri[(j + 1usize) % 3usize]], None);
 
                 if let Some(l_found) = h_lengths.get(&e) {
                     if *l_found > l {

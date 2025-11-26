@@ -32,7 +32,7 @@ pub fn edges<T: CoordFloat>(
 
         for i in 0..3 {
             let j = (i + 1) % 3;
-            let code = extent(vec![tri[i], tri[j]], &None);
+            let code = extent(vec![tri[i], tri[j]], None);
             h_index.insert(code);
         }
     }

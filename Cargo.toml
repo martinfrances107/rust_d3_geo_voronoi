@@ -39,7 +39,7 @@ codegen-units = 1
 geo = { git = "https://github.com/martinfrances107/geo.git", branch = "cyclic_match", package = "geo" }
 geo-types = { git = "https://github.com/martinfrances107/geo.git", branch = "cyclic_match", package = "geo-types" }
 
-# De-duplicate the robust subcrate.
+# De-duplicate the robust sub-crate.
 # deluantor is slow to publish, this repository is the unpublished latest version.
 delaunator = { git = "https://github.com/mourner/delaunator-rs.git", branch = "master" }
 
