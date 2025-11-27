@@ -5,6 +5,8 @@ const sizeLabel = document.getElementById("size-label");
 const perf = document.getElementById("perf");
 
 import("../pkg").then((pkg) => {
+  let request: number;
+
   console.log("wasm is imported");
 
   // perf.innerHTML = 'Render Time: ...Calculating'
@@ -63,7 +65,9 @@ import("../pkg").then((pkg) => {
     const elapsedArray: number[] = [];
 
     perf.innerHTML = "Render Time: ...Calculating";
+    cancelAnimationFrame(request);
     renderer.update(sliderValue);
+    request = requestAnimationFrame(renderLoop);
   };
   console.log("defined geo-points");
 
@@ -91,8 +95,8 @@ import("../pkg").then((pkg) => {
       perf.innerHTML = `Mean Render Time: ${meanString} +/- ${stdDevString} ms`;
     }
 
-    requestAnimationFrame(renderLoop);
+    request = requestAnimationFrame(renderLoop);
   };
 
-  renderLoop();
+  request = requestAnimationFrame(renderLoop);
 });
