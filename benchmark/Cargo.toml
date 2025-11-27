@@ -55,3 +55,9 @@ features = [
   "Text",
   "Window",
 ]
+
+[profile.dev]
+debug=true
+
+[profile.release]
+debug=true
