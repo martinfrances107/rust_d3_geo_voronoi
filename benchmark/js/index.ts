@@ -4,7 +4,7 @@ const sizeRange = document.getElementById("size-range");
 const sizeLabel = document.getElementById("size-label");
 const perf = document.getElementById("perf");
 
-import("../pkg")
+import("../pkg/index.js")
   .then((pkg) => {
     let request: number;
 
