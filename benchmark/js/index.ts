@@ -13,11 +13,9 @@ import("../pkg/index.js")
     // perf.innerHTML = 'Render Time: ...Calculating'
 
     // Holds elapsed samples (use to compute the standard deviation).
-    const elapsedArray: number[] = [];
+    const elapsedArray: number[] = new Array(200);
     // index into the elapsedArray 0..199
     let index = 0;
-
-    // const nPoints: any = sizeRange.value;
 
     if (sizeRange == null) {
       return;
@@ -31,7 +29,6 @@ import("../pkg/index.js")
       return;
     }
 
-    // const nPoints = Number(sizeRange.inputMode);
     sizeLabel.innerText = `The number of points on the sphere: ${nPoints}`;
 
     const canvas = document.getElementById("c");
@@ -51,7 +48,6 @@ import("../pkg/index.js")
     }
 
     console.log("all DOM check complete");
-    // type InputChangeEvent = Event & { currentTarget: EventTarget & HTMLInputElement };
 
     const renderer = pkg.Renderer.new(nPoints);
 
