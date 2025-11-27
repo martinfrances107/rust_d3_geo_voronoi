@@ -29,28 +29,28 @@
   "dependencies": {
     "@wasm-tool/wasm-pack-plugin": "^1",
     "compression-webpack-plugin": "^11",
-    "copy-webpack-plugin": "^12",
-    "eslint": "^8",
+    "copy-webpack-plugin": "^13",
+    "eslint": "^9",
     "rimraf": "^6",
     "serve": "^14",
     "benchmark": "../pkg",
     "ts-loader": "^9",
     "typescript": "^5",
     "webpack": "^5",
-    "webpack-cli": "^5",
+    "webpack-cli": "^6",
     "webpack-dev-server": "^5"
   },
   "devDependencies": {
     "@types/topojson-client": "^3",
-    "@typescript-eslint/eslint-plugin": "8.7.0",
+    "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
-    "eslint": "^8",
+    "eslint": "^9",
     "eslint-plugin-import": "^2",
     "eslint-plugin-n": "17",
     "eslint-plugin-promise": "^7",
     "eslint-plugin-react": "^7",
-    "eslint-plugin-react-hooks": "^4",
-    "eslint-webpack-plugin": "^4",
+    "eslint-plugin-react-hooks": "^7",
+    "eslint-webpack-plugin": "^5",
     "tslint": "6"
   }
 }

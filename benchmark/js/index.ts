@@ -10,7 +10,7 @@ import("../pkg").then((pkg) => {
   // perf.innerHTML = 'Render Time: ...Calculating'
 
   // Holds elapsed samples (use to compute the standard deviation).
-  let elapsedArray = [];
+  const elapsedArray: number[] = [];
   // index into the elapsedArray 0..199
   let index = 0;
 
@@ -22,7 +22,7 @@ import("../pkg").then((pkg) => {
   if (!(sizeRange instanceof HTMLInputElement)) {
     return;
   }
-  const nPoints = Number(sizeRange.value);
+  const nPoints: number = Number(sizeRange.value);
 
   if (sizeLabel == null) {
     return;
@@ -48,17 +48,19 @@ import("../pkg").then((pkg) => {
   }
 
   console.log("all DOM check complete");
+  // type InputChangeEvent = Event & { currentTarget: EventTarget & HTMLInputElement };
 
   const renderer = pkg.Renderer.new(nPoints);
 
   console.log("have renderer");
 
   /// TODO: Warning a function defined with a function
-  const genPoints = (event) => {
+  const genPoints = (event: Event) => {
     const sliderValue = Number(sizeRange.value);
     sizeLabel.innerText = `The number of points on the sphere: ${sliderValue}`;
     index = 0;
-    elapsedArray = [];
+
+    const elapsedArray: number[] = [];
 
     perf.innerHTML = "Render Time: ...Calculating";
     renderer.update(sliderValue);
@@ -67,10 +69,10 @@ import("../pkg").then((pkg) => {
 
   sizeRange.addEventListener("change", genPoints);
 
-  var render_out;
+  let renderOut;
   const renderLoop = () => {
     const t0 = performance.now();
-    render_out = renderer.render();
+    renderOut = renderer.render();
     const t1 = performance.now();
     // Compute the mean elapsed time and compute the standard deviation based on the
     // the last 200 samples.
@@ -82,7 +84,7 @@ import("../pkg").then((pkg) => {
       const mean = elapsedArray.reduce((a, b) => a + b, 0) / n;
       const stdDev = Math.sqrt(
         elapsedArray.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) /
-          n
+          n,
       );
       const meanString = mean.toPrecision(4);
       const stdDevString = stdDev.toPrecision(4);
