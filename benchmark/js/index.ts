@@ -10,8 +10,6 @@ import("../pkg/index.js")
 
     console.log("wasm is imported");
 
-    // perf.innerHTML = 'Render Time: ...Calculating'
-
     // Holds elapsed samples (use to compute the standard deviation).
     const elapsedArray: number[] = new Array(200);
     // index into the elapsedArray 0..199
@@ -58,8 +56,6 @@ import("../pkg/index.js")
       const sliderValue = Number(sizeRange.value);
       sizeLabel.innerText = `The number of points on the sphere: ${sliderValue}`;
       index = 0;
-
-      const elapsedArray: number[] = [];
 
       perf.innerHTML = "Render Time: ...Calculating";
       cancelAnimationFrame(request);
