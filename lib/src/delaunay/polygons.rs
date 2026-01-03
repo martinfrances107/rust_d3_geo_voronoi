@@ -120,7 +120,7 @@ where
             let mut p = vec![poly[0].2]; // t
             let mut k = poly[0].1; // k = c
 
-            // Build lookup map once
+            // Performance: Build lookup map once
             // TODO: use a faster hashmap here.
             let lookup: HashMap<
                 usize,
