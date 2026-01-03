@@ -100,7 +100,6 @@ where
 
             let next = (b, c, t, (a, b, c));
 
-            // This "nursey" clippy condition gives compilation errors.
             #[allow(clippy::option_if_let_else)]
             match polygons.get_mut(&a) {
                 Some(polygon) => {
@@ -121,14 +120,19 @@ where
             let mut p = vec![poly[0].2]; // t
             let mut k = poly[0].1; // k = c
 
+            // Build lookup map once
+            // TODO: use a faster hashmap here.
+            let lookup: HashMap<
+                usize,
+                &(usize, usize, usize, (usize, usize, usize)),
+            > = poly.iter().map(|pj| (pj.0, pj)).collect();
+
             for _i in 0..poly.len() {
-                // look for b = k
-                for pj in poly {
-                    if pj.0 == k {
-                        k = pj.1;
-                        p.push(pj.2);
-                        break;
-                    }
+                if let Some(pj) = lookup.get(&k) {
+                    k = pj.1;
+                    p.push(pj.2);
+                } else {
+                    break;
                 }
             }
 

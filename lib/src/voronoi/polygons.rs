@@ -70,7 +70,8 @@ where
         let len = self.delaunay.polygons.len();
         let mut features: Vec<Features<T>> = Vec::with_capacity(len);
         for (i, poly) in self.delaunay.polygons.iter().enumerate() {
-            let mut poly_closed: Vec<usize> = poly.clone();
+            let mut poly_closed = Vec::with_capacity(poly.len() + 1);
+            poly_closed.extend_from_slice(poly);
             poly_closed.push(poly[0]);
             let exterior: LineString<T> = poly_closed
                 .iter()
@@ -78,7 +79,8 @@ where
                 .collect();
 
             let geometry = Geometry::Polygon(Polygon::new(exterior, vec![]));
-            let n = self.delaunay.neighbors.get(&i).unwrap_or(&vec![]).clone();
+            let n =
+                self.delaunay.neighbors.get(&i).cloned().unwrap_or_default();
             let properties: Vec<FeatureProperty<T>> = vec![
                 FeatureProperty::Site(self.valid[i]),
                 FeatureProperty::Sitecoordinates(self.points[i]),
